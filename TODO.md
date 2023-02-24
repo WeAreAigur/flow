@@ -1,0 +1,5 @@
+- node bank
+- multiple handles according to input/output properties
+- export to config
+- config to invoke ??
+- create input/output frontend components for easy invocation/consumption
