@@ -19,7 +19,7 @@ export function NodeCategory(props: NodeCategoryProps) {
 				{Object.entries(props.nodeDefinitions).map(([category, val]) => (
 					<Fragment key={category}>
 						{isNodeDefinition(val) ? (
-							<NodeDefinitionInstance title={val.title} id={val.id} />
+							<NodeDefinitionInstance node={val} />
 						) : (
 							<NodeCategory title={category} nodeDefinitions={val} />
 						)}

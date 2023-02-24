@@ -1,12 +1,12 @@
+import { NodeDefinition } from '#/types';
+
 export interface NodeDefinitionProps {
-	title: string;
-	id: string;
+	node: NodeDefinition;
 }
 
-const onDragStart = (event, nodeTitle, nodeId) => {
+const onDragStart = (event, node) => {
 	event.target.classList.add('bg-red-500');
-	event.dataTransfer.setData('application/aigurflow/title', nodeTitle);
-	event.dataTransfer.setData('application/aigurflow/id', nodeId);
+	event.dataTransfer.setData('application/aigurflow', JSON.stringify(node));
 	event.dataTransfer.effectAllowed = 'move';
 };
 
@@ -18,11 +18,11 @@ export function NodeDefinitionInstance(props: NodeDefinitionProps) {
 	return (
 		<div
 			className="border p-4 rounded-lg cursor-pointer"
-			onDragStart={(event) => onDragStart(event, props.title, props.id)}
+			onDragStart={(event) => onDragStart(event, props.node)}
 			onDragEnd={(event) => onDragStop(event)}
 			draggable
 		>
-			{props.title}
+			{props.node.title}
 		</div>
 	);
 }

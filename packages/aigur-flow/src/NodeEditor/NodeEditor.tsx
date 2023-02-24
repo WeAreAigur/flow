@@ -1,11 +1,41 @@
+import { NodeDefinition, NodeDefinitionType } from '#/types';
 import { useCallback, useRef, useState } from 'react';
 import ReactFlow, { addEdge, Background, Panel, useEdgesState, useNodesState } from 'reactflow';
 
-const initialNodes = [];
+import { GenericNode } from '../nodeTypes/GenericNode';
+import { InputNode } from '../nodeTypes/InputNode';
+import { OutputNode } from '../nodeTypes/OutputNode';
+import { ProviderNode } from '../nodeTypes/ProviderNode';
+
+const initialNodes = [
+	{
+		id: 'pipeline-input',
+		type: 'pipeline-input',
+		position: { x: 0, y: 0 },
+		data: {
+			title: 'Input',
+		},
+	},
+	{
+		id: 'pipeline-output',
+		type: 'pipeline-output',
+		position: { x: 550, y: 0 },
+		data: {
+			title: 'Output',
+		},
+	},
+];
 
 const initialEdges = [];
 
 let nodeCnt = 0;
+
+const nodeTypes = {
+	'pipeline-input': InputNode,
+	'pipeline-output': OutputNode,
+	generic: GenericNode,
+	provider: ProviderNode,
+};
 
 export function NodeEditor() {
 	const reactFlowWrapper = useRef(null);
@@ -33,11 +63,14 @@ export function NodeEditor() {
 			event.preventDefault();
 
 			const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-			const nodeDefinitionId = event.dataTransfer.getData('application/aigurflow/id');
-			const nodeDefinitionTitle = event.dataTransfer.getData('application/aigurflow/title');
+			const nodeDefinition: NodeDefinition = JSON.parse(
+				event.dataTransfer.getData('application/aigurflow')
+			);
+
+			console.log(`***nodeDefinition`, nodeDefinition);
 
 			// check if the dropped element is valid
-			if (typeof nodeDefinitionId === 'undefined' || !nodeDefinitionId) {
+			if (!nodeDefinition?.id) {
 				return;
 			}
 
@@ -45,11 +78,12 @@ export function NodeEditor() {
 				x: event.clientX - reactFlowBounds.left,
 				y: event.clientY - reactFlowBounds.top,
 			});
+			console.log(`***nodeDefinition.type`, nodeDefinition.type);
 			const newNode = {
-				id: `${nodeDefinitionId}@@${nodeCnt++}`,
-				type: 'default', // TODO: get type by id (gpt -> provider, etc)
+				id: `${nodeDefinition.id}@@${nodeCnt++}`,
+				type: nodeDefinition.type,
 				position,
-				data: { label: nodeDefinitionTitle },
+				data: nodeDefinition,
 			};
 
 			setNodes((nds) => nds.concat(newNode));
@@ -68,6 +102,7 @@ export function NodeEditor() {
 				onDragOver={onDragOver}
 				onDrop={onDrop}
 				onInit={setReactFlowInstance}
+				nodeTypes={nodeTypes}
 				fitView
 			>
 				<Background />
@@ -85,11 +120,11 @@ function reactFlowToAigurPipeline(flow: ReactFlowObject) {
 	const pipeline: AigurPipeline = { input: null, output: null, nodes: [] };
 
 	for (const node of nodes) {
-		const [nodeId] = node.id.split('@@');
+		const nodeId = node.id.split('@@')[0] as NodeDefinitionType;
 
-		if (nodeId === 'input') {
+		if (nodeId === 'pipeline-input') {
 			pipeline.input = { subject: 'subject!' };
-		} else if (nodeId === 'output') {
+		} else if (nodeId === 'pipeline-output') {
 			pipeline.output = { joke: 'joke!' };
 		} else {
 			pipeline.nodes.push({
