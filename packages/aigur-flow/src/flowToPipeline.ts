@@ -6,7 +6,7 @@ export async function flowToPipeline(flow: FlowPipeline, nodesIO: NodesIO) {
 	console.log(`***flow`, flow);
 	const nodes = flow.nodes;
 	const edges = flow.edges;
-	const pipelineData: PipelineData = { nodes: [] };
+	const pipelineData: PipelineData = { nodes: [], input: nodesIO['input'].input };
 
 	let edge = edges.find((edge) => edge.source === 'pipeline-input');
 	const outputEdge = edges.find((edge) => edge.target === 'pipeline-output');
@@ -50,7 +50,7 @@ export async function invokePipeline(pipe: PipelineData) {
 
 	// console.log(`***pipe.nodes`, pipe.nodes);
 
-	const res = await pipeline.invoke({ subject: 'tell me a joke about computers' });
+	const res = await pipeline.invoke(pipe.input);
 	console.log(`***res`, res);
 }
 
@@ -163,6 +163,12 @@ if (import.meta.vitest) {
 			},
 		};
 		const nodesIO = {
+			input: {
+				input: {
+					subject: 'cars',
+				},
+				output: {},
+			},
 			gpt3Prediction: {
 				input: {
 					prompt: '$context.input.subject$',
@@ -189,6 +195,7 @@ if (import.meta.vitest) {
 		});
 
 		expect(pipelineData).toStrictEqual({
+			input: { subject: 'cars' },
 			nodes: [
 				{
 					action: gpt3Prediction,
