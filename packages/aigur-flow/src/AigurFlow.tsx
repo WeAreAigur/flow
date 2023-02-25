@@ -9,11 +9,9 @@ export function AigurFlow() {
 	const io = useNodesIOStore((state) => state.io);
 	return (
 		<ReactFlowProvider>
-			<div className="aigur-flow h-full">
+			<div className="aigur-flow h-full flex flex-col space-y-4">
+				<div>{JSON.stringify(io)}</div>
 				<div className="h-full flex">
-					<div>
-						<pre>{JSON.stringify(io, null, 2)}</pre>
-					</div>
 					<div className="h-full w-1/4">
 						<NodeBank nodeDefinitions={nodeDefinitions} />
 					</div>

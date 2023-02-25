@@ -4,19 +4,20 @@ import { FlowPipeline, NodesIO, PipelineData } from './types';
 
 export async function flowToPipeline(flow: FlowPipeline, nodesIO: NodesIO) {
 	console.log(`***flow`, flow);
+	console.log(`***nodesIO`, nodesIO);
 	const nodes = flow.nodes;
 	const edges = flow.edges;
 	const pipelineData: PipelineData = { nodes: [], input: nodesIO['input'].input };
-
-	let edge = edges.find((edge) => edge.source === 'pipeline-input');
-	const outputEdge = edges.find((edge) => edge.target === 'pipeline-output');
+	let edge = edges.find((edge) => edge.source === 'input');
+	const outputEdge = edges.find((edge) => edge.target === 'output');
 	if (!edge || !outputEdge) {
 		console.warn(`input and output nodes must be connected`);
 		return;
 	}
 	do {
 		const node = nodes.find((node) => node.id === edge.source);
-		const nodeIO = nodesIO[node.data.id];
+		const nodeIO = nodesIO[node.id];
+		console.log(`***nodeIO`, nodeIO);
 		if (node.data.id !== 'input') {
 			pipelineData.nodes.push({
 				...nodeIO,
@@ -52,6 +53,7 @@ export async function invokePipeline(pipe: PipelineData) {
 
 	const res = await pipeline.invoke(pipe.input);
 	console.log(`***res`, res);
+	return res;
 }
 
 async function getAction(nodeId: string) {

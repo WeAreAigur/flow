@@ -69,32 +69,17 @@ export function PipelineNode(props: PipelineNodeProps) {
 
 	return (
 		<div
-			className={`px-4 py-2 rounded-lg bg-stone-800 border ring-2 ring-offset-2 ring-offset-zinc-900 min-h-[9rem] min-w-[14rem] w-[15rem] ${
+			className={`flex px-4 py-2 rounded-lg bg-stone-800 border ring-2 ring-offset-2 ring-offset-zinc-900 min-h-[9rem] min-w-[14rem] w-[15rem] ${
 				props.data.nodeClassName ?? ''
 			}`}
 		>
-			<div className="flex flex-col space-y-2 text-left">
-				<div className="text-xs text-stone-500">{props.data.definitionLabel}</div>
-				<div className="text-2xl font-bold text-stone-100">{props.data.title}</div>
-				<div className="divider"></div>
-				{props.data ? (
-					<>
-						<div>Input</div>
-						{Object.entries(props.data.input ?? {}).map(([key, val]) => (
-							<div key={key}>
-								{key} - {val}
-							</div>
-						))}
-						<div>Output</div>
-						{Object.entries(props.data.output ?? {}).map(([key, val]) => (
-							<div key={key}>
-								{key} - {val}
-							</div>
-						))}
-					</>
-				) : null}
-				<div className="flex justify-between">
-					<EditNodeModalTrigger onSelect={() => selectNode(props.data)} />
+			<div className="flex flex-col space-y-2 text-left justify-between flex-1">
+				<div className="flex-1">
+					<div className="text-xs text-stone-500">{props.data.definitionLabel}</div>
+					<div className="text-2xl font-bold text-stone-100">{props.data.title}</div>
+				</div>
+				<div className="flex justify-between items-center">
+					<EditNodeModalTrigger onSelect={() => selectNode({ ...props.data, id: props.id })} />
 					<div>
 						{/* Lovely double triple ternary 💪🏻 */}
 						<div
@@ -116,7 +101,7 @@ export function PipelineNode(props: PipelineNodeProps) {
 					key={`${handle.position}-${i}`}
 					type={handle.type}
 					position={handle.position}
-					className={`!h-6 !w-2 !rounded-none !border-none ${props.data.handleClassName ?? ''}`}
+					className={`!h-12 !w-3 !rounded-none !border-none ${props.data.handleClassName ?? ''}`}
 					id={`${props.id}-${handle.position}`}
 					onConnect={(params) => console.log(params)}
 				/>

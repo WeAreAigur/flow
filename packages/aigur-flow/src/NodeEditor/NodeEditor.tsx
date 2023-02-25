@@ -5,6 +5,7 @@ import ReactFlow, {
 	addEdge,
 	Background,
 	Panel,
+	updateEdge,
 	useEdgesState,
 	useNodesState,
 	useStoreApi,
@@ -23,13 +24,13 @@ import { NodeDefinition } from '../types';
 
 const initialNodes = [
 	{
-		id: 'pipeline-input',
+		id: 'input',
 		type: 'pipeline-input',
 		position: { x: 0, y: 0 },
 		data: nodeDefinitions.Pipeline.input,
 	},
 	{
-		id: 'pipeline-output',
+		id: 'output',
 		type: 'pipeline-output',
 		position: { x: 850, y: 0 },
 		data: nodeDefinitions.Pipeline.output,
@@ -47,11 +48,12 @@ const nodeTypes = {
 	provider: ProviderNode,
 };
 
-const MIN_DISTANCE = 550;
+const MIN_DISTANCE = 400;
 const PROXIMITY_CLASS = 'proximity';
 
 export function NodeEditor() {
 	const reactFlowWrapper = useRef(null);
+	const edgeUpdateSuccessful = useRef(true);
 	const store = useStoreApi();
 	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -59,6 +61,7 @@ export function NodeEditor() {
 	const selectedNode = useNodeStore((state) => state.selectedNode);
 	const nodesIO = useNodesIOStore((state) => state.io);
 	const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+	const [output, setOutput] = useState(null);
 
 	const onDragOver = useCallback((event) => {
 		event.preventDefault();
@@ -70,7 +73,8 @@ export function NodeEditor() {
 			const flow = reactFlowInstance.toObject();
 			const pipeline = await flowToPipeline(flow, nodesIO);
 			console.log(`***pipeline`, pipeline);
-			invokePipeline(pipeline);
+			const output = await invokePipeline(pipeline);
+			setOutput(output);
 		}
 	}, [nodesIO, reactFlowInstance]);
 
@@ -195,6 +199,29 @@ export function NodeEditor() {
 		[getClosestEdge, setEdges]
 	);
 
+	const onEdgeUpdateStart = useCallback(() => {
+		edgeUpdateSuccessful.current = false;
+	}, []);
+
+	const onEdgeUpdate = useCallback(
+		(oldEdge, newConnection) => {
+			edgeUpdateSuccessful.current = true;
+			setEdges((els) => updateEdge(oldEdge, newConnection, els));
+		},
+		[setEdges]
+	);
+
+	const onEdgeUpdateEnd = useCallback(
+		(_, edge) => {
+			if (!edgeUpdateSuccessful.current) {
+				setEdges((eds) => eds.filter((e) => e.id !== edge.id));
+			}
+
+			edgeUpdateSuccessful.current = true;
+		},
+		[setEdges]
+	);
+
 	return (
 		<div className="reactflow-wrapper h-full" ref={reactFlowWrapper}>
 			<ReactFlow
@@ -202,6 +229,9 @@ export function NodeEditor() {
 				edges={edges}
 				onNodesChange={onNodesChange}
 				onEdgesChange={onEdgesChange}
+				onEdgeUpdate={onEdgeUpdate}
+				onEdgeUpdateStart={onEdgeUpdateStart}
+				onEdgeUpdateEnd={onEdgeUpdateEnd}
 				onConnect={onConnect}
 				onDragOver={onDragOver}
 				onDrop={onDrop}
@@ -217,6 +247,7 @@ export function NodeEditor() {
 				<Panel position="bottom-right">
 					<button onClick={onSave}>Save</button>
 				</Panel>
+				<Panel position="top-right">Output - {JSON.stringify(output)}</Panel>
 			</ReactFlow>
 			<EditNodeModal node={selectedNode} />
 		</div>

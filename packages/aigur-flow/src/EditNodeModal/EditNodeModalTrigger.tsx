@@ -4,11 +4,7 @@ export interface EditNodeModalTriggerProps {
 
 export function EditNodeModalTrigger(props: EditNodeModalTriggerProps) {
 	return (
-		<label
-			htmlFor="edit-node-modal"
-			className="btn btn-xs btn-ghost btn-primary"
-			onClick={props.onSelect}
-		>
+		<label htmlFor="edit-node-modal" className="btn btn-ghost btn-primary" onClick={props.onSelect}>
 			Edit
 		</label>
 	);

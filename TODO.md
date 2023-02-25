@@ -1,8 +1,5 @@
-- node bank
-- export to config
-- config to invoke ??
+- save nodeio according to safe id (id@@index)
 - create input/output frontend components for easy invocation/consumption
-- invoke pipeline from frontend
 - show progress
 - rename node
 - disable edit if not connected
