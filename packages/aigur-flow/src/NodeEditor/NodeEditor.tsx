@@ -1,15 +1,24 @@
-import ReactFlow, { addEdge, Background, Panel, useEdgesState, useNodesState } from 'reactflow';
-import { useCallback, useRef, useState } from 'react';
+import './NodeEditor.css';
 
-import { NodeDefinition } from '../types';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { useNodeStore } from '../stores/useNode';
-import { ProviderNode } from '../nodeTypes/ProviderNode';
-import { OutputNode } from '../nodeTypes/OutputNode';
-import { InputNode } from '../nodeTypes/InputNode';
-import { GenericNode } from '../nodeTypes/GenericNode';
-import { flowToPipeline } from '../flowToPipeline';
+import { useCallback, useRef, useState } from 'react';
+import ReactFlow, {
+	addEdge,
+	Background,
+	Panel,
+	useEdgesState,
+	useNodesState,
+	useStoreApi,
+} from 'reactflow';
+
 import { EditNodeModal } from '../EditNodeModal';
+import { flowToPipeline } from '../flowToPipeline';
+import { GenericNode } from '../nodeTypes/GenericNode';
+import { InputNode } from '../nodeTypes/InputNode';
+import { OutputNode } from '../nodeTypes/OutputNode';
+import { ProviderNode } from '../nodeTypes/ProviderNode';
+import { useNodeStore } from '../stores/useNode';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { NodeDefinition } from '../types';
 
 const initialNodes = [
 	{
@@ -23,7 +32,7 @@ const initialNodes = [
 	{
 		id: 'pipeline-output',
 		type: 'pipeline-output',
-		position: { x: 550, y: 0 },
+		position: { x: 850, y: 0 },
 		data: {
 			title: 'Output',
 		},
@@ -41,8 +50,12 @@ const nodeTypes = {
 	provider: ProviderNode,
 };
 
+const MIN_DISTANCE = 550;
+const PROXIMITY_CLASS = 'proximity';
+
 export function NodeEditor() {
 	const reactFlowWrapper = useRef(null);
+	const store = useStoreApi();
 	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 	const [reactFlowInstance, setReactFlowInstance] = useState(null);
@@ -96,6 +109,88 @@ export function NodeEditor() {
 		[reactFlowInstance, setNodes]
 	);
 
+	const getClosestEdge = useCallback(
+		(node) => {
+			const { nodeInternals } = store.getState();
+			const storeNodes = Array.from(nodeInternals.values());
+
+			const closestNode = storeNodes.reduce(
+				(res, n) => {
+					if (n.id !== node.id) {
+						const dx = n.positionAbsolute.x - node.positionAbsolute.x;
+						const dy = n.positionAbsolute.y - node.positionAbsolute.y;
+						const d = Math.sqrt(dx * dx + dy * dy);
+
+						if (d < res.distance && d < MIN_DISTANCE) {
+							res.distance = d;
+							res.node = n;
+						}
+					}
+
+					return res;
+				},
+				{
+					distance: Number.MAX_VALUE,
+					node: null,
+				}
+			);
+
+			if (!closestNode.node) {
+				return null;
+			}
+
+			const closeNodeIsSource = closestNode.node.positionAbsolute.x < node.positionAbsolute.x;
+
+			return {
+				id: `${node.id}-${closestNode.node.id}`,
+				source: closeNodeIsSource ? closestNode.node.id : node.id,
+				target: closeNodeIsSource ? node.id : closestNode.node.id,
+			};
+		},
+		[store]
+	);
+
+	const onNodeDrag = useCallback(
+		(_, node) => {
+			const closeEdge = getClosestEdge(node);
+
+			setEdges((edges) => {
+				const nextEdges = edges.filter((e) => e.className !== PROXIMITY_CLASS);
+
+				if (
+					closeEdge &&
+					!nextEdges.find(
+						(nextEdge) =>
+							nextEdge.source === closeEdge.source && nextEdge.target === closeEdge.target
+					)
+				) {
+					(closeEdge as any).className = PROXIMITY_CLASS;
+					nextEdges.push(closeEdge);
+				}
+
+				return nextEdges;
+			});
+		},
+		[getClosestEdge, setEdges]
+	);
+
+	const onNodeDragStop = useCallback(
+		(_, node) => {
+			const closeEdge = getClosestEdge(node);
+
+			setEdges((edges) => {
+				const nextEdges = edges.filter((edge) => edge.className !== PROXIMITY_CLASS);
+
+				if (closeEdge) {
+					nextEdges.push(closeEdge);
+				}
+
+				return nextEdges;
+			});
+		},
+		[getClosestEdge, setEdges]
+	);
+
 	return (
 		<div className="reactflow-wrapper h-full" ref={reactFlowWrapper}>
 			<ReactFlow
@@ -106,8 +201,11 @@ export function NodeEditor() {
 				onConnect={onConnect}
 				onDragOver={onDragOver}
 				onDrop={onDrop}
+				onNodeDrag={onNodeDrag}
+				onNodeDragStop={onNodeDragStop}
 				onInit={setReactFlowInstance}
 				nodeTypes={nodeTypes}
+				maxZoom={0.75}
 				fitView
 			>
 				<Background />

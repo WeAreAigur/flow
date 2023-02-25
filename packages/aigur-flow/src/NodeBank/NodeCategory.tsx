@@ -11,7 +11,7 @@ interface NodeCategoryProps {
 export function NodeCategory(props: NodeCategoryProps) {
 	return (
 		<div className="collapse">
-			<input type="checkbox" className="peer" />
+			<input type="checkbox" className="peer" defaultChecked={true} />
 			<div className="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
 				{props.title}
 			</div>
