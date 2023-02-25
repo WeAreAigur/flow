@@ -1,11 +1,15 @@
-import { NodeDefinition, NodeDefinitionType } from '#/types';
-import { useCallback, useRef, useState } from 'react';
 import ReactFlow, { addEdge, Background, Panel, useEdgesState, useNodesState } from 'reactflow';
+import { useCallback, useRef, useState } from 'react';
 
-import { GenericNode } from '../nodeTypes/GenericNode';
-import { InputNode } from '../nodeTypes/InputNode';
-import { OutputNode } from '../nodeTypes/OutputNode';
+import { NodeDefinition } from '../types';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { useNodeStore } from '../stores/useNode';
 import { ProviderNode } from '../nodeTypes/ProviderNode';
+import { OutputNode } from '../nodeTypes/OutputNode';
+import { InputNode } from '../nodeTypes/InputNode';
+import { GenericNode } from '../nodeTypes/GenericNode';
+import { flowToPipeline } from '../flowToPipeline';
+import { EditNodeModal } from '../EditNodeModal';
 
 const initialNodes = [
 	{
@@ -42,7 +46,8 @@ export function NodeEditor() {
 	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 	const [reactFlowInstance, setReactFlowInstance] = useState(null);
-
+	const selectedNode = useNodeStore((state) => state.selectedNode);
+	const nodesIO = useNodesIOStore((state) => state.io);
 	const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
 	const onDragOver = useCallback((event) => {
@@ -53,10 +58,10 @@ export function NodeEditor() {
 	const onSave = useCallback(() => {
 		if (reactFlowInstance) {
 			const flow = reactFlowInstance.toObject();
-			const pipeline = reactFlowToAigurPipeline(flow);
+			const pipeline = flowToPipeline(flow, nodesIO);
 			console.log(`***pipeline`, pipeline);
 		}
-	}, [reactFlowInstance]);
+	}, [nodesIO, reactFlowInstance]);
 
 	const onDrop = useCallback(
 		(event) => {
@@ -86,7 +91,7 @@ export function NodeEditor() {
 				data: nodeDefinition,
 			};
 
-			setNodes((nds) => nds.concat(newNode));
+			setNodes((nodes) => nodes.concat(newNode));
 		},
 		[reactFlowInstance, setNodes]
 	);
@@ -110,58 +115,7 @@ export function NodeEditor() {
 					<button onClick={onSave}>Save</button>
 				</Panel>
 			</ReactFlow>
+			<EditNodeModal node={selectedNode} />
 		</div>
 	);
-}
-
-function reactFlowToAigurPipeline(flow: ReactFlowObject) {
-	const nodes = flow.nodes;
-	const edges = flow.edges;
-	const pipeline: AigurPipeline = { input: null, output: null, nodes: [] };
-
-	for (const node of nodes) {
-		const nodeId = node.id.split('@@')[0] as NodeDefinitionType;
-
-		if (nodeId === 'pipeline-input') {
-			pipeline.input = { subject: 'subject!' };
-		} else if (nodeId === 'pipeline-output') {
-			pipeline.output = { joke: 'joke!' };
-		} else {
-			pipeline.nodes.push({
-				id: nodeId,
-			});
-		}
-	}
-
-	// for (const edge of edges) {
-	// 	const source = edge.source;
-	// 	const target = edge.target;
-	// 	const sourceNode = nodes.find((node) => node.id === source);
-	// 	const targetNode = nodes.find((node) => node.id === target);
-	// 	const sourceNodeDefinition = sourceNode.data.label;
-	// 	const targetNodeDefinition = targetNode.data.label;
-
-	// 	// TODO: configure nodes according to source/target
-	// }
-
-	return pipeline;
-}
-
-interface ReactFlowObject {
-	nodes: {
-		id: string;
-	}[];
-	edges: {
-		id: string;
-		source: string;
-		target: string;
-		sourceHandle: string;
-		targetHandle: string;
-	}[];
-}
-
-interface AigurPipeline {
-	input: Record<string, any>; // TODO: zod?
-	output: Record<string, any>; // TODO: ReadableStream
-	nodes: any[];
 }

@@ -4,10 +4,6 @@
 	"exclude": ["dist", "build", "node_modules"],
 	"compilerOptions": {
 		"lib": ["dom", "ES2021"],
-		"strict": false,
-		"baseUrl": ".",
-		"paths": {
-			"#/*": ["src/*"]
-		}
+		"strict": false
 	}
 }

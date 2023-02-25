@@ -1,15 +1,12 @@
-import type { Pipeline } from '@aigur/client';
 import { Position } from 'reactflow';
 
 import { PipelineNode } from './PipelineNode';
+import { NodeDefinition } from '../types';
 
+import type { Pipeline } from '@aigur/client';
 export interface InputNodeProps {
 	id: string;
-	data: {
-		title: string;
-		id: string;
-		pipeline: Pipeline<any, any, any>;
-	};
+	data: NodeDefinition & { pipeline: Pipeline<any, any, any> };
 }
 
 export function InputNode(props: InputNodeProps) {
@@ -17,19 +14,15 @@ export function InputNode(props: InputNodeProps) {
 		<PipelineNode
 			id={props.id}
 			data={{
-				label: props.data.title,
+				...props.data,
 				nodeClassName: 'border-yellow-600 ring-yellow-900',
 				handleClassName: '!bg-yellow-400',
-				type: 'input',
 				handles: [
 					{
 						position: Position.Right,
 						type: 'source',
 					},
 				],
-				index: 0,
-				definitionLabel: 'Pipeline',
-				pipeline: props.data.pipeline,
 			}}
 		/>
 	);

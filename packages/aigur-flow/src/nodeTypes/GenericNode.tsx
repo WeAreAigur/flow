@@ -1,15 +1,12 @@
-import type { Pipeline } from '@aigur/client';
 import { Position } from 'reactflow';
 
 import { PipelineNode } from './PipelineNode';
+import { NodeDefinition } from '../types';
 
+import type { Pipeline } from '@aigur/client';
 export interface GenericNodeProps {
 	id: string;
-	data: {
-		title: string;
-		id: string;
-		pipeline: Pipeline<any, any, any>;
-	};
+	data: NodeDefinition & { pipeline: Pipeline<any, any, any> };
 }
 
 export function GenericNode(props: GenericNodeProps) {
@@ -17,10 +14,9 @@ export function GenericNode(props: GenericNodeProps) {
 		<PipelineNode
 			id={props.id}
 			data={{
-				label: props.data.title,
+				...props.data,
 				nodeClassName: 'border-pink-600 ring-pink-900',
 				handleClassName: '!bg-pink-400',
-				type: 'generic',
 				handles: [
 					{
 						position: Position.Right,
@@ -31,9 +27,6 @@ export function GenericNode(props: GenericNodeProps) {
 						type: 'target',
 					},
 				],
-				index: 0,
-				definitionLabel: 'Beep',
-				pipeline: props.data.pipeline,
 			}}
 		/>
 	);

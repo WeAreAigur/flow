@@ -1,20 +1,19 @@
 import { useRef, useState } from 'react';
 import { Handle, Position } from 'reactflow';
 
-import type { Pipeline } from '@aigur/client';
+import { EditNodeModalTrigger } from '../EditNodeModal/EditNodeModalTrigger';
+import { useNodeStore } from '../stores/useNode';
+import { NodeDefinition } from '../types';
 
+import type { Pipeline } from '@aigur/client';
 export interface PipelineNodeProps {
 	id: string;
-	data: {
-		index: number;
-		type: string;
-		label: string;
-		definitionLabel: string;
+	data: NodeDefinition & {
+		pipeline: Pipeline<any, any, any>;
 		handles: {
 			type: 'target' | 'source';
 			position: Position;
 		}[];
-		pipeline: Pipeline<any, any, any>;
 		nodeClassName?: string;
 		handleClassName?: string;
 	};
@@ -28,6 +27,7 @@ let resetTimeout;
 const PIPELINE_RESET_TIME = 1_500;
 const PIPELINE_RESET_ON_START_TIME = 10_000;
 export function PipelineNode(props: PipelineNodeProps) {
+	const selectNode = useNodeStore((state) => state.selectNode);
 	const [status, setStatus] = useState<'idle' | 'inProgress' | 'done'>('idle');
 	const lastProgressEventIdx = useRef<number>(-1);
 
@@ -75,20 +75,40 @@ export function PipelineNode(props: PipelineNodeProps) {
 		>
 			<div className="flex flex-col space-y-2 text-left">
 				<div className="text-xs text-stone-500">{props.data.definitionLabel}</div>
-				<div className="text-2xl font-bold text-stone-100">{props.data.label}</div>
-			</div>
-			<div className="absolute right-2 bottom-2 hidden">
-				{/* Lovely double triple ternary 💪🏻 */}
-				<div
-					className={`transition-all duration-300 badge ${
-						status === 'idle'
-							? 'badge-outline'
-							: status === 'inProgress'
-							? 'badge-warning'
-							: 'badge-success'
-					}`}
-				>
-					{status === 'idle' ? 'Idle' : status === 'inProgress' ? 'In Progress' : 'Done'}
+				<div className="text-2xl font-bold text-stone-100">{props.data.title}</div>
+				<div className="divider"></div>
+				{props.data ? (
+					<>
+						<div>Input</div>
+						{Object.entries(props.data.input ?? {}).map(([key, val]) => (
+							<div key={key}>
+								{key} - {val}
+							</div>
+						))}
+						<div>Output</div>
+						{Object.entries(props.data.output ?? {}).map(([key, val]) => (
+							<div key={key}>
+								{key} - {val}
+							</div>
+						))}
+					</>
+				) : null}
+				<div className="flex justify-between">
+					<EditNodeModalTrigger onSelect={() => selectNode(props.data)} />
+					<div>
+						{/* Lovely double triple ternary 💪🏻 */}
+						<div
+							className={`transition-all duration-300 badge ${
+								status === 'idle'
+									? 'badge-outline'
+									: status === 'inProgress'
+									? 'badge-warning'
+									: 'badge-success'
+							}`}
+						>
+							{status === 'idle' ? 'Idle' : status === 'inProgress' ? 'In Progress' : 'Done'}
+						</div>
+					</div>
 				</div>
 			</div>
 			{props.data.handles?.map((handle, i) => (
@@ -97,7 +117,8 @@ export function PipelineNode(props: PipelineNodeProps) {
 					type={handle.type}
 					position={handle.position}
 					className={`!h-6 !w-2 !rounded-none !border-none ${props.data.handleClassName ?? ''}`}
-					id={`${props.data.index}-${handle.position}`}
+					id={`${props.id}-${handle.position}`}
+					onConnect={(params) => console.log(params)}
 				/>
 			))}
 		</div>

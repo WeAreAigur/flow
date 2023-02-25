@@ -1,6 +1,5 @@
-import { NodeDefinitions } from '#/types';
-
 import { NodeCategory } from './NodeCategory';
+import { NodeDefinitions } from '../types';
 
 interface NodeBankProps {
 	nodeDefinitions: NodeDefinitions;

@@ -1,6 +1,6 @@
-import { NodeDefinition, NodeDefinitions } from '#/types';
 import { Fragment } from 'react';
 
+import { NodeDefinition, NodeDefinitions } from '../types';
 import { NodeDefinitionInstance } from './NodeDefinitionInstance';
 
 interface NodeCategoryProps {

@@ -1,16 +1,12 @@
-import type { Pipeline } from '@aigur/client';
 import { Position } from 'reactflow';
 
+import { NodeDefinition } from '../types';
 import { PipelineNode } from './PipelineNode';
 
+import type { Pipeline } from '@aigur/client';
 export interface ProviderNodeProps {
 	id: string;
-	data: {
-		title: string;
-		id: string;
-		pipeline: Pipeline<any, any, any>;
-		definitionLabel: string;
-	};
+	data: NodeDefinition & { pipeline: Pipeline<any, any, any> };
 }
 
 export function ProviderNode(props: ProviderNodeProps) {
@@ -18,7 +14,7 @@ export function ProviderNode(props: ProviderNodeProps) {
 		<PipelineNode
 			id={props.id}
 			data={{
-				label: props.data.title,
+				...props.data,
 				nodeClassName: 'border-blue-600 ring-blue-900',
 				handleClassName: '!bg-blue-500',
 				type: 'provider',
@@ -32,9 +28,6 @@ export function ProviderNode(props: ProviderNodeProps) {
 						type: 'target',
 					},
 				],
-				index: 0,
-				definitionLabel: props.data.definitionLabel,
-				pipeline: props.data.pipeline,
 			}}
 		/>
 	);
