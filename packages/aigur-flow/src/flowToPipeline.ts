@@ -3,6 +3,7 @@ import { createClient, Pipeline } from '@aigur/client/src';
 import { FlowPipeline, NodesIO, PipelineData } from './types';
 
 export async function flowToPipeline(flow: FlowPipeline, nodesIO: NodesIO) {
+	console.log(`***flow`, flow);
 	const nodes = flow.nodes;
 	const edges = flow.edges;
 	const pipelineData: PipelineData = { nodes: [] };

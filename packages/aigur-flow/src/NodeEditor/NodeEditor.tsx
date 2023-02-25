@@ -153,7 +153,7 @@ export function NodeEditor() {
 			const closeEdge = getClosestEdge(node);
 
 			setEdges((edges) => {
-				const nextEdges = edges.filter((e) => e.className !== PROXIMITY_CLASS);
+				const nextEdges = edges.filter((edge) => edge.className !== PROXIMITY_CLASS);
 
 				if (
 					closeEdge &&
@@ -180,7 +180,13 @@ export function NodeEditor() {
 				const nextEdges = edges.filter((edge) => edge.className !== PROXIMITY_CLASS);
 
 				if (closeEdge) {
-					nextEdges.push(closeEdge);
+					if (
+						!nextEdges.some(
+							(edge) => edge.source === closeEdge.source && edge.target === closeEdge.target
+						)
+					) {
+						nextEdges.push(closeEdge);
+					}
 				}
 
 				return nextEdges;
