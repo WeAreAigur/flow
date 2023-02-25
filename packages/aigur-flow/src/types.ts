@@ -29,8 +29,6 @@ export interface FlowPipeline {
 }
 
 export interface PipelineData {
-	input: Record<string, any>; // TODO: zod?
-	output: Record<string, any>; // TODO: ReadableStream
 	nodes: any[];
 }
 

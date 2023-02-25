@@ -1,4 +1,4 @@
 module.exports = {
 	reactStrictMode: true,
-	transpilePackages: ['@aigur/flow'],
+	transpilePackages: ['@aigur/flow', '@aigur/client'],
 };

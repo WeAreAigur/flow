@@ -4,6 +4,7 @@
 	"exclude": ["dist", "build", "node_modules"],
 	"compilerOptions": {
 		"lib": ["dom", "ES2021"],
-		"strict": false
+		"strict": false,
+		"types": ["vitest/importMeta"]
 	}
 }

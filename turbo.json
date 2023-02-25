@@ -19,7 +19,7 @@
 		},
 		"playground#dev": {
 			"dependsOn": ["^build"],
-			"env": ["OPENAI_KEY"],
+			"env": ["OPENAI_KEY", "NEXT_PUBLIC_OPENAI_KEY"],
 			"outputs": [".next/**"]
 		}
 	}

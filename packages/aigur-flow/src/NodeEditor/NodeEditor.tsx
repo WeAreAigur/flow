@@ -11,7 +11,8 @@ import ReactFlow, {
 } from 'reactflow';
 
 import { EditNodeModal } from '../EditNodeModal';
-import { flowToPipeline } from '../flowToPipeline';
+import { flowToPipeline, invokePipeline } from '../flowToPipeline';
+import { nodeDefinitions } from '../nodeDefinitions';
 import { GenericNode } from '../nodeTypes/GenericNode';
 import { InputNode } from '../nodeTypes/InputNode';
 import { OutputNode } from '../nodeTypes/OutputNode';
@@ -25,17 +26,13 @@ const initialNodes = [
 		id: 'pipeline-input',
 		type: 'pipeline-input',
 		position: { x: 0, y: 0 },
-		data: {
-			title: 'Input',
-		},
+		data: nodeDefinitions.Pipeline.input,
 	},
 	{
 		id: 'pipeline-output',
 		type: 'pipeline-output',
 		position: { x: 850, y: 0 },
-		data: {
-			title: 'Output',
-		},
+		data: nodeDefinitions.Pipeline.output,
 	},
 ];
 
@@ -68,11 +65,12 @@ export function NodeEditor() {
 		event.dataTransfer.dropEffect = 'move';
 	}, []);
 
-	const onSave = useCallback(() => {
+	const onSave = useCallback(async () => {
 		if (reactFlowInstance) {
 			const flow = reactFlowInstance.toObject();
-			const pipeline = flowToPipeline(flow, nodesIO);
+			const pipeline = await flowToPipeline(flow, nodesIO);
 			console.log(`***pipeline`, pipeline);
+			invokePipeline(pipeline);
 		}
 	}, [nodesIO, reactFlowInstance]);
 
@@ -206,6 +204,7 @@ export function NodeEditor() {
 				onInit={setReactFlowInstance}
 				nodeTypes={nodeTypes}
 				maxZoom={0.75}
+				proOptions={{ hideAttribution: true }}
 				fitView
 			>
 				<Background />
