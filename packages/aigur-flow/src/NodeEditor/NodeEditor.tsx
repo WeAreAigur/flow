@@ -12,7 +12,7 @@ import ReactFlow, {
 } from 'reactflow';
 
 import { EditNodeModal } from '../EditNodeModal';
-import { flowToPipeline, invokePipeline } from '../flowToPipeline';
+import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
 import { nodeDefinitions } from '../nodeDefinitions';
 import { GenericNode } from '../nodeTypes/GenericNode';
 import { InputNode } from '../nodeTypes/InputNode';
@@ -20,6 +20,7 @@ import { OutputNode } from '../nodeTypes/OutputNode';
 import { ProviderNode } from '../nodeTypes/ProviderNode';
 import { useNodeStore } from '../stores/useNode';
 import { useNodesIOStore } from '../stores/useNodesIO';
+import { usePipelineStore } from '../stores/usePipeline';
 import { NodeDefinition } from '../types';
 
 const initialNodes = [
@@ -55,6 +56,7 @@ export function NodeEditor() {
 	const reactFlowWrapper = useRef(null);
 	const edgeUpdateSuccessful = useRef(true);
 	const store = useStoreApi();
+	const selectPipeline = usePipelineStore((state) => state.selectPipeline);
 	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 	const [reactFlowInstance, setReactFlowInstance] = useState(null);
@@ -68,15 +70,16 @@ export function NodeEditor() {
 		event.dataTransfer.dropEffect = 'move';
 	}, []);
 
-	const onSave = useCallback(async () => {
+	const onRun = useCallback(async () => {
 		if (reactFlowInstance) {
 			const flow = reactFlowInstance.toObject();
-			const pipeline = await flowToPipeline(flow, nodesIO);
-			console.log(`***pipeline`, pipeline);
-			const output = await invokePipeline(pipeline);
+			const pipelineData = await flowToPipelineData(flow, nodesIO);
+			const pipeline = pipelineDataToPipeline(pipelineData);
+			selectPipeline(pipeline);
+			const output = await invokePipeline(pipeline, pipelineData);
 			setOutput(output);
 		}
-	}, [nodesIO, reactFlowInstance]);
+	}, [nodesIO, reactFlowInstance, selectPipeline]);
 
 	const onDrop = useCallback(
 		(event) => {
@@ -87,8 +90,6 @@ export function NodeEditor() {
 				event.dataTransfer.getData('application/aigurflow')
 			);
 
-			console.log(`***nodeDefinition`, nodeDefinition);
-
 			// check if the dropped element is valid
 			if (!nodeDefinition?.id) {
 				return;
@@ -98,7 +99,6 @@ export function NodeEditor() {
 				x: event.clientX - reactFlowBounds.left,
 				y: event.clientY - reactFlowBounds.top,
 			});
-			console.log(`***nodeDefinition.type`, nodeDefinition.type);
 			const newNode = {
 				id: `${nodeDefinition.id}@@${nodeCnt++}`,
 				type: nodeDefinition.type,
@@ -245,7 +245,7 @@ export function NodeEditor() {
 			>
 				<Background />
 				<Panel position="bottom-right">
-					<button onClick={onSave}>Run</button>
+					<button onClick={onRun}>Run</button>
 				</Panel>
 				<Panel position="top-right">Output - {JSON.stringify(output)}</Panel>
 			</ReactFlow>

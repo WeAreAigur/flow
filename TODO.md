@@ -1,5 +1,3 @@
-- invoke in playground server
-  - create generic API
 - create input/output frontend components for easy invocation/consumption
 - show progress
 - rename node

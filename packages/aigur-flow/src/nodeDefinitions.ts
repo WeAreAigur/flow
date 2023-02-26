@@ -1,3 +1,5 @@
+import { makeid } from '@aigur/client/src/makeid';
+
 import { NodeDefinitions } from './types';
 
 export const nodeDefinitions: NodeDefinitions = {
@@ -8,6 +10,7 @@ export const nodeDefinitions: NodeDefinitions = {
 			type: 'pipeline-input',
 			input: { subject: 'string' },
 			output: { subject: 'string' },
+			tag: makeid(10),
 		},
 		output: {
 			title: 'Pipeline Output',
@@ -15,6 +18,7 @@ export const nodeDefinitions: NodeDefinitions = {
 			type: 'pipeline-output',
 			input: { joke: 'string' },
 			output: { joke: 'string' },
+			tag: makeid(10),
 		},
 	},
 	Text: {
@@ -26,6 +30,7 @@ export const nodeDefinitions: NodeDefinitions = {
 				definitionLabel: 'GPT-3',
 				input: { prompt: 'string' },
 				output: { text: 'string' },
+				tag: makeid(10),
 			},
 		},
 	},

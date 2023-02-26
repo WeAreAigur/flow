@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
 
-import { useNodesIOStore } from '../stores/useNodesIO';
 import { NodeDefinition } from '../types';
+import { useNodesIOStore } from '../stores/useNodesIO';
 
 export interface EditNodeModalProps {
 	node: NodeDefinition;
@@ -28,7 +28,6 @@ export function EditNodeModal(props: EditNodeModalProps) {
 	}, [io, props.node, reset]);
 
 	const submit = (data) => {
-		console.log('submit', data);
 		setNodeIO(props.node.id, data);
 	};
 

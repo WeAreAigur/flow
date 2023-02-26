@@ -1,9 +1,10 @@
+import { createAblyNotifier } from '@aigur/ably';
+import { Pipeline } from '@aigur/client';
 import { makeid } from '@aigur/client/src/makeid';
-import { Pipeline } from '@aigur/client/src';
 
 import { FlowPipeline, NodesIO, PipelineData } from './types';
 
-export async function flowToPipeline(flow: FlowPipeline, nodesIO: NodesIO) {
+export async function flowToPipelineData(flow: FlowPipeline, nodesIO: NodesIO) {
 	const nodes = flow.nodes;
 	const edges = flow.edges;
 	const pipelineData: PipelineData = {
@@ -23,14 +24,17 @@ export async function flowToPipeline(flow: FlowPipeline, nodesIO: NodesIO) {
 		if (node.data.id !== 'input') {
 			pipelineData.nodes.push({
 				...nodeIO,
+				id: node.data.tag,
 				action: node.data.id,
 				memoryToSave: null,
 			});
 		}
 		edge = edges.find((_edge) => _edge.source === edge.target);
 	} while (!!edge);
+	const outputNode = nodes.find((node) => node.id === 'output');
 	pipelineData.nodes.push({
 		...nodesIO['output'],
+		id: outputNode.data.tag,
 		action: 'output',
 		memoryToSave: null,
 	});
@@ -38,34 +42,37 @@ export async function flowToPipeline(flow: FlowPipeline, nodesIO: NodesIO) {
 	return pipelineData;
 }
 
-export async function invokePipeline(pipe: PipelineData) {
-	// const pipeline = createClient({
-	// 	apiKeys: {
-	// 		openai: process.env.OPENAI_KEY!,
-	// 	},
-	// }).pipeline.create<any, any>(pipe as any);
+export function pipelineDataToPipeline(pipelineData: PipelineData) {
 	const flow: any = {
-		getNodes: () => pipe.nodes,
+		getNodes: () => pipelineData.nodes,
 	};
-	const pipeline = new Pipeline<any, any, any>(pipe as any, flow, {
-		// openai: process.env.NEXT_PUBLIC_OPENAI_KEY!,
-	});
+	const ably = createAblyNotifier('', process.env.NEXT_PUBLIC_ABLY_SUBSCRIBE_KEY!, 'aigur-flow');
+	return new Pipeline<any, any, any>(
+		{
+			...pipelineData,
+			eventListener: ably.eventListener,
+			eventPublisher: ably.eventPublisher,
+			updateProgress: true,
+		} as any,
+		flow,
+		{}
+	);
+}
 
-	return fetch(`/api/pipelines/${pipe.id}`, {
+export async function invokePipeline(
+	pipeline: Pipeline<any, any, any>,
+	pipelineData: PipelineData
+) {
+	return fetch(`/api/pipelines/${pipelineData.id}`, {
 		method: 'POST',
-		body: JSON.stringify(pipe),
+		body: JSON.stringify({
+			...pipelineData,
+			pipelineInstanceId: (pipeline as any).pipelineInstanceId,
+		}),
 		headers: {
 			'Content-Type': 'application/json',
 		},
 	}).then((res) => res.json());
-
-	const res = await pipeline.vercel.invoke(pipe.input);
-
-	// console.log(`***pipe.nodes`, pipe.nodes);
-
-	// const res = await pipeline.invoke(pipe.input);
-	// console.log(`***res`, res);
-	return res;
 }
 
 if (import.meta.vitest) {
@@ -192,17 +199,14 @@ if (import.meta.vitest) {
 				output: {},
 			},
 		};
-		const pipelineData = await flowToPipeline(flow as any, nodesIO);
-		const { gpt3Prediction, output } = await import('@aigur/client').then(
-			({ gpt3Prediction, output }) => ({ gpt3Prediction, output })
-		);
+		const pipelineData = await flowToPipelineData(flow as any, nodesIO);
 
 		expect(pipelineData).toMatchObject({
 			id: /pipeline\-\w+/,
 			input: { subject: 'cars' },
 			nodes: [
 				{
-					action: gpt3Prediction,
+					action: 'gpt3Prediction',
 					input: {
 						prompt: '$context.input.subject$',
 					},
@@ -210,7 +214,7 @@ if (import.meta.vitest) {
 					memoryToSave: null,
 				},
 				{
-					action: output,
+					action: 'output',
 					input: {
 						joke: '$context.0.text$',
 					},

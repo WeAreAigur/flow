@@ -21,7 +21,8 @@
 		"vitest": "^0.29.1"
 	},
 	"dependencies": {
-		"@aigur/client": "^1.3.0",
+		"@aigur/ably": "^1.0.0",
+		"@aigur/client": "^1.4.0",
 		"react-hook-form": "^7.43.2",
 		"reactflow": "^11.5.6",
 		"zustand": "^4.3.3"

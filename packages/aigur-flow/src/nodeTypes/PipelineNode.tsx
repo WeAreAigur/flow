@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
 import { Handle, Position } from 'reactflow';
+import { useEffect, useRef, useState } from 'react';
 
-import { EditNodeModalTrigger } from '../EditNodeModal/EditNodeModalTrigger';
-import { useNodeStore } from '../stores/useNode';
 import { NodeDefinition } from '../types';
+import { usePipelineStore } from '../stores/usePipeline';
+import { useNodeStore } from '../stores/useNode';
+import { EditNodeModalTrigger } from '../EditNodeModal/EditNodeModalTrigger';
 
 import type { Pipeline } from '@aigur/client';
 export interface PipelineNodeProps {
@@ -28,44 +29,54 @@ const PIPELINE_RESET_TIME = 1_500;
 const PIPELINE_RESET_ON_START_TIME = 10_000;
 export function PipelineNode(props: PipelineNodeProps) {
 	const selectNode = useNodeStore((state) => state.selectNode);
+	const selectedPipeline = usePipelineStore((state) => state.selectedPipeline);
 	const [status, setStatus] = useState<'idle' | 'inProgress' | 'done'>('idle');
 	const lastProgressEventIdx = useRef<number>(-1);
 
-	// useEffect(() => {
-	// 	const unsubOnStart = props.data.pipeline.onStart(() => {
-	// 		if (resetTimeout) {
-	// 			clearTimeout(resetTimeout);
-	// 		}
-	// 		resetTimeout = setTimeout(() => setStatus('idle'), PIPELINE_RESET_ON_START_TIME);
-	// 	});
-	// 	const unsubOnFinish = props.data.pipeline.onFinish((event) => {
-	// 		// dont accept anymore events
-	// 		lastProgressEventIdx.current = event.eventIndex;
-	// 		setStatus('done');
-	// 		setTimeout(() => {
-	// 			setStatus('idle');
-	// 			lastProgressEventIdx.current = 0;
-	// 		}, PIPELINE_RESET_TIME);
-	// 	});
-	// 	const unsubOnProgress = props.data.pipeline.onProgress((event) => {
-	// 		if (event.data?.index === props.data.index) {
-	// 			if (event.eventIndex < lastProgressEventIdx.current) {
-	// 				return;
-	// 			}
-	// 			lastProgressEventIdx.current = event.eventIndex;
-	// 			if (event.type === 'node:start') {
-	// 				setStatus((status) => (status === 'idle' ? 'inProgress' : status));
-	// 			} else if (event.type === 'node:finish') {
-	// 				setStatus('done');
-	// 			}
-	// 		}
-	// 	});
-	// 	return () => {
-	// 		unsubOnFinish();
-	// 		unsubOnProgress();
-	// 		unsubOnStart();
-	// 	};
-	// }, [props.data.pipeline, props.data.index, status]);
+	useEffect(() => {
+		if (!selectedPipeline) {
+			return;
+		}
+		const unsubOnStart = selectedPipeline.onStart(() => {
+			if (props.id === 'input') {
+				setStatus('inProgress');
+			}
+			if (resetTimeout) {
+				clearTimeout(resetTimeout);
+			}
+			resetTimeout = setTimeout(() => setStatus('idle'), PIPELINE_RESET_ON_START_TIME);
+		});
+		const unsubOnFinish = selectedPipeline.onFinish((event) => {
+			// dont accept anymore events
+			lastProgressEventIdx.current = event.eventIndex;
+			setStatus('done');
+			setTimeout(() => {
+				setStatus('idle');
+				lastProgressEventIdx.current = 0;
+			}, PIPELINE_RESET_TIME);
+		});
+		const unsubOnProgress = selectedPipeline.onProgress((event) => {
+			if (props.id === 'input') {
+				setStatus('done');
+			}
+			if (event.data?.tag === props.data.tag) {
+				if (event.eventIndex < lastProgressEventIdx.current) {
+					return;
+				}
+				lastProgressEventIdx.current = event.eventIndex;
+				if (event.type === 'node:start') {
+					setStatus((status) => (status === 'idle' ? 'inProgress' : status));
+				} else if (event.type === 'node:finish') {
+					setStatus('done');
+				}
+			}
+		});
+		return () => {
+			unsubOnFinish();
+			unsubOnProgress();
+			unsubOnStart();
+		};
+	}, [props.data, selectedPipeline, status]);
 
 	return (
 		<div
@@ -103,7 +114,6 @@ export function PipelineNode(props: PipelineNodeProps) {
 					position={handle.position}
 					className={`!h-12 !w-3 !rounded-none !border-none ${props.data.handleClassName ?? ''}`}
 					id={`${props.id}-${handle.position}`}
-					onConnect={(params) => console.log(params)}
 				/>
 			))}
 		</div>
