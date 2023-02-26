@@ -1,10 +1,8 @@
-import { createClient, Pipeline } from '@aigur/client/src';
+import { Pipeline } from '@aigur/client/src';
 
 import { FlowPipeline, NodesIO, PipelineData } from './types';
 
 export async function flowToPipeline(flow: FlowPipeline, nodesIO: NodesIO) {
-	console.log(`***flow`, flow);
-	console.log(`***nodesIO`, nodesIO);
 	const nodes = flow.nodes;
 	const edges = flow.edges;
 	const pipelineData: PipelineData = { nodes: [], input: nodesIO['input'].input };
@@ -17,7 +15,6 @@ export async function flowToPipeline(flow: FlowPipeline, nodesIO: NodesIO) {
 	do {
 		const node = nodes.find((node) => node.id === edge.source);
 		const nodeIO = nodesIO[node.id];
-		console.log(`***nodeIO`, nodeIO);
 		if (node.data.id !== 'input') {
 			pipelineData.nodes.push({
 				...nodeIO,
@@ -68,7 +65,7 @@ if (import.meta.vitest) {
 				{
 					width: 240,
 					height: 242,
-					id: 'pipeline-input',
+					id: 'input',
 					type: 'pipeline-input',
 					position: {
 						x: 0,
@@ -93,7 +90,7 @@ if (import.meta.vitest) {
 				{
 					width: 240,
 					height: 242,
-					id: 'pipeline-output',
+					id: 'output',
 					type: 'pipeline-output',
 					position: {
 						x: 742,
@@ -148,14 +145,14 @@ if (import.meta.vitest) {
 			],
 			edges: [
 				{
-					id: 'gpt3Prediction@@0-pipeline-input',
-					source: 'pipeline-input',
+					id: 'gpt3Prediction@@0-input',
+					source: 'input',
 					target: 'gpt3Prediction@@0',
 				},
 				{
-					id: 'pipeline-output-gpt3Prediction@@0',
+					id: 'output-gpt3Prediction@@0',
 					source: 'gpt3Prediction@@0',
-					target: 'pipeline-output',
+					target: 'output',
 				},
 			],
 			viewport: {
@@ -171,7 +168,7 @@ if (import.meta.vitest) {
 				},
 				output: {},
 			},
-			gpt3Prediction: {
+			'gpt3Prediction@@0': {
 				input: {
 					prompt: '$context.input.subject$',
 				},
@@ -188,13 +185,6 @@ if (import.meta.vitest) {
 		const { gpt3Prediction, output } = await import('@aigur/client').then(
 			({ gpt3Prediction, output }) => ({ gpt3Prediction, output })
 		);
-		const p = createClient({ apiKeys: {} }).pipeline.create<any, any, any>({
-			id: '',
-			flow: (flow) =>
-				flow
-					.node(gpt3Prediction, ({ input }) => ({ prompt: input.subject }))
-					.output(output, ({ input }) => ({ joke: input.text })),
-		});
 
 		expect(pipelineData).toStrictEqual({
 			input: { subject: 'cars' },

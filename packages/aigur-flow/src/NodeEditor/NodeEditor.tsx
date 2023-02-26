@@ -245,7 +245,7 @@ export function NodeEditor() {
 			>
 				<Background />
 				<Panel position="bottom-right">
-					<button onClick={onSave}>Save</button>
+					<button onClick={onSave}>Run</button>
 				</Panel>
 				<Panel position="top-right">Output - {JSON.stringify(output)}</Panel>
 			</ReactFlow>
