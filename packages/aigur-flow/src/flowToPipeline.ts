@@ -1,3 +1,4 @@
+import { makeid } from '@aigur/client/src/makeid';
 import { Pipeline } from '@aigur/client/src';
 
 import { FlowPipeline, NodesIO, PipelineData } from './types';
@@ -5,7 +6,11 @@ import { FlowPipeline, NodesIO, PipelineData } from './types';
 export async function flowToPipeline(flow: FlowPipeline, nodesIO: NodesIO) {
 	const nodes = flow.nodes;
 	const edges = flow.edges;
-	const pipelineData: PipelineData = { nodes: [], input: nodesIO['input'].input };
+	const pipelineData: PipelineData = {
+		id: `pipeline-${makeid(5)}`,
+		nodes: [],
+		input: nodesIO['input'].input,
+	};
 	let edge = edges.find((edge) => edge.source === 'input');
 	const outputEdge = edges.find((edge) => edge.target === 'output');
 	if (!edge || !outputEdge) {
@@ -18,7 +23,7 @@ export async function flowToPipeline(flow: FlowPipeline, nodesIO: NodesIO) {
 		if (node.data.id !== 'input') {
 			pipelineData.nodes.push({
 				...nodeIO,
-				action: await getAction(node.data.id),
+				action: node.data.id,
 				memoryToSave: null,
 			});
 		}
@@ -26,7 +31,7 @@ export async function flowToPipeline(flow: FlowPipeline, nodesIO: NodesIO) {
 	} while (!!edge);
 	pipelineData.nodes.push({
 		...nodesIO['output'],
-		action: await getAction('output'),
+		action: 'output',
 		memoryToSave: null,
 	});
 
@@ -43,18 +48,24 @@ export async function invokePipeline(pipe: PipelineData) {
 		getNodes: () => pipe.nodes,
 	};
 	const pipeline = new Pipeline<any, any, any>(pipe as any, flow, {
-		openai: process.env.NEXT_PUBLIC_OPENAI_KEY!,
+		// openai: process.env.NEXT_PUBLIC_OPENAI_KEY!,
 	});
+
+	return fetch(`/api/pipelines/${pipe.id}`, {
+		method: 'POST',
+		body: JSON.stringify(pipe),
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	}).then((res) => res.json());
+
+	const res = await pipeline.vercel.invoke(pipe.input);
 
 	// console.log(`***pipe.nodes`, pipe.nodes);
 
-	const res = await pipeline.invoke(pipe.input);
-	console.log(`***res`, res);
+	// const res = await pipeline.invoke(pipe.input);
+	// console.log(`***res`, res);
 	return res;
-}
-
-async function getAction(nodeId: string) {
-	return import('@aigur/client').then((mod) => mod[nodeId]);
 }
 
 if (import.meta.vitest) {
@@ -186,7 +197,8 @@ if (import.meta.vitest) {
 			({ gpt3Prediction, output }) => ({ gpt3Prediction, output })
 		);
 
-		expect(pipelineData).toStrictEqual({
+		expect(pipelineData).toMatchObject({
+			id: /pipeline\-\w+/,
 			input: { subject: 'cars' },
 			nodes: [
 				{

@@ -29,6 +29,7 @@ export interface FlowPipeline {
 }
 
 export interface PipelineData {
+	id: string;
 	input: Record<string, any>;
 	nodes: any[];
 }

@@ -9,6 +9,7 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
+		"@aigur/client": "^1.3.0",
 		"@aigur/flow": "workspace:*",
 		"next": "^13.1.1",
 		"react": "18.2.0",
