@@ -20,10 +20,6 @@ export interface PipelineNodeProps {
 	};
 }
 
-function upperFirst(str: string) {
-	return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
 let resetTimeout;
 const PIPELINE_RESET_TIME = 1_500;
 const PIPELINE_RESET_ON_START_TIME = 10_000;

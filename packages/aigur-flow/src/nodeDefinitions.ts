@@ -35,3 +35,52 @@ export const nodeDefinitions: NodeDefinitions = {
 		},
 	},
 };
+
+export const nodeDefinitions2 = [
+	{
+		title: 'Pipeline',
+		key: 'pipeline',
+		children: [
+			{
+				title: 'Pipeline Input',
+				key: 'input',
+				id: 'input',
+				type: 'pipeline-input',
+				input: { subject: 'string' },
+				output: { subject: 'string' },
+				tag: makeid(10),
+			},
+			{
+				title: 'Pipeline Output',
+				key: 'output',
+				id: 'output',
+				type: 'pipeline-output',
+				input: { joke: 'string' },
+				output: { joke: 'string' },
+				tag: makeid(10),
+			},
+		],
+	},
+	{
+		title: 'Text',
+		key: 'text',
+		children: [
+			{
+				title: 'Prediction',
+				key: 'prediction',
+				children: [
+					{
+						title: 'GPT-3 Prediction',
+						key: 'gpt3Prediction',
+						id: 'gpt3Prediction',
+						type: 'provider',
+						definitionLabel: 'GPT-3',
+						input: { prompt: 'string' },
+						output: { text: 'string' },
+						tag: makeid(10),
+					},
+				],
+			},
+		],
+	},
+];

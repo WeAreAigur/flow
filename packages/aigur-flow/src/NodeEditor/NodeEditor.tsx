@@ -1,6 +1,5 @@
 import './NodeEditor.css';
 
-import { useCallback, useRef, useState } from 'react';
 import ReactFlow, {
 	addEdge,
 	Background,
@@ -10,18 +9,20 @@ import ReactFlow, {
 	useNodesState,
 	useStoreApi,
 } from 'reactflow';
+import { useCallback, useRef, useState } from 'react';
 
-import { EditNodeModal } from '../EditNodeModal';
-import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
-import { nodeDefinitions } from '../nodeDefinitions';
-import { GenericNode } from '../nodeTypes/GenericNode';
-import { InputNode } from '../nodeTypes/InputNode';
-import { OutputNode } from '../nodeTypes/OutputNode';
-import { ProviderNode } from '../nodeTypes/ProviderNode';
-import { useNodeStore } from '../stores/useNode';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { usePipelineStore } from '../stores/usePipeline';
 import { NodeDefinition } from '../types';
+import { usePipelineStore } from '../stores/usePipeline';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { useNodeStore } from '../stores/useNode';
+import { useFlowStore } from '../stores/useFlow';
+import { ProviderNode } from '../nodeTypes/ProviderNode';
+import { OutputNode } from '../nodeTypes/OutputNode';
+import { InputNode } from '../nodeTypes/InputNode';
+import { GenericNode } from '../nodeTypes/GenericNode';
+import { nodeDefinitions } from '../nodeDefinitions';
+import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
+import { EditNodeModal } from '../EditNodeModal';
 
 const initialNodes = [
 	{
@@ -64,6 +65,7 @@ export function NodeEditor() {
 	const nodesIO = useNodesIOStore((state) => state.io);
 	const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 	const [output, setOutput] = useState(null);
+	const setFlow = useFlowStore((state) => state.setFlow);
 
 	const onDragOver = useCallback((event) => {
 		event.preventDefault();
@@ -195,8 +197,10 @@ export function NodeEditor() {
 
 				return nextEdges;
 			});
+			const flow = reactFlowInstance.toObject();
+			setFlow(flow);
 		},
-		[getClosestEdge, setEdges]
+		[getClosestEdge, reactFlowInstance, setEdges, setFlow]
 	);
 
 	const onEdgeUpdateStart = useCallback(() => {
@@ -216,10 +220,12 @@ export function NodeEditor() {
 			if (!edgeUpdateSuccessful.current) {
 				setEdges((eds) => eds.filter((e) => e.id !== edge.id));
 			}
+			const flow = reactFlowInstance.toObject();
+			setFlow(flow);
 
 			edgeUpdateSuccessful.current = true;
 		},
-		[setEdges]
+		[reactFlowInstance, setEdges, setFlow]
 	);
 
 	return (
@@ -245,9 +251,15 @@ export function NodeEditor() {
 			>
 				<Background />
 				<Panel position="bottom-right">
-					<button onClick={onRun}>Run</button>
+					<button onClick={onRun} className="btn btn-primary btn-lg">
+						Run
+					</button>
 				</Panel>
-				<Panel position="top-right">Output - {JSON.stringify(output)}</Panel>
+				<Panel position="bottom-left">
+					<div className="bg-neutral-800 text-white h-24 w-[32rem] p-2 rounded-lg">
+						<pre>{output?.joke}</pre>
+					</div>
+				</Panel>
 			</ReactFlow>
 			<EditNodeModal node={selectedNode} />
 		</div>
