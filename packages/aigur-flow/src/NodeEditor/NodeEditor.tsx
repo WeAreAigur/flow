@@ -1,5 +1,6 @@
 import './NodeEditor.css';
 
+import { useCallback, useRef, useState } from 'react';
 import ReactFlow, {
 	addEdge,
 	Background,
@@ -9,22 +10,29 @@ import ReactFlow, {
 	useNodesState,
 	useStoreApi,
 } from 'reactflow';
-import { useCallback, useRef, useState } from 'react';
 
-import { NodeDefinition } from '../types';
-import { usePipelineStore } from '../stores/usePipeline';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { useNodeStore } from '../stores/useNode';
-import { useFlowStore } from '../stores/useFlow';
-import { ProviderNode } from '../nodeTypes/ProviderNode';
-import { OutputNode } from '../nodeTypes/OutputNode';
-import { InputNode } from '../nodeTypes/InputNode';
-import { GenericNode } from '../nodeTypes/GenericNode';
-import { nodeDefinitions } from '../nodeDefinitions';
-import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
 import { EditNodeModal } from '../EditNodeModal';
+import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
+import { nodeDefinitions } from '../nodeDefinitions';
+import { GenericNode } from '../nodeTypes/GenericNode';
+import { InputNode } from '../nodeTypes/InputNode';
+import { OutputNode } from '../nodeTypes/OutputNode';
+import { ProviderNode } from '../nodeTypes/ProviderNode';
+import { useFlowStore } from '../stores/useFlow';
+import { useNodeStore } from '../stores/useNode';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { usePipelineStore } from '../stores/usePipeline';
+import { NodeDefinition } from '../types';
 
-const initialNodes = [
+function load(): { nodes: any[]; edges: any[] } {
+	if (typeof window === 'undefined') return;
+	const flow = JSON.parse(atob(window.location.hash.slice(1)));
+	return flow;
+}
+
+const savedFlow = load();
+
+const initialNodes = savedFlow?.nodes ?? [
 	{
 		id: 'input',
 		type: 'pipeline-input',
@@ -39,7 +47,7 @@ const initialNodes = [
 	},
 ];
 
-const initialEdges = [];
+const initialEdges = savedFlow?.edges ?? [];
 
 let nodeCnt = 0;
 
@@ -66,6 +74,17 @@ export function NodeEditor() {
 	const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 	const [output, setOutput] = useState(null);
 	const setFlow = useFlowStore((state) => state.setFlow);
+
+	const saveFlowInUrl = useCallback(() => {
+		if (reactFlowInstance) {
+			setTimeout(() => {
+				const flow = reactFlowInstance.toObject();
+				const base64Flow = btoa(JSON.stringify(flow));
+				window.location.hash = base64Flow;
+				console.log(`***saving flow`, flow);
+			});
+		}
+	}, [reactFlowInstance]);
 
 	const onDragOver = useCallback((event) => {
 		event.preventDefault();
@@ -109,8 +128,9 @@ export function NodeEditor() {
 			};
 
 			setNodes((nodes) => nodes.concat(newNode));
+			saveFlowInUrl();
 		},
-		[reactFlowInstance, setNodes]
+		[reactFlowInstance, saveFlowInUrl, setNodes]
 	);
 
 	const getClosestEdge = useCallback(
@@ -199,8 +219,9 @@ export function NodeEditor() {
 			});
 			const flow = reactFlowInstance.toObject();
 			setFlow(flow);
+			saveFlowInUrl();
 		},
-		[getClosestEdge, reactFlowInstance, setEdges, setFlow]
+		[getClosestEdge, reactFlowInstance, saveFlowInUrl, setEdges, setFlow]
 	);
 
 	const onEdgeUpdateStart = useCallback(() => {
@@ -220,12 +241,13 @@ export function NodeEditor() {
 			if (!edgeUpdateSuccessful.current) {
 				setEdges((eds) => eds.filter((e) => e.id !== edge.id));
 			}
+
 			const flow = reactFlowInstance.toObject();
 			setFlow(flow);
-
+			saveFlowInUrl();
 			edgeUpdateSuccessful.current = true;
 		},
-		[reactFlowInstance, setEdges, setFlow]
+		[reactFlowInstance, saveFlowInUrl, setEdges, setFlow]
 	);
 
 	return (
