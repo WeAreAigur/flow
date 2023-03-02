@@ -12,7 +12,7 @@ export function AigurFlow() {
 			<div className="aigur-flow h-full flex flex-col space-y-4">
 				{/* <div>{JSON.stringify(io)}</div> */}
 				<div className="h-full flex">
-					<div className="h-full w-1/4">
+					<div className="h-full w-1/4 min-w-fit bg-base-300">
 						<NodeBank nodeDefinitions={nodeDefinitions} />
 					</div>
 					<div className="flex-1">

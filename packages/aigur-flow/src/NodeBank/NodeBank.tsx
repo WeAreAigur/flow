@@ -43,6 +43,7 @@ function nodeDefinitionsToTreeData(nodeDefinitions: NodeDefinitions): TreeData {
 			const obj = nodeDefinitionsLevel[key];
 			const objData = {
 				id: obj.id,
+				title: obj.title,
 				type: obj.type,
 				definitionLabel: obj.definitionLabel,
 				input: obj.input,
@@ -51,14 +52,13 @@ function nodeDefinitionsToTreeData(nodeDefinitions: NodeDefinitions): TreeData {
 			};
 			if (!nodeDefinitionsLevel[key].title) {
 				treeLevel.push({
-					title: key,
 					key,
 					children: inner(nodeDefinitionsLevel[key]),
 					...objData,
+					title: key,
 				});
 			} else {
 				treeLevel.push({
-					title: objData.id,
 					key,
 					...objData,
 				});
