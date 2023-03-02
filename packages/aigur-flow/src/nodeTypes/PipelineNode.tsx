@@ -1,10 +1,10 @@
-import { Handle, Position } from 'reactflow';
 import { useEffect, useRef, useState } from 'react';
+import { Handle, Position } from 'reactflow';
 
-import { NodeDefinition } from '../types';
-import { usePipelineStore } from '../stores/usePipeline';
-import { useNodeStore } from '../stores/useNode';
 import { EditNodeModalTrigger } from '../EditNodeModal/EditNodeModalTrigger';
+import { useNodeStore } from '../stores/useNode';
+import { usePipelineStore } from '../stores/usePipeline';
+import { NodeDefinition } from '../types';
 
 import type { Pipeline } from '@aigur/client';
 export interface PipelineNodeProps {
@@ -18,6 +18,7 @@ export interface PipelineNodeProps {
 		nodeClassName?: string;
 		handleClassName?: string;
 	};
+	children?: React.ReactNode;
 }
 
 let resetTimeout;
@@ -72,7 +73,7 @@ export function PipelineNode(props: PipelineNodeProps) {
 			unsubOnProgress();
 			unsubOnStart();
 		};
-	}, [props.data, selectedPipeline, status]);
+	}, [props.data, props.id, selectedPipeline, status]);
 
 	return (
 		<div
@@ -85,6 +86,7 @@ export function PipelineNode(props: PipelineNodeProps) {
 					<div className="text-xs text-stone-500">{props.data.definitionLabel}</div>
 					<div className="text-2xl font-bold text-stone-100">{props.data.title}</div>
 				</div>
+				{props.children ? <div>{props.children}</div> : null}
 				<div className="flex justify-between items-center">
 					<EditNodeModalTrigger onSelect={() => selectNode({ ...props.data, id: props.id })} />
 					<div>

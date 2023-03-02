@@ -6,6 +6,7 @@ export interface NodeDefinition {
 	title: string;
 	id: string;
 	type: NodeDefinitionType;
+	subtype?: string;
 	tag: string;
 	definitionLabel?: string;
 	action?: any;

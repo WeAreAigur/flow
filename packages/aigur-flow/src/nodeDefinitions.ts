@@ -8,6 +8,7 @@ export const nodeDefinitions: NodeDefinitions = {
 			title: 'Pipeline Input',
 			id: 'input',
 			type: 'pipeline-input',
+			subtype: 'text',
 			input: { subject: 'string' },
 			output: { subject: 'string' },
 			tag: makeid(10),

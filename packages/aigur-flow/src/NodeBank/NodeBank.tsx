@@ -21,18 +21,15 @@ export function NodeBank(props: NodeBankProps) {
 				rootClassName="bg-transparent text-white"
 				treeData={nodeDefinitionsToTreeData(props.nodeDefinitions)}
 				onDragStart={({ event, node }) => {
+					// event.dataTransfer.effectAllowed = 'move';
 					event.dataTransfer.setData('application/aigurflow', JSON.stringify(node));
 				}}
 				defaultExpandAll={true}
 				draggable={{
 					icon: false,
-					nodeDraggable: (node) =>
-						node.children === undefined && node.title !== 'input' && node.title !== 'output',
+					nodeDraggable: (node) => node.children === undefined, // && node.title !== 'input' && node.title !== 'output',
 				}}
 			/>
-			{/* {Object.entries(props.nodeDefinitions).map(([category, val]) => (
-				<NodeCategory key={category} title={category} nodeDefinitions={val} />
-			))} */}
 		</div>
 	);
 }

@@ -42,11 +42,6 @@ export function EditNodeModal(props: EditNodeModalProps) {
 				output: prevNode.data.output,
 			}));
 			setPreviousNodes(nodesWithOutput);
-			// for each node, get output properties
-			// filter by field's type (cast number->string?)
-			// create tree structure
-			// set options in state
-			// what about multiple variables in a single property? `$context.0.name$ - $context.1.age$`
 		}
 
 		function getPreviousNodes() {
@@ -129,12 +124,6 @@ export function EditNodeModal(props: EditNodeModalProps) {
 												setValue={setValue}
 												options={getOptionsFor(type)}
 											/>
-											{/* <Select
-											name={`input.${key}`}
-											options={getOptionsFor(type)}
-											register={register}
-										/> */}
-											{/* <input type="text" name={`input.${key}`} {...register(`input.${key}`)} /> */}
 										</div>
 									))}
 									<div className="font-bold py-4">Node Output</div>

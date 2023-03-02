@@ -18,6 +18,7 @@ import { GenericNode } from '../nodeTypes/GenericNode';
 import { InputNode } from '../nodeTypes/InputNode';
 import { OutputNode } from '../nodeTypes/OutputNode';
 import { ProviderNode } from '../nodeTypes/ProviderNode';
+import { TextInputNode } from '../nodeTypes/TextInputNode';
 import { useFlowStore } from '../stores/useFlow';
 import { useNodeStore } from '../stores/useNode';
 import { useNodesIOStore } from '../stores/useNodesIO';
@@ -25,7 +26,7 @@ import { usePipelineStore } from '../stores/usePipeline';
 import { NodeDefinition } from '../types';
 
 function load(): { nodes: any[]; edges: any[] } {
-	if (typeof window === 'undefined') return;
+	if (typeof window === 'undefined' || !window.location.hash.slice(1)) return;
 	const flow = JSON.parse(atob(window.location.hash.slice(1)));
 	return flow;
 }
@@ -35,7 +36,7 @@ const savedFlow = load();
 const initialNodes = savedFlow?.nodes ?? [
 	{
 		id: 'input',
-		type: 'pipeline-input',
+		type: 'pipeline-input-text',
 		position: { x: 0, y: 0 },
 		data: nodeDefinitions.Pipeline.input,
 	},
@@ -52,6 +53,7 @@ const initialEdges = savedFlow?.edges ?? [];
 let nodeCnt = 0;
 
 const nodeTypes = {
+	'pipeline-input-text': TextInputNode,
 	'pipeline-input': InputNode,
 	'pipeline-output': OutputNode,
 	generic: GenericNode,
@@ -122,7 +124,7 @@ export function NodeEditor() {
 			});
 			const newNode = {
 				id: `${nodeDefinition.id}@@${nodeCnt++}`,
-				type: nodeDefinition.type,
+				type: `${nodeDefinition.type}${nodeDefinition.subtype ? `-${nodeDefinition.subtype}` : ''}`,
 				position,
 				data: nodeDefinition,
 			};
