@@ -72,6 +72,7 @@ importers:
       tsconfig: workspace:*
       typescript: ^4.5.2
       vitest: ^0.29.1
+      zod: ^3.20.6
       zustand: ^4.3.3
     dependencies:
       '@aigur/ably': 1.0.0
@@ -80,6 +81,7 @@ importers:
       antd: 5.2.3_react@18.2.0
       react-hook-form: 7.43.2_react@18.2.0
       reactflow: 11.5.6_react@18.2.0
+      zod: 3.20.6
       zustand: 4.3.3_react@18.2.0
     devDependencies:
       '@types/node': 17.0.45

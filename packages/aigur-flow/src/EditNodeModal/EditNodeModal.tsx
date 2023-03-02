@@ -1,11 +1,12 @@
-import { useEffect } from 'react';
+import { z } from 'zod';
 import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
 
-import { useFlowStore } from '../stores/useFlow';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { NodeDefinition } from '../types';
-import { upperFirst } from '../utils/stringUtils';
 import { InputEditor } from './InputEditor';
+import { upperFirst } from '../utils/stringUtils';
+import { NodeDefinition, ZodReadableStream } from '../types';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { useFlowStore } from '../stores/useFlow';
 
 export interface EditNodeModalProps {
 	node: NodeDefinition;
@@ -28,6 +29,10 @@ export function EditNodeModal(props: EditNodeModalProps) {
 	const submit = (data) => {
 		setNodeIO(props.node.id, data);
 	};
+
+	// function getType(key, type) {
+	// 	const shape = getSchemaShape(props.node.input);
+	// }
 
 	return (
 		<>
@@ -56,11 +61,12 @@ export function EditNodeModal(props: EditNodeModalProps) {
 									<div className="py-4 font-bold">Node Input</div>
 									<InputEditor node={props.node} form={form} />
 									<div className="py-4 font-bold">Node Output</div>
-									{Object.entries(props.node.output).map(([key, type]) => (
+									{JSON.stringify(getSchemaShape(props.node.output))}
+									{/* {Object.entries(props.node.output).map(([key, type]) => (
 										<div key={key} className="grid grid-cols-2">
-											<div>{key}</div> <div>{upperFirst(type)}</div>
+											<div>{key}</div> <div>{JSON.stringify(type)}</div>
 										</div>
-									))}
+									))} */}
 								</>
 							</form>
 							<div className="modal-action">
@@ -74,4 +80,27 @@ export function EditNodeModal(props: EditNodeModalProps) {
 			</label>
 		</>
 	);
+}
+
+function getSchemaShape(schema: z.AnyZodObject | ZodReadableStream) {
+	return JSON.stringify(schema);
+	if (schema._def.typeName !== 'ZodObject') {
+		return { type: 'ReadableStream' };
+	}
+	return inner(schema._def.shape());
+
+	function inner(s) {
+		const tree = {};
+		for (let key in s) {
+			const val = s[key];
+			if (val._def.typeName === 'ZodArray') {
+				tree[key] = [inner({ type: val._def.type })];
+			} else if (val._def.typeName === 'ZodObject') {
+				tree[key] = inner(val._def.shape());
+			} else {
+				tree[key] = val._def.typeName;
+			}
+		}
+		return tree;
+	}
 }

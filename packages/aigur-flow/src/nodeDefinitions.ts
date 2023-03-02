@@ -1,6 +1,15 @@
+import { z } from 'zod';
+
+import { APIKeys } from '@aigur/client/src/types';
+import {
+    inputSchema as whisperInputSchema, outputSchema as whisperOutputSchema, whisperApi
+} from '@aigur/client/src/nodes/voice/transcribe/whisper/whisperapi';
+import {
+    gpt3Prediction, outputSchema as gpt3OutputSchema, rawInputSchema as gpt3InputSchema
+} from '@aigur/client/src/nodes/text/prediction/gpt3';
 import { makeid } from '@aigur/client/src/makeid';
 
-import { NodeDefinitions } from './types';
+import { NodeDefinition, NodeDefinitions, NodeDefinitionType, ZodReadableStream } from './types';
 
 const createInput = ({
 	title,
@@ -8,7 +17,7 @@ const createInput = ({
 	subtype,
 }: {
 	title: string;
-	input: Record<string, string>;
+	input: z.AnyZodObject | z.ZodEffects<any, any>;
 	subtype?: string;
 }) => ({
 	title,
@@ -25,16 +34,16 @@ export const nodeDefinitions: NodeDefinitions = {
 		Input: {
 			inputCustom: createInput({
 				title: 'Custom Input',
-				input: { subject: 'string' },
+				input: z.object({}),
 			}),
 			inputText: createInput({
 				title: 'Text Input',
-				input: { text: 'string' },
+				input: z.object({ text: z.string() }),
 				subtype: 'text',
 			}),
 			inputAudio: createInput({
 				title: 'Audio Input',
-				input: { audio: 'string' },
+				input: z.object({ audio: z.string() }),
 				subtype: 'audio',
 			}),
 		},
@@ -42,35 +51,61 @@ export const nodeDefinitions: NodeDefinitions = {
 			title: 'Pipeline Output',
 			id: 'output',
 			type: 'pipeline-output',
-			input: { joke: 'string' },
-			output: { joke: 'string' },
+			input: z.object({ joke: z.string() }),
+			output: z.object({ joke: z.string() }),
 			tag: makeid(10),
 		},
 	},
 	Text: {
 		Prediction: {
-			gpt3: {
+			// gpt3: {
+			// 	title: 'GPT-3 Prediction',
+			// 	id: 'gpt3Prediction',
+			// 	type: 'provider',
+			// 	definitionLabel: 'GPT-3',
+			// 	input: { prompt: 'string' },
+			// 	output: { text: 'string' },
+			// 	tag: makeid(10),
+			// },
+			gpt3: createNodeDefinition({
+				action: gpt3Prediction,
+				inputSchema: gpt3InputSchema,
+				outputSchema: gpt3OutputSchema,
 				title: 'GPT-3 Prediction',
-				id: 'gpt3Prediction',
-				type: 'provider',
 				definitionLabel: 'GPT-3',
-				input: { prompt: 'string' },
-				output: { text: 'string' },
-				tag: makeid(10),
-			},
+				type: 'provider',
+			}),
 		},
 	},
 	Voice: {
 		Transcription: {
-			whisperApi: {
+			whisperApi: createNodeDefinition({
+				action: whisperApi,
+				inputSchema: whisperInputSchema,
+				outputSchema: whisperOutputSchema,
 				title: 'Whisper.com API',
-				id: 'whisperApi',
-				type: 'provider',
 				definitionLabel: 'Whisper',
-				input: { audioUrl: 'string' },
-				output: { text: 'string' },
-				tag: makeid(10),
-			},
+				type: 'provider',
+			}),
 		},
 	},
 };
+
+function createNodeDefinition(opts: {
+	action: (input: any, apiKeys: APIKeys) => Promise<any>;
+	inputSchema: z.AnyZodObject | z.ZodEffects<any, any>;
+	outputSchema: z.AnyZodObject | ZodReadableStream;
+	title: string;
+	type: NodeDefinitionType;
+	definitionLabel: string;
+}): NodeDefinition {
+	return {
+		title: opts.title,
+		id: opts.action.name,
+		input: opts.inputSchema,
+		output: opts.outputSchema,
+		definitionLabel: opts.definitionLabel,
+		type: opts.type,
+		tag: makeid(10),
+	};
+}

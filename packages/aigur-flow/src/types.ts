@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export interface NodeDefinitions {
 	[property: string]: NodeDefinition | NodeDefinitions;
 }
@@ -10,8 +12,8 @@ export interface NodeDefinition {
 	tag: string;
 	definitionLabel?: string;
 	action?: any;
-	input?: Record<string, string>;
-	output?: Record<string, string> | 'Stream';
+	input?: z.AnyZodObject | z.ZodEffects<any, any>;
+	output?: z.AnyZodObject | ZodReadableStream;
 }
 
 export type NodeDefinitionType = string; //'generic' | 'pipeline-input' | 'pipeline-output' | 'provider';
@@ -42,4 +44,10 @@ export type NodesIO = Record<
 		input: Record<string, string>;
 		output: Record<string, string>;
 	}
+>;
+
+export type ZodReadableStream = z.ZodType<
+	InstanceType<typeof ReadableStream>,
+	z.ZodTypeDef,
+	InstanceType<typeof ReadableStream>
 >;
