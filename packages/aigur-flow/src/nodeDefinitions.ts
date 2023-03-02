@@ -1,18 +1,23 @@
 import { makeid } from '@aigur/client/src/makeid';
 
 import { NodeDefinitions } from './types';
+import { upperFirst } from './utils/stringUtils';
+
+const createGenericInput = (input, subtype?) => ({
+	title: `Pipeline${subtype ? ` ${upperFirst(subtype)}` : ''} Input`,
+	id: 'input',
+	type: 'pipeline-input',
+	subtype,
+	input,
+	output: input,
+	tag: makeid(10),
+});
 
 export const nodeDefinitions: NodeDefinitions = {
 	Pipeline: {
-		input: {
-			title: 'Pipeline Input',
-			id: 'input',
-			type: 'pipeline-input',
-			subtype: 'text',
-			input: { subject: 'string' },
-			output: { subject: 'string' },
-			tag: makeid(10),
-		},
+		input: createGenericInput({ subject: 'string' }),
+		inputText: createGenericInput({ text: 'string' }, 'text'),
+		inputAudio: createGenericInput({ audio: 'string' }, 'audio'),
 		output: {
 			title: 'Pipeline Output',
 			id: 'output',

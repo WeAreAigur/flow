@@ -1,18 +1,18 @@
 import { ReactFlowProvider } from 'reactflow';
 
-import { useNodesIOStore } from './stores/useNodesIO';
-import { NodeEditor } from './NodeEditor';
-import { nodeDefinitions } from './nodeDefinitions';
 import { NodeBank } from './NodeBank';
+import { nodeDefinitions } from './nodeDefinitions';
+import { NodeEditor } from './NodeEditor';
+import { useNodesIOStore } from './stores/useNodesIO';
 
 export function AigurFlow() {
 	const io = useNodesIOStore((state) => state.io);
 	return (
 		<ReactFlowProvider>
-			<div className="aigur-flow h-full flex flex-col space-y-4">
-				{/* <div>{JSON.stringify(io)}</div> */}
-				<div className="h-full flex">
-					<div className="h-full w-1/4 min-w-fit bg-base-300">
+			<div className="flex flex-col h-full space-y-4 aigur-flow">
+				<div>{JSON.stringify(io)}</div>
+				<div className="flex h-full">
+					<div className="w-1/4 h-full min-w-fit bg-base-300">
 						<NodeBank nodeDefinitions={nodeDefinitions} />
 					</div>
 					<div className="flex-1">

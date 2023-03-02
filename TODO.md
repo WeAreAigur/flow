@@ -1,3 +1,5 @@
+- encapsulate getoptionsfor in valuefield
+
 - values
 
   - text input or "add value" button

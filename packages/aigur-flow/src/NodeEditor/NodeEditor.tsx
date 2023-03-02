@@ -16,9 +16,10 @@ import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../f
 import { nodeDefinitions } from '../nodeDefinitions';
 import { GenericNode } from '../nodeTypes/GenericNode';
 import { InputNode } from '../nodeTypes/InputNode';
+import { AudioInputNode } from '../nodeTypes/InputNodes/AudioInputNode/AudioInputNode';
+import { TextInputNode } from '../nodeTypes/InputNodes/TextInputNode';
 import { OutputNode } from '../nodeTypes/OutputNode';
 import { ProviderNode } from '../nodeTypes/ProviderNode';
-import { TextInputNode } from '../nodeTypes/TextInputNode';
 import { useFlowStore } from '../stores/useFlow';
 import { useNodeStore } from '../stores/useNode';
 import { useNodesIOStore } from '../stores/useNodesIO';
@@ -36,9 +37,9 @@ const savedFlow = load();
 const initialNodes = savedFlow?.nodes ?? [
 	{
 		id: 'input',
-		type: 'pipeline-input-text',
+		type: 'pipeline-input-audio',
 		position: { x: 0, y: 0 },
-		data: nodeDefinitions.Pipeline.input,
+		data: nodeDefinitions.Pipeline.inputAudio,
 	},
 	{
 		id: 'output',
@@ -54,6 +55,7 @@ let nodeCnt = 0;
 
 const nodeTypes = {
 	'pipeline-input-text': TextInputNode,
+	'pipeline-input-audio': AudioInputNode,
 	'pipeline-input': InputNode,
 	'pipeline-output': OutputNode,
 	generic: GenericNode,
@@ -128,6 +130,9 @@ export function NodeEditor() {
 				position,
 				data: nodeDefinition,
 			};
+
+			console.log(`***nodeDefinition`, nodeDefinition);
+			console.log(`***newNode`, newNode);
 
 			setNodes((nodes) => nodes.concat(newNode));
 			saveFlowInUrl();
@@ -253,7 +258,7 @@ export function NodeEditor() {
 	);
 
 	return (
-		<div className="reactflow-wrapper h-full" ref={reactFlowWrapper}>
+		<div className="h-full reactflow-wrapper" ref={reactFlowWrapper}>
 			<ReactFlow
 				nodes={nodes}
 				edges={edges}

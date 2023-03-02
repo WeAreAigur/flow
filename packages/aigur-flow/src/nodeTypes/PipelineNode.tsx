@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
 import { Handle, Position } from 'reactflow';
+import { useEffect, useRef, useState } from 'react';
 
-import { EditNodeModalTrigger } from '../EditNodeModal/EditNodeModalTrigger';
-import { useNodeStore } from '../stores/useNode';
-import { usePipelineStore } from '../stores/usePipeline';
 import { NodeDefinition } from '../types';
+import { usePipelineStore } from '../stores/usePipeline';
+import { useNodeStore } from '../stores/useNode';
+import { EditNodeModalTrigger } from '../EditNodeModal/EditNodeModalTrigger';
 
 import type { Pipeline } from '@aigur/client';
 export interface PipelineNodeProps {
@@ -77,17 +77,17 @@ export function PipelineNode(props: PipelineNodeProps) {
 
 	return (
 		<div
-			className={`flex px-4 py-2 rounded-lg bg-stone-800 border ring-2 ring-offset-2 ring-offset-zinc-900 min-h-[9rem] min-w-[14rem] w-[15rem] ${
+			className={`flex px-4 py-2 rounded-lg bg-stone-800 border ring-2 ring-offset-2 ring-offset-zinc-900 min-h-[12rem] min-w-[14rem] w-[20rem] ${
 				props.data.nodeClassName ?? ''
 			}`}
 		>
-			<div className="flex flex-col space-y-2 text-left justify-between flex-1">
+			<div className="flex flex-col justify-between flex-1 space-y-2 text-left">
 				<div className="flex-1">
 					<div className="text-xs text-stone-500">{props.data.definitionLabel}</div>
 					<div className="text-2xl font-bold text-stone-100">{props.data.title}</div>
 				</div>
 				{props.children ? <div>{props.children}</div> : null}
-				<div className="flex justify-between items-center">
+				<div className="flex items-center justify-between">
 					<EditNodeModalTrigger onSelect={() => selectNode({ ...props.data, id: props.id })} />
 					<div>
 						{/* Lovely double triple ternary 💪🏻 */}

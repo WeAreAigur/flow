@@ -14,7 +14,7 @@ export interface NodeDefinition {
 	output?: Record<string, string> | 'Stream';
 }
 
-export type NodeDefinitionType = 'generic' | 'pipeline-input' | 'pipeline-output' | 'provider';
+export type NodeDefinitionType = string; //'generic' | 'pipeline-input' | 'pipeline-output' | 'provider';
 
 export interface FlowPipeline {
 	nodes: {

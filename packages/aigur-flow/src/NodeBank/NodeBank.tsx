@@ -45,6 +45,7 @@ function nodeDefinitionsToTreeData(nodeDefinitions: NodeDefinitions): TreeData {
 				id: obj.id,
 				title: obj.title,
 				type: obj.type,
+				subtype: obj.subtype,
 				definitionLabel: obj.definitionLabel,
 				input: obj.input,
 				output: obj.output,
