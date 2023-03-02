@@ -1,4 +1,10 @@
-- encapsulate getoptionsfor in valuefield
+- output panel
+- wrap audio/image nodes with upload to aigur logic
+- upload image input
+- url just for execution (only input and output in a nice UX/UI)
+- history
+- cost
+- mark which property is mandatory
 
 - values
 
@@ -10,13 +16,16 @@
   - ability to setup demo inputs (upload audio, image, text)
   - NTH - define which demo inputs will be available when sharing
 - delete node
+- explanation about the node when editing/hovering (also in nodebank)
+  - this node takes a string and a modifier and...
+
+---
 
 - rename node
 - disable edit if not connected
   - tooltip
-- explanation about the node when editing/hovering (also in nodebank)
-  - this node takes a string and a modifier and...
 - link to rest api to invoke the pipeline
+  - saving in db is not mandatory if the state is serialized in the url
   - NTH - invoke using aigur client?
   - NTH - production link and versioned link (each "save" creates a new version, can promote a version to production)
 - login

@@ -23,6 +23,7 @@
 	"dependencies": {
 		"@aigur/ably": "^1.0.0",
 		"@aigur/client": "^1.5.2",
+		"@aigur/supabase": "^0.32.0",
 		"antd": "^5.2.3",
 		"react-hook-form": "^7.43.2",
 		"reactflow": "^11.5.6",

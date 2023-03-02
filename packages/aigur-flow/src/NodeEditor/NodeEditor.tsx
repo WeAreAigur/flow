@@ -39,7 +39,7 @@ const initialNodes = savedFlow?.nodes ?? [
 		id: 'input',
 		type: 'pipeline-input-audio',
 		position: { x: 0, y: 0 },
-		data: nodeDefinitions.Pipeline.inputAudio,
+		data: nodeDefinitions.Pipeline.Input.inputAudio,
 	},
 	{
 		id: 'output',

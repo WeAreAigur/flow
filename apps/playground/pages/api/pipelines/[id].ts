@@ -30,6 +30,7 @@ export default async function genericEdgeFunction(req: NextRequest) {
 		flow,
 		{
 			openai: process.env.OPENAI_KEY!,
+			whisperapi: process.env.WHISPERAPI_KEY!,
 		}
 	);
 	return vercelEdgeFunction({ [pipe.id]: pipeline })(req);
@@ -40,5 +41,5 @@ export const config = {
 };
 
 async function getAction(nodeId: string) {
-	return import('@aigur/client').then((mod) => mod[nodeId]);
+	return import('@aigur/client/src').then((mod) => (mod as any)[nodeId]);
 }
