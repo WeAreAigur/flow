@@ -77,7 +77,7 @@ export function PipelineNode(props: PipelineNodeProps) {
 
 	return (
 		<div
-			className={`flex px-4 py-2 rounded-lg bg-stone-800 border ring-2 ring-offset-2 ring-offset-zinc-900 min-h-[12rem] min-w-[14rem] w-[20rem] ${
+			className={`flex px-4 py-4 rounded-lg bg-stone-800 border ring-2 ring-offset-2 ring-offset-zinc-900 min-h-[12rem] min-w-[14rem] w-[20rem] ${
 				props.data.nodeClassName ?? ''
 			}`}
 		>
@@ -110,7 +110,7 @@ export function PipelineNode(props: PipelineNodeProps) {
 					key={`${handle.position}-${i}`}
 					type={handle.type}
 					position={handle.position}
-					className={`!h-12 !w-3 !rounded-none !border-none ${props.data.handleClassName ?? ''}`}
+					className={`!h-3 !w-12 !rounded-none !border-none ${props.data.handleClassName ?? ''}`}
 					id={`${props.id}-${handle.position}`}
 				/>
 			))}

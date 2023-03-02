@@ -1,30 +1,24 @@
 import './NodeEditor.css';
 
-import { useCallback, useRef, useState } from 'react';
 import ReactFlow, {
-	addEdge,
-	Background,
-	Panel,
-	updateEdge,
-	useEdgesState,
-	useNodesState,
-	useStoreApi,
+    addEdge, Background, Panel, updateEdge, useEdgesState, useNodesState, useStoreApi
 } from 'reactflow';
+import { useCallback, useRef, useState } from 'react';
 
-import { EditNodeModal } from '../EditNodeModal';
-import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
-import { nodeDefinitions } from '../nodeDefinitions';
-import { GenericNode } from '../nodeTypes/GenericNode';
-import { InputNode } from '../nodeTypes/InputNode';
-import { AudioInputNode } from '../nodeTypes/InputNodes/AudioInputNode/AudioInputNode';
-import { TextInputNode } from '../nodeTypes/InputNodes/TextInputNode';
-import { OutputNode } from '../nodeTypes/OutputNode';
-import { ProviderNode } from '../nodeTypes/ProviderNode';
-import { useFlowStore } from '../stores/useFlow';
-import { useNodeStore } from '../stores/useNode';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { usePipelineStore } from '../stores/usePipeline';
 import { NodeDefinition } from '../types';
+import { usePipelineStore } from '../stores/usePipeline';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { useNodeStore } from '../stores/useNode';
+import { useFlowStore } from '../stores/useFlow';
+import { ProviderNode } from '../nodeTypes/ProviderNode';
+import { OutputNode } from '../nodeTypes/OutputNode';
+import { TextInputNode } from '../nodeTypes/InputNodes/TextInputNode';
+import { AudioInputNode } from '../nodeTypes/InputNodes/AudioInputNode/AudioInputNode';
+import { InputNode } from '../nodeTypes/InputNode';
+import { GenericNode } from '../nodeTypes/GenericNode';
+import { nodeDefinitions } from '../nodeDefinitions';
+import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
+import { EditNodeModal } from '../EditNodeModal';
 
 function load(): { nodes: any[]; edges: any[] } {
 	if (typeof window === 'undefined' || !window.location.hash.slice(1)) return;
@@ -44,7 +38,7 @@ const initialNodes = savedFlow?.nodes ?? [
 	{
 		id: 'output',
 		type: 'pipeline-output',
-		position: { x: 850, y: 0 },
+		position: { x: 0, y: 850 },
 		data: nodeDefinitions.Pipeline.output,
 	},
 ];
@@ -62,7 +56,7 @@ const nodeTypes = {
 	provider: ProviderNode,
 };
 
-const MIN_DISTANCE = 400;
+const MIN_DISTANCE = 550;
 const PROXIMITY_CLASS = 'proximity';
 
 export function NodeEditor() {

@@ -19,7 +19,7 @@ export function OutputNode(props: OutputNodeProps) {
 				handleClassName: '!bg-yellow-400',
 				handles: [
 					{
-						position: Position.Left,
+						position: Position.Top,
 						type: 'target',
 					},
 				],

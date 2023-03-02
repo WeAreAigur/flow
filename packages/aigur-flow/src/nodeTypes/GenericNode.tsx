@@ -19,11 +19,11 @@ export function GenericNode(props: GenericNodeProps) {
 				handleClassName: '!bg-pink-400',
 				handles: [
 					{
-						position: Position.Right,
+						position: Position.Top,
 						type: 'source',
 					},
 					{
-						position: Position.Left,
+						position: Position.Bottom,
 						type: 'target',
 					},
 				],

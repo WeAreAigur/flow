@@ -45,7 +45,7 @@ export function AudioInputNode(props: AudioInputNodeProps) {
 				handleClassName: '!bg-yellow-400',
 				handles: [
 					{
-						position: Position.Right,
+						position: Position.Bottom,
 						type: 'source',
 					},
 				],

@@ -1,7 +1,7 @@
 import { Position } from 'reactflow';
 
-import { NodeDefinition } from '../types';
 import { PipelineNode } from './PipelineNode';
+import { NodeDefinition } from '../types';
 
 import type { Pipeline } from '@aigur/client';
 export interface ProviderNodeProps {
@@ -20,11 +20,11 @@ export function ProviderNode(props: ProviderNodeProps) {
 				type: 'provider',
 				handles: [
 					{
-						position: Position.Right,
+						position: Position.Bottom,
 						type: 'source',
 					},
 					{
-						position: Position.Left,
+						position: Position.Top,
 						type: 'target',
 					},
 				],

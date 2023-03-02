@@ -19,7 +19,7 @@ export function InputNode(props: InputNodeProps) {
 				handleClassName: '!bg-yellow-400',
 				handles: [
 					{
-						position: Position.Right,
+						position: Position.Bottom,
 						type: 'source',
 					},
 				],
