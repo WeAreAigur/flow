@@ -12,6 +12,7 @@
 		"@aigur/ably": "^1.0.0",
 		"@aigur/client": "^1.5.2",
 		"@aigur/flow": "workspace:*",
+		"@aigur/supabase": "^0.32.0",
 		"next": "^13.1.1",
 		"react": "18.2.0",
 		"react-dom": "18.2.0"

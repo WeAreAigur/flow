@@ -1,9 +1,7 @@
 import { Position } from 'reactflow';
 import { useEffect } from 'react';
 
-import { supabaseUpload } from '@aigur/supabase';
-import { makeid } from '@aigur/client/src/makeid';
-import { Pipeline, stringToArrayBuffer } from '@aigur/client';
+import { Pipeline } from '@aigur/client';
 
 import { VoiceRecorder } from './VoiceRecorder';
 import { useRecord } from './useRecord';
@@ -22,17 +20,16 @@ export function AudioInputNode(props: AudioInputNodeProps) {
 
 	useEffect(() => {
 		if (audio) {
-			stringToArrayBuffer({ string: audio })
-				.then(({ arrayBuffer }) =>
-					supabaseUpload({
-						bucket: 'flow',
-						file: arrayBuffer,
-						name: makeid(10),
-						extension: 'mp3',
-						supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-						supabaseServiceKey: process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!,
-					})
-				)
+			fetch('/api/supabaseupload', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					audio,
+				}),
+			})
+				.then((res) => res.json())
 				.then(({ url }) =>
 					setNodeIO(props.data.id, { input: { audio: url }, output: { audio: url } })
 				);

@@ -1,5 +1,4 @@
 - output panel
-- wrap audio/image nodes with upload to aigur logic
 - upload image input
 - url just for execution (only input and output in a nice UX/UI)
 - history
