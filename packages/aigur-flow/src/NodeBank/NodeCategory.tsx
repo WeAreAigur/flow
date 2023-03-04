@@ -1,11 +1,11 @@
 import { Fragment } from 'react';
 
-import { NodeDefinition, NodeDefinitions } from '../types';
 import { NodeDefinitionInstance } from './NodeDefinitionInstance';
+import { NodeDefinition, NodeTree } from '../types';
 
 interface NodeCategoryProps {
 	title: string;
-	nodeDefinitions: NodeDefinition | NodeDefinitions;
+	nodeDefinitions: NodeDefinition | NodeTree;
 }
 
 export function NodeCategory(props: NodeCategoryProps) {

@@ -1,17 +1,15 @@
 import { Tree } from 'antd';
 
-import { NodeDefinitions } from '../types';
-
-interface Branch {
+export interface Branch {
 	title: string;
 	key: string;
 	children?: Branch[];
 }
 
-type TreeData = Branch[];
+export type TreeData = Branch[];
 
 interface NodeBankProps {
-	nodeDefinitions: NodeDefinitions;
+	nodeTree: TreeData;
 }
 
 export function NodeBank(props: NodeBankProps) {
@@ -19,10 +17,10 @@ export function NodeBank(props: NodeBankProps) {
 		<div className="h-full p-4">
 			<Tree
 				rootClassName="bg-transparent text-white"
-				treeData={nodeDefinitionsToTreeData(props.nodeDefinitions)}
+				treeData={props.nodeTree}
 				onDragStart={({ event, node }) => {
 					// event.dataTransfer.effectAllowed = 'move';
-					event.dataTransfer.setData('application/aigurflow', JSON.stringify(node));
+					event.dataTransfer.setData('application/aigurflow', node.key);
 				}}
 				defaultExpandAll={true}
 				draggable={{
@@ -32,40 +30,4 @@ export function NodeBank(props: NodeBankProps) {
 			/>
 		</div>
 	);
-}
-
-// TODO: rewrite this
-function nodeDefinitionsToTreeData(nodeDefinitions: NodeDefinitions): TreeData {
-	return inner(nodeDefinitions);
-
-	function inner(nodeDefinitionsLevel, treeLevel = []) {
-		for (let key in nodeDefinitionsLevel) {
-			const obj = nodeDefinitionsLevel[key];
-			const objData = {
-				id: obj.id,
-				title: obj.title,
-				type: obj.type,
-				subtype: obj.subtype,
-				definitionLabel: obj.definitionLabel,
-				input: obj.input,
-				output: obj.output,
-				tag: obj.tag,
-			};
-			if (!nodeDefinitionsLevel[key].title) {
-				treeLevel.push({
-					key,
-					children: inner(nodeDefinitionsLevel[key]),
-					...objData,
-					title: key,
-				});
-			} else {
-				treeLevel.push({
-					key,
-					...objData,
-				});
-			}
-		}
-
-		return treeLevel;
-	}
 }

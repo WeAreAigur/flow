@@ -1,7 +1,7 @@
 import { Position } from 'reactflow';
 import { useEffect } from 'react';
 
-import { Pipeline } from '@aigur/client';
+import { Pipeline } from '@aigur/client/src';
 
 import { VoiceRecorder } from './VoiceRecorder';
 import { useRecord } from './useRecord';
@@ -30,11 +30,9 @@ export function AudioInputNode(props: AudioInputNodeProps) {
 				}),
 			})
 				.then((res) => res.json())
-				.then(({ url }) =>
-					setNodeIO(props.data.id, { input: { audio: url }, output: { audio: url } })
-				);
+				.then(({ url }) => setNodeIO(props.id, { input: { audio: url }, output: { audio: url } }));
 		}
-	}, [audio, props.data.id, setNodeIO]);
+	}, [audio, props.data.id, props.id, setNodeIO]);
 
 	return (
 		<PipelineNode

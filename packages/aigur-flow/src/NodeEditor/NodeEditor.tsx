@@ -5,18 +5,22 @@ import ReactFlow, {
 } from 'reactflow';
 import { useCallback, useRef, useState } from 'react';
 
-import { NodeDefinition } from '../types';
+import { makeid } from '@aigur/client/src/makeid';
+
+import { upperFirst } from '../utils/stringUtils';
 import { usePipelineStore } from '../stores/usePipeline';
 import { useNodesIOStore } from '../stores/useNodesIO';
 import { useNodeStore } from '../stores/useNode';
 import { useFlowStore } from '../stores/useFlow';
-import { ProviderNode } from '../nodeTypes/ProviderNode';
-import { OutputNode } from '../nodeTypes/OutputNode';
-import { TextInputNode } from '../nodeTypes/InputNodes/TextInputNode';
-import { AudioInputNode } from '../nodeTypes/InputNodes/AudioInputNode/AudioInputNode';
-import { InputNode } from '../nodeTypes/InputNode';
-import { GenericNode } from '../nodeTypes/GenericNode';
-import { nodeDefinitions } from '../nodeDefinitions';
+import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
+import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
+import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
+import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
+import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
+import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
+import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
+import { GenericNode } from '../pipelineNodeTypes/GenericNode';
+import { nodeRepository } from '../nodeRepository';
 import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
 import { EditNodeModal } from '../EditNodeModal';
 
@@ -28,30 +32,34 @@ function load(): { nodes: any[]; edges: any[] } {
 
 const savedFlow = load();
 
-const initialNodes = savedFlow?.nodes ?? [
-	{
-		id: 'input',
-		type: 'pipeline-input-audio',
-		position: { x: 0, y: 0 },
-		data: nodeDefinitions.Pipeline.Input.inputAudio,
-	},
-	{
-		id: 'output',
-		type: 'pipeline-output',
-		position: { x: 0, y: 850 },
-		data: nodeDefinitions.Pipeline.output,
-	},
-];
+const initialNodes =
+	savedFlow?.nodes ??
+	[
+		// {
+		// 	id: 'input',
+		// 	type: 'pipeline-input-audio',
+		// 	position: { x: 0, y: 0 },
+		// 	data: nodeRepository.inputAudio,
+		// },
+		// {
+		// 	id: 'output',
+		// 	type: 'pipeline-output',
+		// 	position: { x: 0, y: 850 },
+		// 	data: nodeRepository.output,
+		// },
+	];
 
 const initialEdges = savedFlow?.edges ?? [];
 
 let nodeCnt = 0;
 
 const nodeTypes = {
-	'pipeline-input-text': TextInputNode,
-	'pipeline-input-audio': AudioInputNode,
-	'pipeline-input': InputNode,
-	'pipeline-output': OutputNode,
+	'pipeline-inputText': TextInputNode,
+	'pipeline-inputAudio': AudioInputNode,
+	'pipeline-inputCustom': InputNode,
+	'pipeline-outputText': TextOutputNode,
+	'pipeline-outputAudio': AudioOutputNode,
+	'pipeline-outputCustom': OutputNode,
 	generic: GenericNode,
 	provider: ProviderNode,
 };
@@ -74,6 +82,8 @@ export function NodeEditor() {
 	const setFlow = useFlowStore((state) => state.setFlow);
 
 	const saveFlowInUrl = useCallback(() => {
+		// TODO: enable again
+		return;
 		if (reactFlowInstance) {
 			setTimeout(() => {
 				const flow = reactFlowInstance.toObject();
@@ -105,12 +115,12 @@ export function NodeEditor() {
 			event.preventDefault();
 
 			const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-			const nodeDefinition: NodeDefinition = JSON.parse(
-				event.dataTransfer.getData('application/aigurflow')
-			);
+			const nodeDefinitionId: string = event.dataTransfer.getData('application/aigurflow');
+			console.log(`***nodeDefinitionId`, nodeDefinitionId);
+			const nodeDefinition = nodeRepository[nodeDefinitionId];
 
 			// check if the dropped element is valid
-			if (!nodeDefinition?.id) {
+			if (!nodeDefinition) {
 				return;
 			}
 
@@ -120,9 +130,10 @@ export function NodeEditor() {
 			});
 			const newNode = {
 				id: `${nodeDefinition.id}@@${nodeCnt++}`,
-				type: `${nodeDefinition.type}${nodeDefinition.subtype ? `-${nodeDefinition.subtype}` : ''}`,
+				type: `${nodeDefinition.type}${upperFirst(nodeDefinition.subtype ?? '')}`,
 				position,
 				data: nodeDefinition,
+				tag: makeid(16),
 			};
 
 			console.log(`***nodeDefinition`, nodeDefinition);

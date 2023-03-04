@@ -1,15 +1,15 @@
 import { Position } from 'reactflow';
 
-import { PipelineNode } from './PipelineNode';
-import { NodeDefinition } from '../types';
+import { PipelineNode } from '../PipelineNode';
+import { NodeDefinition } from '../../types';
 
-import type { Pipeline } from '@aigur/client';
-export interface OutputNodeProps {
+import type { Pipeline } from '@aigur/client/src';
+export interface InputNodeProps {
 	id: string;
 	data: NodeDefinition & { pipeline: Pipeline<any, any, any> };
 }
 
-export function OutputNode(props: OutputNodeProps) {
+export function InputNode(props: InputNodeProps) {
 	return (
 		<PipelineNode
 			id={props.id}
@@ -19,8 +19,8 @@ export function OutputNode(props: OutputNodeProps) {
 				handleClassName: '!bg-yellow-400',
 				handles: [
 					{
-						position: Position.Top,
-						type: 'target',
+						position: Position.Bottom,
+						type: 'source',
 					},
 				],
 			}}

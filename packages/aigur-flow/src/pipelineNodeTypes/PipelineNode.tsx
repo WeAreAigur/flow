@@ -6,7 +6,7 @@ import { usePipelineStore } from '../stores/usePipeline';
 import { useNodeStore } from '../stores/useNode';
 import { EditNodeModalTrigger } from '../EditNodeModal/EditNodeModalTrigger';
 
-import type { Pipeline } from '@aigur/client';
+import type { Pipeline } from '@aigur/client/src';
 export interface PipelineNodeProps {
 	id: string;
 	data: NodeDefinition & {

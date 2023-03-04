@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { z } from 'zod';
 import { UseFormReturn } from 'react-hook-form';
+import { useEffect, useState } from 'react';
 
-import { useFlowStore } from '../stores/useFlow';
-import { NodeDefinition } from '../types';
 import { ValueField } from './ValueField';
+import { NodeDefinition } from '../types';
+import { useFlowStore } from '../stores/useFlow';
 
 export interface InputEditorProps {
 	node: NodeDefinition;
@@ -25,10 +26,9 @@ export function InputEditor(props: InputEditorProps) {
 	useEffect(() => {
 		if (props.node && currentFlow) {
 			const previousNodes = getPreviousNodes();
-			console.log(`***previousNodes`, previousNodes);
 			const nodesWithOutput = previousNodes.map((prevNode) => ({
 				id: prevNode.id,
-				output: prevNode.data.output,
+				output: prevNode.data.schema.output,
 			}));
 			setPreviousNodes(nodesWithOutput);
 		}
@@ -55,32 +55,47 @@ export function InputEditor(props: InputEditorProps) {
 
 		let idx = previousNodes.length - 2;
 		for (let node of previousNodes) {
-			const filteredOutput = Object.entries(node.output).reduce((acc, [key, val]) => {
-				if (val === type) {
-					acc.push({
-						label: key,
-						value: key,
-					});
-				}
-				return acc;
-			}, []);
+			const fields = getFields(node.output as z.AnyZodObject);
+			const filteredOutput = fields.filter(([key, fieldType]) => fieldType === type);
+			const children = filteredOutput.map(([key, fieldType]) => ({
+				label: key,
+				value: key,
+			}));
 			nodeWithFilteredOutput.push({
 				label: node.id,
 				value: idx < 0 ? 'input' : idx,
-				children: filteredOutput,
+				children,
 			});
 			idx--;
 		}
 		return nodeWithFilteredOutput;
 	};
 
+	// console.log(`***props.node.schema.input`, props.node.schema.input);
+	// console.log(
+	// 	`***props.node.schema.input shape`,
+	// 	(props.node.schema.input as z.AnyZodObject)._def.shape()
+	// );
+
+	// TODO: handle nested objects
+	function getFields(schema: z.AnyZodObject) {
+		const shape = schema._def.shape();
+		return Object.entries(shape).map(([key, type]) => {
+			const isDefault = type instanceof z.ZodDefault;
+			const shapeType = isDefault ? shape[key]._def.innerType : shape[key];
+			const typeName = shapeType._def.typeName;
+			return [key, typeName];
+		});
+	}
+
 	return (
 		<div className="">
-			{Object.entries(props.node.input).map(([key, type]) => (
-				<div key={key} className="grid grid-cols-6">
-					<div className="col-span-2">{key}</div>
+			{getFields(props.node.schema.input).map(([key, type]) => (
+				<div key={key} className="grid items-center grid-cols-7 space-y-4">
+					<div className="col-span-3">{key}</div>
 					<ValueField
 						name={`input.${key}`}
+						type={type}
 						register={register}
 						setValue={setValue}
 						options={getOptionsFor(type)}

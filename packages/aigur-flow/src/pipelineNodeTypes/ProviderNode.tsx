@@ -3,27 +3,28 @@ import { Position } from 'reactflow';
 import { PipelineNode } from './PipelineNode';
 import { NodeDefinition } from '../types';
 
-import type { Pipeline } from '@aigur/client';
-export interface GenericNodeProps {
+import type { Pipeline } from '@aigur/client/src';
+export interface ProviderNodeProps {
 	id: string;
 	data: NodeDefinition & { pipeline: Pipeline<any, any, any> };
 }
 
-export function GenericNode(props: GenericNodeProps) {
+export function ProviderNode(props: ProviderNodeProps) {
 	return (
 		<PipelineNode
 			id={props.id}
 			data={{
 				...props.data,
-				nodeClassName: 'border-pink-600 ring-pink-900',
-				handleClassName: '!bg-pink-400',
+				nodeClassName: 'border-blue-600 ring-blue-900',
+				handleClassName: '!bg-blue-500',
+				type: 'provider',
 				handles: [
 					{
-						position: Position.Top,
+						position: Position.Bottom,
 						type: 'source',
 					},
 					{
-						position: Position.Bottom,
+						position: Position.Top,
 						type: 'target',
 					},
 				],
