@@ -7,6 +7,10 @@ import {
 import {
     gpt3Prediction, outputSchema as gpt3OutputSchema, rawInputSchema as gpt3InputSchema
 } from '@aigur/client/src/nodes/text/prediction/gpt3';
+import {
+    googleImageLabeling, inputSchema as googleImageInputSchema,
+    outputSchema as googleImageOutputSchema
+} from '@aigur/client/src/nodes/image/labeling/googleImageLabeling';
 
 import { upperFirst } from './utils/stringUtils';
 import { NodeDefinition, NodeDefinitionType, ZodReadableStream } from './types';
@@ -71,6 +75,15 @@ export const whisperApiNode = createNodeDefinition({
 	type: 'provider',
 });
 
+export const googleImageLabelingNode = createNodeDefinition({
+	action: googleImageLabeling,
+	inputSchema: googleImageInputSchema,
+	outputSchema: googleImageOutputSchema,
+	title: 'Google Image Labeling',
+	definitionLabel: 'Google',
+	type: 'provider',
+});
+
 export const nodeRepository = {
 	/// input
 	inputCustom: inputCustomNode,
@@ -82,8 +95,8 @@ export const nodeRepository = {
 	outputAudio: outputAudioNode,
 	/// nodes
 	gpt3Prediction: gpt3PredictionNode,
-
 	whisperApi: whisperApiNode,
+	googleImageLabeling: googleImageLabelingNode,
 } as const satisfies Record<string, NodeDefinition>;
 
 function createNodeDefinition(opts: {

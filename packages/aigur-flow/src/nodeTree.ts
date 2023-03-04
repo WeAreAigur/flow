@@ -55,6 +55,22 @@ export const nodeTree: TreeData = [
 		],
 	},
 	{
+		title: 'Image',
+		key: 'image',
+		children: [
+			{
+				title: 'Labeling',
+				key: 'labeling',
+				children: [
+					{
+						title: nodeRepository.googleImageLabeling.title,
+						key: nodeRepository.googleImageLabeling.id,
+					},
+				],
+			},
+		],
+	},
+	{
 		title: 'Voice',
 		key: 'voice',
 		children: [
