@@ -8,6 +8,9 @@ import {
     gpt3Prediction, outputSchema as gpt3OutputSchema, rawInputSchema as gpt3InputSchema
 } from '@aigur/client/src/nodes/text/prediction/gpt3';
 import {
+    inputSchema as stabilityInputSchema, outputSchema as stabilityOutputSchema, stabilityTextToImage
+} from '@aigur/client/src/nodes/image/textToImage/stability';
+import {
     googleImageLabeling, inputSchema as googleImageInputSchema,
     outputSchema as googleImageOutputSchema
 } from '@aigur/client/src/nodes/image/labeling/googleImageLabeling';
@@ -84,6 +87,15 @@ export const googleImageLabelingNode = createNodeDefinition({
 	type: 'provider',
 });
 
+export const stabilityTextToImageNode = createNodeDefinition({
+	action: stabilityTextToImage,
+	inputSchema: stabilityInputSchema,
+	outputSchema: stabilityOutputSchema,
+	title: 'Stability Text to Image',
+	definitionLabel: 'Stability',
+	type: 'provider',
+});
+
 export const nodeRepository = {
 	/// input
 	inputCustom: inputCustomNode,
@@ -97,6 +109,7 @@ export const nodeRepository = {
 	gpt3Prediction: gpt3PredictionNode,
 	whisperApi: whisperApiNode,
 	googleImageLabeling: googleImageLabelingNode,
+	stabilityTextToImage: stabilityTextToImageNode,
 } as const satisfies Record<string, NodeDefinition>;
 
 function createNodeDefinition(opts: {

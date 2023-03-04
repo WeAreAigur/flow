@@ -31,6 +31,7 @@ export default async function genericEdgeFunction(req: NextRequest) {
 		{
 			openai: process.env.OPENAI_KEY!,
 			whisperapi: process.env.WHISPERAPI_KEY!,
+			stability: process.env.STABILITY_KEY!,
 		}
 	);
 	return vercelEdgeFunction({ [pipe.id]: pipeline })(req);

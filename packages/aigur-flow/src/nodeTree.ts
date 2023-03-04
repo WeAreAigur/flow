@@ -59,6 +59,16 @@ export const nodeTree: TreeData = [
 		key: 'image',
 		children: [
 			{
+				title: 'Text to Image',
+				key: 'textToImage',
+				children: [
+					{
+						title: nodeRepository.stabilityTextToImage.title,
+						key: nodeRepository.stabilityTextToImage.id,
+					},
+				],
+			},
+			{
 				title: 'Labeling',
 				key: 'labeling',
 				children: [

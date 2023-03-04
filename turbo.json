@@ -25,7 +25,8 @@
 				"NEXT_PUBLIC_ABLY_SUBSCRIBE_KEY",
 				"SUPABASE_URL",
 				"SUPABASE_SERVICE_KEY",
-				"WHISPERAPI_KEY"
+				"WHISPERAPI_KEY",
+				"STABILITY_KEY"
 			],
 			"outputs": [".next/**"]
 		}
