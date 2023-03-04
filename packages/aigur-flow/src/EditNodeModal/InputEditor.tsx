@@ -1,10 +1,11 @@
-import { z } from 'zod';
-import { UseFormReturn } from 'react-hook-form';
 import { useEffect, useState } from 'react';
+import { UseFormRegister, UseFormReturn, UseFormSetValue } from 'react-hook-form';
+import { z } from 'zod';
+import { isZTOObject, zodToObj, ZTO_Base } from 'zod-to-obj';
 
-import { ValueField } from './ValueField';
-import { NodeDefinition } from '../types';
 import { useFlowStore } from '../stores/useFlow';
+import { NodeDefinition } from '../types';
+import { ValueField } from './ValueField';
 
 export interface InputEditorProps {
 	node: NodeDefinition;
@@ -55,11 +56,11 @@ export function InputEditor(props: InputEditorProps) {
 
 		let idx = previousNodes.length - 2;
 		for (let node of previousNodes) {
-			const fields = getFields(node.output as z.AnyZodObject);
-			const filteredOutput = fields.filter(([key, fieldType]) => fieldType === type);
-			const children = filteredOutput.map(([key, fieldType]) => ({
-				label: key,
-				value: key,
+			const fields = zodToObj(node.output as z.AnyZodObject);
+			const filteredOutput = fields.filter((field) => field.type === type);
+			const children = filteredOutput.map((field) => ({
+				label: field.property,
+				value: field.property,
 			}));
 			nodeWithFilteredOutput.push({
 				label: node.id,
@@ -71,37 +72,47 @@ export function InputEditor(props: InputEditorProps) {
 		return nodeWithFilteredOutput;
 	};
 
-	// console.log(`***props.node.schema.input`, props.node.schema.input);
-	// console.log(
-	// 	`***props.node.schema.input shape`,
-	// 	(props.node.schema.input as z.AnyZodObject)._def.shape()
-	// );
-
-	// TODO: handle nested objects
-	function getFields(schema: z.AnyZodObject) {
-		const shape = schema._def.shape();
-		return Object.entries(shape).map(([key, type]) => {
-			const isDefault = type instanceof z.ZodDefault;
-			const shapeType = isDefault ? shape[key]._def.innerType : shape[key];
-			const typeName = shapeType._def.typeName;
-			return [key, typeName];
-		});
-	}
-
+	console.log(`***props.node.schema.input`, props.node.schema.input);
+	const in2 = zodToObj(props.node.schema.input);
+	console.log(`***in2`, in2);
 	return (
 		<div className="">
-			{getFields(props.node.schema.input).map(([key, type]) => (
-				<div key={key} className="grid items-center grid-cols-7 space-y-4">
-					<div className="col-span-3">{key}</div>
-					<ValueField
-						name={`input.${key}`}
-						type={type}
-						register={register}
-						setValue={setValue}
-						options={getOptionsFor(type)}
-					/>
+			<X
+				prefix="input"
+				data={in2}
+				register={register}
+				setValue={setValue}
+				getOptionsFor={getOptionsFor}
+			/>
+		</div>
+	);
+}
+
+function X(props: {
+	data: ZTO_Base[];
+	register: UseFormRegister<any>;
+	setValue: UseFormSetValue<any>;
+	getOptionsFor: (type: string) => any[];
+	prefix: string;
+}) {
+	return (
+		<>
+			{props.data.map((field) => (
+				<div key={field.property} className="grid items-center grid-cols-7 space-y-4">
+					<div className="col-span-3">{field.property}</div>
+					{isZTOObject(field) ? (
+						<X {...props} data={field.properties} prefix={`${props.prefix}.${field.property}`} />
+					) : (
+						<ValueField
+							name={`${props.prefix}.${field.property}`}
+							type={field.type}
+							register={props.register}
+							setValue={props.setValue}
+							options={props.getOptionsFor(field.type)}
+						/>
+					)}
 				</div>
 			))}
-		</div>
+		</>
 	);
 }

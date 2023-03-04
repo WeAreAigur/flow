@@ -5,7 +5,7 @@ import { Option, ValueMenu } from './ValueMenu';
 export interface ValueFieldProps {
 	name: string;
 	register: UseFormRegister<any>;
-	type: 'ZodString' | 'ZodNumber' | 'ZodBoolean';
+	type: 'string' | 'number' | 'boolean' | 'array' | 'object' | 'enum';
 	options: Option[];
 	setValue: (name: string, value: string) => void;
 	className?: string;
@@ -14,11 +14,11 @@ export interface ValueFieldProps {
 export function ValueField(props: ValueFieldProps) {
 	function getInputType() {
 		switch (props.type) {
-			case 'ZodString':
+			case 'string':
 				return 'text';
-			case 'ZodNumber':
+			case 'number':
 				return 'number';
-			case 'ZodBoolean':
+			case 'boolean':
 				return 'checkbox';
 		}
 	}
@@ -29,9 +29,8 @@ export function ValueField(props: ValueFieldProps) {
 				name={props.name}
 				{...props.register(props.name, {
 					onChange: (e) => {
-						if (props.type === 'ZodNumber') {
+						if (props.type === 'number') {
 							const output = parseInt(e.target.value, 10);
-							console.log(`***output`, props.name, output);
 							return isNaN(output) ? undefined : output;
 						}
 						return e.target.value;

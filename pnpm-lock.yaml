@@ -73,6 +73,7 @@ importers:
       typescript: ^4.5.2
       vitest: ^0.29.1
       zod: ^3.20.6
+      zod-to-obj: workspace:*
       zustand: ^4.3.3
     dependencies:
       '@aigur/ably': 1.0.0
@@ -82,6 +83,7 @@ importers:
       react-hook-form: 7.43.2_react@18.2.0
       reactflow: 11.5.6_react@18.2.0
       zod: 3.20.6
+      zod-to-obj: link:../zod-to-obj
       zustand: 4.3.3_react@18.2.0
     devDependencies:
       '@types/node': 17.0.45
@@ -106,13 +108,28 @@ importers:
       eslint: 7.32.0
       eslint-config-next: 13.0.0_jofidmxrjzhj7l6vknpw5ecvfe
       eslint-config-prettier: 8.6.0_eslint@7.32.0
-      eslint-config-turbo: 0.0.8_eslint@7.32.0
+      eslint-config-turbo: 0.0.9_eslint@7.32.0
       eslint-plugin-react: 7.31.8_eslint@7.32.0
     devDependencies:
       typescript: 4.9.5
 
   packages/tsconfig:
     specifiers: {}
+
+  packages/zod-to-obj:
+    specifiers:
+      '@types/node': ^17.0.12
+      tsconfig: workspace:*
+      typescript: ^4.5.2
+      vitest: ^0.29.1
+      zod: ^3.20.6
+    dependencies:
+      zod: 3.20.6
+    devDependencies:
+      '@types/node': 17.0.45
+      tsconfig: link:../tsconfig
+      typescript: 4.9.5
+      vitest: 0.29.1
 
 packages:
 
@@ -2225,13 +2242,13 @@ packages:
       eslint: 7.32.0
     dev: false
 
-  /eslint-config-turbo/0.0.8_eslint@7.32.0:
-    resolution: {integrity: sha512-ijj6uv0QX2kWahg3OYnTK1/q4MueXsqY2uE4MP9yeUA5CzVhL7GU+biKlv1BfMMqPltixHUcpZoW4yyNLCnMiw==}
+  /eslint-config-turbo/0.0.9_eslint@7.32.0:
+    resolution: {integrity: sha512-j1cTdx3tRmKo0csyfQKhpuT8dynK9oddbK5nmrShoMpXI2qMbxHLYH7MWAid4FmJN8rYympy3VKw5U63Yazycg==}
     peerDependencies:
       eslint: '>6.6.0'
     dependencies:
       eslint: 7.32.0
-      eslint-plugin-turbo: 0.0.8_eslint@7.32.0
+      eslint-plugin-turbo: 0.0.9_eslint@7.32.0
     dev: false
 
   /eslint-import-resolver-node/0.3.7:
@@ -2382,8 +2399,8 @@ packages:
       string.prototype.matchall: 4.0.8
     dev: false
 
-  /eslint-plugin-turbo/0.0.8_eslint@7.32.0:
-    resolution: {integrity: sha512-pExSCmjWw/KFKb3/0PVqxiWb30FbcwDEf6kKv3alvNBSVEzDHalyAGHc9klbLSG+nFmbkfNE3Ky/UHDryCqt8g==}
+  /eslint-plugin-turbo/0.0.9_eslint@7.32.0:
+    resolution: {integrity: sha512-fEsuSnYU3GLtT+s66mUuzDL1LaSieIx5uk3tPO0ToGv7hI2XzOfP24aPkQItTBGl7kq2JaVkRzPwcnfz8hkp0w==}
     peerDependencies:
       eslint: '>6.6.0'
     dependencies:
