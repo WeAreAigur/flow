@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 
+import { Pipeline, vercelEdgeFunction } from '@aigur/client/src';
 import { createAblyNotifier } from '@aigur/ably';
-import { Pipeline, vercelEdgeFunction } from '@aigur/client';
 
 const ably = createAblyNotifier(
 	process.env.ABLY_KEY!,

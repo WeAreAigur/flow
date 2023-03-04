@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { Pipeline } from '@aigur/client';
+import { Pipeline } from '@aigur/client/src';
 
 interface PipelineState {
 	selectedPipeline: Pipeline<any, any, any>;

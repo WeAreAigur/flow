@@ -1,3 +1,5 @@
+nodeRepository -> nodeTree -> NodeBank -> NodeEditor -> PipelineNode
+
 - output panel
 - upload image input
 - url just for execution (only input and output in a nice UX/UI)

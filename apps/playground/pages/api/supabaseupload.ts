@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { stringToArrayBuffer } from '@aigur/client';
 import { supabaseUpload } from '@aigur/supabase';
+import { stringToArrayBuffer } from '@aigur/client/src';
 
 export default async function upload(req: NextRequest) {
 	const { audio } = await req.json();

@@ -5,7 +5,7 @@ import { PipelineNode } from '../PipelineNode';
 import { NodeDefinition } from '../../types';
 import { useNodesIOStore } from '../../stores/useNodesIO';
 
-import type { Pipeline } from '@aigur/client';
+import type { Pipeline } from '@aigur/client/src';
 export interface TextInputNodeProps {
 	id: string;
 	data: NodeDefinition & { pipeline: Pipeline<any, any, any> };
@@ -16,7 +16,7 @@ export function TextInputNode(props: TextInputNodeProps) {
 	const [text, setText] = useState('');
 	const saveText = (text) => {
 		setText(text);
-		setNodeIO(props.data.id, { input: { text }, output: { text } });
+		setNodeIO(props.id, { input: { text }, output: { text } });
 	};
 	return (
 		<PipelineNode

@@ -1,19 +1,23 @@
-import { createAblyNotifier } from '@aigur/ably';
-import { Pipeline } from '@aigur/client';
 import { makeid } from '@aigur/client/src/makeid';
+import { Pipeline } from '@aigur/client/src';
+import { createAblyNotifier } from '@aigur/ably';
 
 import { FlowPipeline, NodesIO, PipelineData } from './types';
 
 export async function flowToPipelineData(flow: FlowPipeline, nodesIO: NodesIO) {
 	const nodes = flow.nodes;
 	const edges = flow.edges;
+	const inputNode = nodes.find((node) => node.id.startsWith('input'));
+	const outputNode = nodes.find((node) => node.id.startsWith('output'));
+	console.log(`***inputNode`, inputNode);
+	console.log(`***outputNode`, outputNode);
 	const pipelineData: PipelineData = {
 		id: `pipeline-${makeid(5)}`,
 		nodes: [],
-		input: nodesIO['input'].input,
+		input: nodesIO[inputNode.id].input,
 	};
-	let edge = edges.find((edge) => edge.source === 'input');
-	const outputEdge = edges.find((edge) => edge.target === 'output');
+	let edge = edges.find((edge) => edge.source.startsWith('input'));
+	const outputEdge = edges.find((edge) => edge.target.startsWith('output'));
 	if (!edge || !outputEdge) {
 		console.warn(`input and output nodes must be connected`);
 		return;
@@ -21,7 +25,7 @@ export async function flowToPipelineData(flow: FlowPipeline, nodesIO: NodesIO) {
 	do {
 		const node = nodes.find((node) => node.id === edge.source);
 		const nodeIO = nodesIO[node.id];
-		if (node.data.id !== 'input') {
+		if (!node.data.id.startsWith('input')) {
 			pipelineData.nodes.push({
 				...nodeIO,
 				id: node.data.tag,
@@ -31,9 +35,8 @@ export async function flowToPipelineData(flow: FlowPipeline, nodesIO: NodesIO) {
 		}
 		edge = edges.find((_edge) => _edge.source === edge.target);
 	} while (!!edge);
-	const outputNode = nodes.find((node) => node.id === 'output');
 	pipelineData.nodes.push({
-		...nodesIO['output'],
+		...nodesIO[outputNode.id],
 		id: outputNode.data.tag,
 		action: 'output',
 		memoryToSave: null,
@@ -84,7 +87,7 @@ if (import.meta.vitest) {
 					width: 240,
 					height: 242,
 					id: 'input',
-					type: 'pipeline-input',
+					type: 'pipeline-input-custom',
 					position: {
 						x: 0,
 						y: 0,
@@ -92,7 +95,7 @@ if (import.meta.vitest) {
 					data: {
 						title: 'Pipeline Input',
 						id: 'input',
-						type: 'pipeline-input',
+						type: 'pipeline-input-custom',
 						input: {
 							subject: 'string',
 						},

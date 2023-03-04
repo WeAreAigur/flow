@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-export interface NodeDefinitions {
-	[property: string]: NodeDefinition | NodeDefinitions;
+export interface NodeTree {
+	[property: string]: NodeDefinition | NodeTree;
 }
 
 export interface NodeDefinition {
@@ -9,11 +9,16 @@ export interface NodeDefinition {
 	id: string;
 	type: NodeDefinitionType;
 	subtype?: string;
-	tag: string;
 	definitionLabel?: string;
 	action?: any;
-	input?: z.AnyZodObject | z.ZodEffects<any, any>;
-	output?: z.AnyZodObject | ZodReadableStream;
+	schema: {
+		input?: z.AnyZodObject;
+		output?: z.AnyZodObject | ZodReadableStream;
+	};
+}
+
+export interface NodeInstance extends NodeDefinition {
+	tag: string;
 }
 
 export type NodeDefinitionType = string; //'generic' | 'pipeline-input' | 'pipeline-output' | 'provider';
@@ -21,7 +26,7 @@ export type NodeDefinitionType = string; //'generic' | 'pipeline-input' | 'pipel
 export interface FlowPipeline {
 	nodes: {
 		id: string;
-		data: NodeDefinition;
+		data: NodeInstance;
 	}[];
 	edges: {
 		id: string;
