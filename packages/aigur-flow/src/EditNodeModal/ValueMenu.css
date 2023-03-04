@@ -5,8 +5,8 @@
 .aigur-flow-value-menu-root:after {
 	content: '➕';
 	position: absolute;
-	top: 14px;
-	left: 10px;
+	top: 7px;
+	left: 5px;
 	pointer-events: none;
 }
 
@@ -16,11 +16,11 @@
 	.ant-select-selector {
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
-	border-top-right-radius: 10px;
-	border-bottom-right-radius: 10px;
+	border-top-right-radius: 9px;
+	border-bottom-right-radius: 9px;
 	border: 1px solid rgba(166, 173, 187, 0.2);
 	border-left: 0;
 	background: #20252e;
-	height: 48px;
-	width: 40px;
+	height: 32px;
+	width: 32px;
 }

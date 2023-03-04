@@ -19,7 +19,6 @@ export function zodToObj(schema: z.AnyZodObject): ZTO_Base[] {
 	for (const key in shape) {
 		const field = shape[key];
 		const unwrappedField = unwrapSchema(field);
-		console.log(`***unwrappedField`, unwrappedField);
 		const obj: ZTO_Base = {
 			property: key,
 			type: zodTypeToType[unwrappedField._def.typeName],
@@ -73,3 +72,4 @@ function isOptional(schema: z.ZodTypeAny) {
 
 export const isZTOObject = (obj: ZTO_Base): obj is ZTO_Object => obj.type === 'object';
 export const isZTOEnum = (obj: ZTO_Base): obj is ZTO_Enum => obj.type === 'enum';
+export const isZTOArray = (obj: ZTO_Base): obj is ZTO_Object => obj.type === 'array';

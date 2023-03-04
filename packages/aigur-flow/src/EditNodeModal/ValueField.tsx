@@ -36,7 +36,7 @@ export function ValueField(props: ValueFieldProps) {
 						return e.target.value;
 					},
 				})}
-				className="col-span-3 border-r-0 rounded-tr-none rounded-br-none input input-bordered"
+				className="col-span-3 border-r-0 rounded-tr-none rounded-br-none input input-bordered input-sm"
 			/>
 			<ValueMenu
 				options={props.options}

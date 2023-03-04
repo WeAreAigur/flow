@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { UseFormRegister, UseFormReturn, UseFormSetValue } from 'react-hook-form';
+import { isZTOArray, isZTOObject, zodToObj, ZTO_Base } from 'zod-to-obj';
 import { z } from 'zod';
-import { isZTOObject, zodToObj, ZTO_Base } from 'zod-to-obj';
+import { UseFormRegister, UseFormReturn, UseFormSetValue } from 'react-hook-form';
+import { useEffect, useState } from 'react';
 
-import { useFlowStore } from '../stores/useFlow';
-import { NodeDefinition } from '../types';
 import { ValueField } from './ValueField';
+import { NodeDefinition } from '../types';
+import { useFlowStore } from '../stores/useFlow';
 
 export interface InputEditorProps {
 	node: NodeDefinition;
@@ -72,14 +72,11 @@ export function InputEditor(props: InputEditorProps) {
 		return nodeWithFilteredOutput;
 	};
 
-	console.log(`***props.node.schema.input`, props.node.schema.input);
-	const in2 = zodToObj(props.node.schema.input);
-	console.log(`***in2`, in2);
 	return (
 		<div className="">
-			<X
+			<SchemaForm
 				prefix="input"
-				data={in2}
+				data={zodToObj(props.node.schema.input)}
 				register={register}
 				setValue={setValue}
 				getOptionsFor={getOptionsFor}
@@ -88,29 +85,49 @@ export function InputEditor(props: InputEditorProps) {
 	);
 }
 
-function X(props: {
+function SchemaForm(props: {
 	data: ZTO_Base[];
 	register: UseFormRegister<any>;
 	setValue: UseFormSetValue<any>;
 	getOptionsFor: (type: string) => any[];
 	prefix: string;
 }) {
+	const renderField = (field) => {
+		if (isZTOObject(field)) {
+			return (
+				<SchemaForm
+					{...props}
+					data={field.properties}
+					prefix={`${props.prefix}.${field.property}`}
+				/>
+			);
+		}
+		if (isZTOArray(field)) {
+			return (
+				<SchemaForm
+					{...props}
+					data={field.properties}
+					prefix={`${props.prefix}.${field.property}`}
+				/>
+			);
+		}
+		return (
+			<ValueField
+				name={`${props.prefix}.${field.property}`}
+				type={field.type}
+				register={props.register}
+				setValue={props.setValue}
+				options={props.getOptionsFor(field.type)}
+			/>
+		);
+	};
+
 	return (
 		<>
 			{props.data.map((field) => (
 				<div key={field.property} className="grid items-center grid-cols-7 space-y-4">
 					<div className="col-span-3">{field.property}</div>
-					{isZTOObject(field) ? (
-						<X {...props} data={field.properties} prefix={`${props.prefix}.${field.property}`} />
-					) : (
-						<ValueField
-							name={`${props.prefix}.${field.property}`}
-							type={field.type}
-							register={props.register}
-							setValue={props.setValue}
-							options={props.getOptionsFor(field.type)}
-						/>
-					)}
+					{renderField(field)}
 				</div>
 			))}
 		</>
