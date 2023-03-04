@@ -1,5 +1,5 @@
-import { nodeRepository } from './nodeRepository';
 import { TreeData } from './NodeBank';
+import { nodeRepository } from './nodeRepository';
 
 export const nodeTree: TreeData = [
 	{
@@ -39,6 +39,10 @@ export const nodeTree: TreeData = [
 					{
 						title: nodeRepository.outputAudio.title,
 						key: nodeRepository.outputAudio.id,
+					},
+					{
+						title: nodeRepository.outputImage.title,
+						key: nodeRepository.outputImage.id,
 					},
 				],
 			},

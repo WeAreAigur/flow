@@ -2,17 +2,24 @@ import { z } from 'zod';
 
 import { APIKeys } from '@aigur/client/src/types';
 import {
-    inputSchema as whisperInputSchema, outputSchema as whisperOutputSchema, whisperApi
+	inputSchema as whisperInputSchema,
+	outputSchema as whisperOutputSchema,
+	whisperApi,
 } from '@aigur/client/src/nodes/voice/transcribe/whisper/whisperapi';
 import {
-    gpt3Prediction, outputSchema as gpt3OutputSchema, rawInputSchema as gpt3InputSchema
+	gpt3Prediction,
+	outputSchema as gpt3OutputSchema,
+	rawInputSchema as gpt3InputSchema,
 } from '@aigur/client/src/nodes/text/prediction/gpt3';
 import {
-    inputSchema as stabilityInputSchema, outputSchema as stabilityOutputSchema, stabilityTextToImage
+	inputSchema as stabilityInputSchema,
+	outputSchema as stabilityOutputSchema,
+	stabilityTextToImage,
 } from '@aigur/client/src/nodes/image/textToImage/stability';
 import {
-    googleImageLabeling, inputSchema as googleImageInputSchema,
-    outputSchema as googleImageOutputSchema
+	googleImageLabeling,
+	inputSchema as googleImageInputSchema,
+	outputSchema as googleImageOutputSchema,
 } from '@aigur/client/src/nodes/image/labeling/googleImageLabeling';
 
 import { upperFirst } from './utils/stringUtils';
@@ -60,6 +67,13 @@ export const outputAudioNode = createIO({
 	subtype: 'audio',
 });
 
+export const outputImageNode = createIO({
+	type: 'output',
+	title: 'Image Output',
+	input: z.object({ imageUrl: z.string() }),
+	subtype: 'image',
+});
+
 export const gpt3PredictionNode = createNodeDefinition({
 	action: gpt3Prediction,
 	inputSchema: gpt3InputSchema,
@@ -105,6 +119,7 @@ export const nodeRepository = {
 	outputCustom: outputCustomNode,
 	outputText: outputTextNode,
 	outputAudio: outputAudioNode,
+	outputImage: outputImageNode,
 	/// nodes
 	gpt3Prediction: gpt3PredictionNode,
 	whisperApi: whisperApiNode,

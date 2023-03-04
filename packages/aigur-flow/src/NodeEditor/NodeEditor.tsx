@@ -1,28 +1,35 @@
 import './NodeEditor.css';
 
-import ReactFlow, {
-    addEdge, Background, Panel, updateEdge, useEdgesState, useNodesState, useStoreApi
-} from 'reactflow';
 import { useCallback, useRef, useState } from 'react';
+import ReactFlow, {
+	addEdge,
+	Background,
+	Panel,
+	updateEdge,
+	useEdgesState,
+	useNodesState,
+	useStoreApi,
+} from 'reactflow';
 
 import { makeid } from '@aigur/client/src/makeid';
 
-import { upperFirst } from '../utils/stringUtils';
-import { usePipelineStore } from '../stores/usePipeline';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { useNodeStore } from '../stores/useNode';
-import { useFlowStore } from '../stores/useFlow';
-import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
-import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
-import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
-import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
-import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
-import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
-import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
-import { GenericNode } from '../pipelineNodeTypes/GenericNode';
-import { nodeRepository } from '../nodeRepository';
-import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
 import { EditNodeModal } from '../EditNodeModal';
+import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
+import { nodeRepository } from '../nodeRepository';
+import { GenericNode } from '../pipelineNodeTypes/GenericNode';
+import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
+import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
+import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
+import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
+import { ImageOutputNode } from '../pipelineNodeTypes/OutputNodes/ImageOutputNode';
+import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
+import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
+import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
+import { useFlowStore } from '../stores/useFlow';
+import { useNodeStore } from '../stores/useNode';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { usePipelineStore } from '../stores/usePipeline';
+import { upperFirst } from '../utils/stringUtils';
 
 function load(): { nodes: any[]; edges: any[] } {
 	if (typeof window === 'undefined' || !window.location.hash.slice(1)) return;
@@ -59,6 +66,7 @@ const nodeTypes = {
 	'pipeline-inputCustom': InputNode,
 	'pipeline-outputText': TextOutputNode,
 	'pipeline-outputAudio': AudioOutputNode,
+	'pipeline-outputImage': ImageOutputNode,
 	'pipeline-outputCustom': OutputNode,
 	generic: GenericNode,
 	provider: ProviderNode,
