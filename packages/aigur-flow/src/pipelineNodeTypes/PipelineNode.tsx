@@ -1,10 +1,12 @@
-import { Handle, Position } from 'reactflow';
 import { useEffect, useRef, useState } from 'react';
+import { Handle, Position } from 'reactflow';
 
-import { NodeInstance } from '../types';
-import { usePipelineStore } from '../stores/usePipeline';
-import { useNodeStore } from '../stores/useNode';
 import { EditNodeModalTrigger } from '../EditNodeModal/EditNodeModalTrigger';
+import { useFlowStore } from '../stores/useFlow';
+import { useNodeStore } from '../stores/useNode';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { usePipelineStore } from '../stores/usePipeline';
+import { NodeInstance } from '../types';
 
 import type { Pipeline } from '@aigur/client/src';
 export interface PipelineNodeProps {
@@ -29,6 +31,8 @@ export function PipelineNode(props: PipelineNodeProps) {
 	const selectedPipeline = usePipelineStore((state) => state.selectedPipeline);
 	const [status, setStatus] = useState<'idle' | 'inProgress' | 'done'>('idle');
 	const lastProgressEventIdx = useRef<number>(-1);
+	const currentFlow = useFlowStore((state) => state.currentFlow);
+	const deleteNodeIO = useNodesIOStore((state) => state.deleteNodeIO);
 
 	useEffect(() => {
 		if (!selectedPipeline) {
@@ -75,7 +79,10 @@ export function PipelineNode(props: PipelineNodeProps) {
 		};
 	}, [props.data, props.id, selectedPipeline, status]);
 
-	function deleteNode() {}
+	function deleteNode() {
+		currentFlow.deleteElements({ nodes: [props] });
+		deleteNodeIO(props.id);
+	}
 
 	return (
 		<div
@@ -83,7 +90,13 @@ export function PipelineNode(props: PipelineNodeProps) {
 				props.data.nodeClassName ?? ''
 			}`}
 		>
-			<div className="flex flex-col justify-between flex-1 space-y-2 text-left">
+			<div className="relative flex flex-col justify-between flex-1 space-y-2 text-left">
+				<button
+					className="absolute top-0 right-0 -mt-2 -mr-2 font-bold btn btn-circle btn-outline btn-error btn-xs"
+					onClick={deleteNode}
+				>
+					X
+				</button>
 				<div className="flex-1">
 					<div className="text-xs text-stone-500">{props.data.definitionLabel}</div>
 					<div className="text-2xl font-bold text-stone-100">{props.data.title}</div>
