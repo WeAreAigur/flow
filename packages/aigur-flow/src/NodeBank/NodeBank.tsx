@@ -26,11 +26,14 @@ export function NodeBank(props: NodeBankProps) {
 					treeData={props.nodeTree}
 					onClick={(_event, node) => {
 						const nodeDefinition = nodeRepository[node.key];
+						const viewport = currentFlow.getViewport();
 						const newNode = createNode(nodeDefinition, {
-							x: 300 + Math.random() * 500,
-							y: 400 + Math.random() * 500,
+							x: viewport.x + 300 + Math.random() * 100,
+							y: viewport.y / 2 - 500 + Math.random() * 100,
 						});
+
 						currentFlow.addNodes(newNode);
+						// console.log(`***currentFlow.toObject()`, currentFlow.toObject());
 					}}
 					onDragStart={({ event, node }) => {
 						// event.dataTransfer.effectAllowed = 'move';

@@ -1,12 +1,12 @@
-import { Handle, Position } from 'reactflow';
 import { useEffect, useRef, useState } from 'react';
+import { Handle, Position } from 'reactflow';
 
-import { NodeInstance } from '../types';
-import { usePipelineStore } from '../stores/usePipeline';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { useNodeStore } from '../stores/useNode';
-import { useFlowStore } from '../stores/useFlow';
 import { EditNodeModalTrigger } from '../EditNodeModal/EditNodeModalTrigger';
+import { useFlowStore } from '../stores/useFlow';
+import { useNodeStore } from '../stores/useNode';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { usePipelineStore } from '../stores/usePipeline';
+import { NodeInstance } from '../types';
 
 import type { Pipeline } from '@aigur/client/src';
 export interface PipelineNodeProps {
@@ -39,7 +39,7 @@ export function PipelineNode(props: PipelineNodeProps) {
 			return;
 		}
 		const unsubOnStart = selectedPipeline.onStart(() => {
-			if (props.id === 'input') {
+			if (props.id.startsWith('input')) {
 				setStatus('inProgress');
 			}
 			if (resetTimeout) {
@@ -57,17 +57,22 @@ export function PipelineNode(props: PipelineNodeProps) {
 			}, PIPELINE_RESET_TIME);
 		});
 		const unsubOnProgress = selectedPipeline.onProgress((event) => {
-			if (props.id === 'input') {
+			if (props.id.startsWith('input')) {
 				setStatus('done');
 			}
+			// console.log(`***tag`, event.data, props.data);
 			if (event.data?.tag === props.data.tag) {
+				// console.log('event index', event.eventIndex, lastProgressEventIdx.current);
 				if (event.eventIndex < lastProgressEventIdx.current) {
+					// console.log(`dropping!`);
 					return;
 				}
 				lastProgressEventIdx.current = event.eventIndex;
 				if (event.type === 'node:start') {
+					// console.log(`setting to inProgress`, props.data.id);
 					setStatus((status) => (status === 'idle' ? 'inProgress' : status));
 				} else if (event.type === 'node:finish') {
+					// console.log(`setting to done`, props.data.id);
 					setStatus('done');
 				}
 			}
@@ -95,7 +100,7 @@ export function PipelineNode(props: PipelineNodeProps) {
 					className="absolute top-0 right-0 -mt-2 -mr-2 font-bold btn btn-circle btn-outline btn-warning btn-xs"
 					onClick={deleteNode}
 				>
-					X
+					x
 				</button>
 				<div className="flex-1">
 					<div className="text-xs text-stone-500">{props.data.definitionLabel}</div>

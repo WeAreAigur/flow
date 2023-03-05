@@ -1,5 +1,5 @@
-import { TreeData } from './NodeBank';
 import { nodeRepository } from './nodeRepository';
+import { TreeData } from './NodeBank';
 
 export const nodeTree: TreeData = [
 	{
@@ -10,10 +10,10 @@ export const nodeTree: TreeData = [
 				title: 'Input',
 				key: 'input',
 				children: [
-					{
-						title: nodeRepository.inputCustom.title,
-						key: nodeRepository.inputCustom.id,
-					},
+					// {
+					// 	title: nodeRepository.inputCustom.title,
+					// 	key: nodeRepository.inputCustom.id,
+					// },
 					{
 						title: nodeRepository.inputText.title,
 						key: nodeRepository.inputText.id,
@@ -28,10 +28,10 @@ export const nodeTree: TreeData = [
 				title: 'Output',
 				key: 'output',
 				children: [
-					{
-						title: nodeRepository.outputCustom.title,
-						key: nodeRepository.outputCustom.id,
-					},
+					// {
+					// 	title: nodeRepository.outputCustom.title,
+					// 	key: nodeRepository.outputCustom.id,
+					// },
 					{
 						title: nodeRepository.outputText.title,
 						key: nodeRepository.outputText.id,

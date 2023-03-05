@@ -26,7 +26,7 @@ export async function flowToPipelineData(flow: FlowPipeline, nodesIO: NodesIO) {
 		if (!node.data.id.startsWith('input')) {
 			pipelineData.nodes.push({
 				...nodeIO,
-				id: node.data.tag,
+				tag: node.data.tag,
 				action: node.data.id,
 				memoryToSave: null,
 			});
@@ -35,10 +35,11 @@ export async function flowToPipelineData(flow: FlowPipeline, nodesIO: NodesIO) {
 	} while (!!edge);
 	pipelineData.nodes.push({
 		...nodesIO[outputNode.id],
-		id: outputNode.data.tag,
+		tag: outputNode.data.tag,
 		action: 'output',
 		memoryToSave: null,
 	});
+
 
 	return pipelineData;
 }

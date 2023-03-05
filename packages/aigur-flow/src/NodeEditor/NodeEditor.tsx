@@ -33,17 +33,17 @@ import { getPreviousNodes } from '../utils/getPreviousNodes';
 import { createNode } from './nodeCreator';
 
 function loadDataFromUrl() {
-	return;
 	if (typeof window === 'undefined' || !window.location.hash.slice(1)) return;
 	const data = JSON.parse(atob(window.location.hash.slice(1)));
 	if (data?.flow.nodes) {
 		for (let node of data.flow.nodes) {
-			console.log(`***node`, node);
 			node.data = nodeRepository[node.data.id];
 		}
 	}
 	return data;
 }
+
+let isLoaded = false;
 
 const savedFlow = { nodes: null, edges: null }; // loadDataFromUrl().flow;
 
@@ -166,21 +166,23 @@ export function NodeEditor() {
 	);
 
 	useEffect(() => {
-		const data = loadDataFromUrl();
-		if (!data) {
-			return;
-		}
-		if (data.flow) {
-			setNodes(data.flow.nodes);
-			setEdges(data.flow.edges);
-		}
-		if (data.nodesIO) {
-			initIO(data.nodesIO);
+		if (!isLoaded) {
+			isLoaded = true;
+			const data = loadDataFromUrl();
+			if (!data) {
+				return;
+			}
+			if (data.flow) {
+				setNodes(data.flow.nodes);
+				setEdges(data.flow.edges);
+			}
+			if (data.nodesIO) {
+				initIO(data.nodesIO);
+			}
 		}
 	}, []);
 
 	const saveFlowInUrl = useCallback(() => {
-		return;
 		if (reactFlowInstance) {
 			setTimeout(() => {
 				console.log(`saving`);

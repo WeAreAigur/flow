@@ -66,19 +66,6 @@ function getDefaultValue(schema: z.ZodTypeAny) {
 	return;
 }
 
-// export function isOptional(schema: z.ZodTypeAny) {
-// 	console.log(`***schema`, schema);
-// 	const def = schema?._def;
-// 	if (!def) {
-// 		return false;
-// 	}
-// 	return (
-// 		def.typeName === 'ZodOptional' ||
-// 		def.typeName === 'ZodDefault' ||
-// 		(def.typeName === 'ZodEffects' && isOptional(def.schema))
-// 	);
-// }
-
 export const isZTOObject = (obj: ZTO_Base): obj is ZTO_Object => obj.type === 'object';
 export const isZTOEnum = (obj: ZTO_Base): obj is ZTO_Enum => obj.type === 'enum';
 export const isZTOArray = (obj: ZTO_Base): obj is ZTO_Array => obj.type === 'array';
