@@ -15,9 +15,9 @@ interface NodeBankProps {
 export function NodeBank(props: NodeBankProps) {
 	return (
 		<div className="h-full">
-			<div className="flex items-center bg-base-300 h-11 flex-end">
+			{/* <div className="flex items-center bg-base-300 h-11 flex-end">
 				<input type="text" className="input input-xs input-bordered" />
-			</div>
+			</div> */}
 			<div className="p-4">
 				<Tree
 					rootClassName="bg-transparent text-white"

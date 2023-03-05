@@ -12,8 +12,8 @@ export interface TextInputNodeProps {
 }
 
 export function TextInputNode(props: TextInputNodeProps) {
-	const { setNodeIO } = useNodesIOStore((state) => state);
-	const [text, setText] = useState('');
+	const { setNodeIO, io } = useNodesIOStore((state) => state);
+	const [text, setText] = useState(io[props.id]?.input?.text ?? '');
 	const saveText = (text) => {
 		setText(text);
 		setNodeIO(props.id, { input: { text }, output: { text } });

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-export function useRecord() {
+export function useRecord(defaultAudio?: string) {
 	const [hasPermission, setHasPermission] = useState<boolean | null>(null);
 	const [isRecording, setIsRecording] = useState(false);
-	const [result, setResult] = useState<string | null>(null);
+	const [result, setResult] = useState<string | null>(defaultAudio);
 	const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
 
 	function startRecording() {

@@ -34,30 +34,22 @@ import { nodeRepository } from '../nodeRepository';
 import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
 import { EditNodeModal } from '../EditNodeModal';
 
-function load(): { nodes: any[]; edges: any[] } {
+function loadDataFromUrl() {
+	return;
 	if (typeof window === 'undefined' || !window.location.hash.slice(1)) return;
-	const flow = JSON.parse(atob(window.location.hash.slice(1)));
-	return flow;
+	const data = JSON.parse(atob(window.location.hash.slice(1)));
+	if (data?.flow.nodes) {
+		for (let node of data.flow.nodes) {
+			console.log(`***node`, node);
+			node.data = nodeRepository[node.data.id];
+		}
+	}
+	return data;
 }
 
-const savedFlow = load();
+const savedFlow = { nodes: null, edges: null }; // loadDataFromUrl().flow;
 
-const initialNodes =
-	savedFlow?.nodes ??
-	[
-		// {
-		// 	id: 'input',
-		// 	type: 'pipeline-input-audio',
-		// 	position: { x: 0, y: 0 },
-		// 	data: nodeRepository.inputAudio,
-		// },
-		// {
-		// 	id: 'output',
-		// 	type: 'pipeline-output',
-		// 	position: { x: 0, y: 850 },
-		// 	data: nodeRepository.output,
-		// },
-	];
+const initialNodes = savedFlow?.nodes ?? [];
 
 const initialEdges = savedFlow?.edges ?? [];
 
@@ -82,7 +74,7 @@ export function NodeEditor() {
 	const reactFlowWrapper = useRef(null);
 	const edgeUpdateSuccessful = useRef(true);
 	const store = useStoreApi();
-	const setNodeIO = useNodesIOStore((state) => state.setNodeIO);
+	const { setNodeIO, initIO } = useNodesIOStore((state) => state);
 	const selectPipeline = usePipelineStore((state) => state.selectPipeline);
 	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -93,18 +85,41 @@ export function NodeEditor() {
 	const [output, setOutput] = useState(null);
 	const { setFlow, currentFlow } = useFlowStore((state) => state);
 
+	useEffect(() => {
+		const data = loadDataFromUrl();
+		if (!data) {
+			return;
+		}
+		if (data.flow) {
+			console.log(`setting flow from url`, data.flow);
+			setNodes(data.flow.nodes);
+			setEdges(data.flow.edges);
+		}
+		if (data.nodesIO) {
+			console.log(`setting io from url`, data.nodesIO);
+			initIO(data.nodesIO);
+		}
+	}, []);
+
 	const saveFlowInUrl = useCallback(() => {
-		// TODO: enable again
 		return;
 		if (reactFlowInstance) {
 			setTimeout(() => {
+				console.log(`saving`);
 				const flow = reactFlowInstance.toObject();
-				const base64Flow = btoa(JSON.stringify(flow));
+				if (!flow?.nodes.length && typeof window !== 'undefined') {
+					history.replaceState('', '', location.pathname);
+					return;
+				}
+				const base64Flow = btoa(JSON.stringify({ flow, nodesIO }));
 				window.location.hash = base64Flow;
-				console.log(`***saving flow`, flow);
 			});
 		}
-	}, [reactFlowInstance]);
+	}, [nodesIO, reactFlowInstance]);
+
+	useEffect(() => {
+		saveFlowInUrl();
+	}, [nodesIO, saveFlowInUrl]);
 
 	const connectNodesProperties = useCallback(
 		(edge: Edge<any>) => {
@@ -279,9 +294,12 @@ export function NodeEditor() {
 
 				return nextEdges;
 			});
+			if (closeEdge) {
+				connectNodesProperties(closeEdge);
+			}
 			saveFlowInUrl();
 		},
-		[getClosestEdge, saveFlowInUrl, setEdges]
+		[connectNodesProperties, getClosestEdge, saveFlowInUrl, setEdges]
 	);
 
 	useEffect(() => {
@@ -290,16 +308,16 @@ export function NodeEditor() {
 		}
 	}, [reactFlowInstance, setFlow]);
 
-	useEffect(() => {
-		if (
-			currentFlow &&
-			edges &&
-			edges.length > 0 &&
-			edges[edges.length - 1].className !== PROXIMITY_CLASS
-		) {
-			connectNodesProperties(edges[edges.length - 1]);
-		}
-	}, [connectNodesProperties, edges, currentFlow]);
+	// useEffect(() => {
+	// 	if (
+	// 		currentFlow &&
+	// 		edges &&
+	// 		edges.length > 0 &&
+	// 		edges[edges.length - 1].className !== PROXIMITY_CLASS
+	// 	) {
+	// 		connectNodesProperties(edges[edges.length - 1]);
+	// 	}
+	// }, [connectNodesProperties, edges, currentFlow]);
 
 	const onEdgeUpdateStart = useCallback(() => {
 		edgeUpdateSuccessful.current = false;
@@ -319,11 +337,18 @@ export function NodeEditor() {
 				setEdges((eds) => eds.filter((e) => e.id !== edge.id));
 			}
 
+			connectNodesProperties(edge);
 			saveFlowInUrl();
 			edgeUpdateSuccessful.current = true;
 		},
-		[saveFlowInUrl, setEdges]
+		[connectNodesProperties, saveFlowInUrl, setEdges]
 	);
+
+	function newPipeline() {
+		setNodes([]);
+		setEdges([]);
+		initIO({});
+	}
 
 	return (
 		<div className="h-full reactflow-wrapper" ref={reactFlowWrapper}>
@@ -347,6 +372,11 @@ export function NodeEditor() {
 				fitView
 			>
 				<Background />
+				<Panel position="top-right">
+					<button onClick={newPipeline} className="btn btn-secondary btn-sm">
+						New
+					</button>
+				</Panel>
 				<Panel position="bottom-right">
 					<button onClick={onRun} className="btn btn-primary btn-lg">
 						Run
@@ -354,7 +384,7 @@ export function NodeEditor() {
 				</Panel>
 				{/* <Panel position="bottom-left">
 					<div className="bg-neutral-800 text-white h-24 w-[32rem] p-2 rounded-lg">
-						<pre>{output?.joke}</pre>
+						<pre>{output}</pre>
 					</div>
 				</Panel> */}
 			</ReactFlow>

@@ -1,13 +1,13 @@
-import { Position } from 'reactflow';
 import { useEffect } from 'react';
+import { Position } from 'reactflow';
 
 import { Pipeline } from '@aigur/client/src';
 
-import { VoiceRecorder } from './VoiceRecorder';
-import { useRecord } from './useRecord';
-import { PipelineNode } from '../../PipelineNode';
-import { NodeInstance } from '../../../types';
 import { useNodesIOStore } from '../../../stores/useNodesIO';
+import { NodeInstance } from '../../../types';
+import { PipelineNode } from '../../PipelineNode';
+import { useRecord } from './useRecord';
+import { VoiceRecorder } from './VoiceRecorder';
 
 export interface AudioInputNodeProps {
 	id: string;
@@ -15,8 +15,8 @@ export interface AudioInputNodeProps {
 }
 
 export function AudioInputNode(props: AudioInputNodeProps) {
-	const { toggleRecording, isRecording, result: audio } = useRecord();
-	const { setNodeIO } = useNodesIOStore((state) => state);
+	const { setNodeIO, io } = useNodesIOStore((state) => state);
+	const { toggleRecording, isRecording, result: audio } = useRecord(io[props.id]?.input?.audio);
 
 	useEffect(() => {
 		if (audio) {
