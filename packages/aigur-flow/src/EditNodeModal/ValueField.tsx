@@ -23,7 +23,7 @@ export function ValueField(props: ValueFieldProps) {
 		}
 	}
 	return (
-		<>
+		<div>
 			<input
 				type={getInputType()}
 				name={props.name}
@@ -42,6 +42,6 @@ export function ValueField(props: ValueFieldProps) {
 				options={props.options}
 				onChange={(values: string[]) => props.setValue(props.name, `$context.${values.join('.')}$`)}
 			/>
-		</>
+		</div>
 	);
 }

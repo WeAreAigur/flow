@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ZTO_Base, ZTO_Enum, ZTO_Object } from './types';
+import { ZTO_Array, ZTO_Base, ZTO_Enum, ZTO_Object } from './types';
 
 export * from './types';
 
@@ -72,4 +72,4 @@ function isOptional(schema: z.ZodTypeAny) {
 
 export const isZTOObject = (obj: ZTO_Base): obj is ZTO_Object => obj.type === 'object';
 export const isZTOEnum = (obj: ZTO_Base): obj is ZTO_Enum => obj.type === 'enum';
-export const isZTOArray = (obj: ZTO_Base): obj is ZTO_Object => obj.type === 'array';
+export const isZTOArray = (obj: ZTO_Base): obj is ZTO_Array => obj.type === 'array';

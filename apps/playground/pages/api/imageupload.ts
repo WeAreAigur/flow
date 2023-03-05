@@ -1,19 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { supabaseUpload } from '@aigur/supabase';
-import { stringToArrayBuffer } from '@aigur/client/src';
 
 export default async function upload(req: NextRequest) {
-	const { audio } = await req.json();
-	const { arrayBuffer } = await stringToArrayBuffer({ string: audio });
+	const { arrayBuffer, extension } = await req.json();
+	console.log(`***arrayBuffer`, arrayBuffer);
+	console.log(`uploading to supabase`, { extension });
 	const { url } = await supabaseUpload({
 		bucket: 'flow',
 		file: arrayBuffer,
 		name: makeid(),
-		extension: 'mp3',
+		extension,
 		supabaseUrl: process.env.SUPABASE_URL!,
 		supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY!,
 	});
+
+	console.log(`uploaded to supabase`, { url });
 
 	return NextResponse.json({ url });
 }

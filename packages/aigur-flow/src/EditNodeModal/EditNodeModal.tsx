@@ -1,12 +1,13 @@
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodToObj } from 'zod-to-obj';
 
-import { InputEditor } from './InputEditor';
-import { upperFirst } from '../utils/stringUtils';
-import { NodeDefinition, ZodReadableStream } from '../types';
-import { useNodesIOStore } from '../stores/useNodesIO';
 import { useFlowStore } from '../stores/useFlow';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { NodeDefinition } from '../types';
+import { upperFirst } from '../utils/stringUtils';
+import { InputEditor } from './InputEditor';
 
 export interface EditNodeModalProps {
 	node: NodeDefinition;
@@ -19,6 +20,7 @@ export function EditNodeModal(props: EditNodeModalProps) {
 
 	useEffect(() => {
 		if (props.node) {
+			// TODO: set default values
 			form.reset({
 				input: structuredClone(io[props.node.id]?.input ?? {}),
 				output: structuredClone(io[props.node.id]?.output ?? {}),
@@ -27,15 +29,29 @@ export function EditNodeModal(props: EditNodeModalProps) {
 	}, [currentFlow, form, io, props.node]);
 
 	const submit = (data) => {
-		console.log(`***submitting`, data);
-		const inputToSubmit = {};
-		for (let property in data.input) {
-			if (data.input[property] !== 'NaN' && data.input[property] !== '') {
-				inputToSubmit[property] = data.input[property];
-			}
-		}
+		console.log(`***submitting original`, data.input);
+		const inputToSubmit = pruneObject(data.input);
+		console.log(`***submitting pruned`, inputToSubmit);
 		setNodeIO(props.node.id, { input: inputToSubmit, output: {} });
 	};
+
+	function pruneObject(obj: Record<string, any>) {
+		const prunedObject = {};
+		for (let property in obj) {
+			console.log(`***property`, property, obj[property]);
+			if (obj[property] !== 'NaN' && obj[property] !== '') {
+				prunedObject[property] = obj[property];
+			}
+			if (Array.isArray(obj[property])) {
+				console.log(`ARRAY`, property, obj[property]);
+				prunedObject[property] = obj[property].map(pruneObject);
+			} else if (typeof obj[property] === 'object') {
+				prunedObject[property] = pruneObject(obj[property]);
+			}
+		}
+
+		return prunedObject;
+	}
 
 	// function getType(key, type) {
 	// 	const shape = getSchemaShape(props.node.input);
@@ -73,9 +89,9 @@ export function EditNodeModal(props: EditNodeModalProps) {
 										<div className="py-4 text-2xl font-bold">Output</div>
 										<div className="p-4 rounded-lg bg-base-200">
 											{/* TODO: handle streams */}
-											{Object.entries(props.node.schema.output._def.shape()).map(([key, val]) => (
-												<div key={key} className="grid grid-cols-2">
-													<div>{key}</div> <div>{val._def.typeName.replace('Zod', '')}</div>
+											{zodToObj(props.node.schema.output as z.AnyZodObject).map((field) => (
+												<div key={field.property} className="grid grid-cols-2">
+													<div>{field.property}</div> <div>{field.type}</div>
 												</div>
 											))}
 										</div>
@@ -93,27 +109,4 @@ export function EditNodeModal(props: EditNodeModalProps) {
 			</label>
 		</>
 	);
-}
-
-function getSchemaShape(schema: z.AnyZodObject | ZodReadableStream) {
-	return JSON.stringify(schema);
-	if (schema._def.typeName !== 'ZodObject') {
-		return { type: 'ReadableStream' };
-	}
-	return inner(schema._def.shape());
-
-	function inner(s) {
-		const tree = {};
-		for (let key in s) {
-			const val = s[key];
-			if (val._def.typeName === 'ZodArray') {
-				tree[key] = [inner({ type: val._def.type })];
-			} else if (val._def.typeName === 'ZodObject') {
-				tree[key] = inner(val._def.shape());
-			} else {
-				tree[key] = val._def.typeName;
-			}
-		}
-		return tree;
-	}
 }

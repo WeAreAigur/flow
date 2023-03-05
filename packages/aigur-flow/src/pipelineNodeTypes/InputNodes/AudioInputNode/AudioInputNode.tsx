@@ -1,13 +1,13 @@
-import { Position } from 'reactflow';
 import { useEffect } from 'react';
+import { Position } from 'reactflow';
 
 import { Pipeline } from '@aigur/client/src';
 
-import { VoiceRecorder } from './VoiceRecorder';
-import { useRecord } from './useRecord';
-import { PipelineNode } from '../../PipelineNode';
-import { NodeDefinition } from '../../../types';
 import { useNodesIOStore } from '../../../stores/useNodesIO';
+import { NodeDefinition } from '../../../types';
+import { PipelineNode } from '../../PipelineNode';
+import { useRecord } from './useRecord';
+import { VoiceRecorder } from './VoiceRecorder';
 
 export interface AudioInputNodeProps {
 	id: string;
@@ -20,7 +20,7 @@ export function AudioInputNode(props: AudioInputNodeProps) {
 
 	useEffect(() => {
 		if (audio) {
-			fetch('/api/supabaseupload', {
+			fetch('/api/audioupload', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

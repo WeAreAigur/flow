@@ -9,10 +9,8 @@ export async function flowToPipelineData(flow: FlowPipeline, nodesIO: NodesIO) {
 	const edges = flow.edges;
 	const inputNode = nodes.find((node) => node.id.startsWith('input'));
 	const outputNode = nodes.find((node) => node.id.startsWith('output'));
-	console.log(`***inputNode`, inputNode);
-	console.log(`***outputNode`, outputNode);
 	const pipelineData: PipelineData = {
-		id: `pipeline-${makeid(5)}`,
+		id: `pipeline-${makeid(10)}`,
 		nodes: [],
 		input: nodesIO[inputNode.id].input,
 	};
@@ -87,7 +85,7 @@ if (import.meta.vitest) {
 					width: 240,
 					height: 242,
 					id: 'input',
-					type: 'pipeline-input-custom',
+					type: 'pipeline-inputCustom',
 					position: {
 						x: 0,
 						y: 0,
@@ -95,7 +93,7 @@ if (import.meta.vitest) {
 					data: {
 						title: 'Pipeline Input',
 						id: 'input',
-						type: 'pipeline-input-custom',
+						type: 'pipeline-inputCustom',
 						input: {
 							subject: 'string',
 						},
@@ -120,7 +118,7 @@ if (import.meta.vitest) {
 					data: {
 						title: 'Pipeline Output',
 						id: 'output',
-						type: 'pipeline-output',
+						type: 'pipeline-outputCustom',
 						input: {
 							joke: 'string',
 						},

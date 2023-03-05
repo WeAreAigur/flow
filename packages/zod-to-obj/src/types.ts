@@ -10,6 +10,10 @@ export interface ZTO_Object extends ZTO_Base {
 	properties: ZTO_Base[];
 }
 
+export interface ZTO_Array extends ZTO_Base {
+	properties: ZTO_Base[];
+}
+
 export interface ZTO_Enum extends ZTO_Base {
 	possibleValues: string[];
 }

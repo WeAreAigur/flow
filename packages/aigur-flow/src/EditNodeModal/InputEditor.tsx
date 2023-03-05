@@ -1,11 +1,11 @@
-import { isZTOArray, isZTOObject, zodToObj, ZTO_Base } from 'zod-to-obj';
-import { z } from 'zod';
-import { UseFormRegister, UseFormReturn, UseFormSetValue } from 'react-hook-form';
 import { useEffect, useState } from 'react';
+import { UseFormRegister, UseFormReturn, UseFormSetValue } from 'react-hook-form';
+import { z } from 'zod';
+import { isZTOArray, isZTOObject, zodToObj, ZTO_Base } from 'zod-to-obj';
 
-import { ValueField } from './ValueField';
-import { NodeDefinition } from '../types';
 import { useFlowStore } from '../stores/useFlow';
+import { NodeDefinition } from '../types';
+import { ValueField } from './ValueField';
 
 export interface InputEditorProps {
 	node: NodeDefinition;
@@ -73,15 +73,13 @@ export function InputEditor(props: InputEditorProps) {
 	};
 
 	return (
-		<div className="">
-			<SchemaForm
-				prefix="input"
-				data={zodToObj(props.node.schema.input)}
-				register={register}
-				setValue={setValue}
-				getOptionsFor={getOptionsFor}
-			/>
-		</div>
+		<SchemaForm
+			prefix="input"
+			data={zodToObj(props.node.schema.input)}
+			register={register}
+			setValue={setValue}
+			getOptionsFor={getOptionsFor}
+		/>
 	);
 }
 
@@ -104,11 +102,13 @@ function SchemaForm(props: {
 		}
 		if (isZTOArray(field)) {
 			return (
-				<SchemaForm
-					{...props}
-					data={field.properties}
-					prefix={`${props.prefix}.${field.property}`}
-				/>
+				<div className="flex flex-col p-4 space-y-4 bg-base-300">
+					<SchemaForm
+						{...props}
+						data={field.properties}
+						prefix={`${props.prefix}.${field.property}.0`}
+					/>
+				</div>
 			);
 		}
 		return (
@@ -125,7 +125,10 @@ function SchemaForm(props: {
 	return (
 		<>
 			{props.data.map((field) => (
-				<div key={field.property} className="grid items-center grid-cols-7 space-y-4">
+				<div
+					key={field.property}
+					className="flex flex-row items-center justify-between space-x-4 space-y-4"
+				>
 					<div className="col-span-3">{field.property}</div>
 					{renderField(field)}
 				</div>
