@@ -1,7 +1,7 @@
 import { Handle, Position } from 'reactflow';
 import { useEffect, useRef, useState } from 'react';
 
-import { NodeDefinition } from '../types';
+import { NodeInstance } from '../types';
 import { usePipelineStore } from '../stores/usePipeline';
 import { useNodeStore } from '../stores/useNode';
 import { EditNodeModalTrigger } from '../EditNodeModal/EditNodeModalTrigger';
@@ -9,7 +9,7 @@ import { EditNodeModalTrigger } from '../EditNodeModal/EditNodeModalTrigger';
 import type { Pipeline } from '@aigur/client/src';
 export interface PipelineNodeProps {
 	id: string;
-	data: NodeDefinition & {
+	data: NodeInstance & {
 		pipeline: Pipeline<any, any, any>;
 		handles: {
 			type: 'target' | 'source';
@@ -74,6 +74,8 @@ export function PipelineNode(props: PipelineNodeProps) {
 			unsubOnStart();
 		};
 	}, [props.data, props.id, selectedPipeline, status]);
+
+	function deleteNode() {}
 
 	return (
 		<div

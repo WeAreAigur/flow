@@ -27,7 +27,7 @@ export function InputEditor(props: InputEditorProps) {
 
 	useEffect(() => {
 		if (props.node && currentFlow) {
-			const previousNodes = getPreviousNodes(props.node.id, currentFlow);
+			const previousNodes = getPreviousNodes(props.node.id, currentFlow.toObject());
 			const nodesWithOutput = previousNodes.map((prevNode) => ({
 				id: prevNode.id,
 				output: prevNode.data.schema.output,

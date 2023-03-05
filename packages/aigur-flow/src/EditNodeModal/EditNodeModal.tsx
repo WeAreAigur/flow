@@ -1,13 +1,13 @@
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodToObj } from 'zod-to-obj';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
 
-import { useFlowStore } from '../stores/useFlow';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { NodeDefinition } from '../types';
-import { upperFirst } from '../utils/stringUtils';
 import { InputEditor } from './InputEditor';
+import { upperFirst } from '../utils/stringUtils';
+import { NodeDefinition } from '../types';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { useFlowStore } from '../stores/useFlow';
 
 export interface EditNodeModalProps {
 	node: NodeDefinition;
@@ -29,21 +29,17 @@ export function EditNodeModal(props: EditNodeModalProps) {
 	}, [currentFlow, form, io, props.node]);
 
 	const submit = (data) => {
-		console.log(`***submitting original`, data.input);
 		const inputToSubmit = pruneObject(data.input);
-		console.log(`***submitting pruned`, inputToSubmit);
 		setNodeIO(props.node.id, { input: inputToSubmit, output: {} });
 	};
 
 	function pruneObject(obj: Record<string, any>) {
 		const prunedObject = {};
 		for (let property in obj) {
-			console.log(`***property`, property, obj[property]);
 			if (obj[property] !== 'NaN' && obj[property] !== '') {
 				prunedObject[property] = obj[property];
 			}
 			if (Array.isArray(obj[property])) {
-				console.log(`ARRAY`, property, obj[property]);
 				prunedObject[property] = obj[property].map(pruneObject);
 			} else if (typeof obj[property] === 'object') {
 				prunedObject[property] = pruneObject(obj[property]);

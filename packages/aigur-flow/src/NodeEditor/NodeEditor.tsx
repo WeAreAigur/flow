@@ -1,6 +1,6 @@
 import './NodeEditor.css';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { zodToObj } from 'zod-to-obj';
 import ReactFlow, {
 	addEdge,
 	Background,
@@ -11,28 +11,28 @@ import ReactFlow, {
 	useNodesState,
 	useStoreApi,
 } from 'reactflow';
-import { zodToObj } from 'zod-to-obj';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { makeid } from '@aigur/client/src/makeid';
 
-import { EditNodeModal } from '../EditNodeModal';
-import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
-import { nodeRepository } from '../nodeRepository';
-import { GenericNode } from '../pipelineNodeTypes/GenericNode';
-import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
-import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
-import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
-import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
-import { ImageOutputNode } from '../pipelineNodeTypes/OutputNodes/ImageOutputNode';
-import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
-import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
-import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
-import { useFlowStore } from '../stores/useFlow';
-import { useNodeStore } from '../stores/useNode';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { usePipelineStore } from '../stores/usePipeline';
-import { getPreviousNodes } from '../utils/getPreviousNodes';
 import { upperFirst } from '../utils/stringUtils';
+import { getPreviousNodes } from '../utils/getPreviousNodes';
+import { usePipelineStore } from '../stores/usePipeline';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { useNodeStore } from '../stores/useNode';
+import { useFlowStore } from '../stores/useFlow';
+import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
+import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
+import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
+import { ImageOutputNode } from '../pipelineNodeTypes/OutputNodes/ImageOutputNode';
+import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
+import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
+import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
+import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
+import { GenericNode } from '../pipelineNodeTypes/GenericNode';
+import { nodeRepository } from '../nodeRepository';
+import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
+import { EditNodeModal } from '../EditNodeModal';
 
 function load(): { nodes: any[]; edges: any[] } {
 	if (typeof window === 'undefined' || !window.location.hash.slice(1)) return;
@@ -128,7 +128,7 @@ export function NodeEditor() {
 				return;
 			}
 
-			const previousNodes = getPreviousNodes(targetNode.id, currentFlow);
+			const previousNodes = getPreviousNodes(targetNode.id, currentFlow.toObject());
 
 			const sourceNodeIndex = previousNodes.length - 2 < 0 ? 'input' : previousNodes.length - 2;
 			setNodeIO(targetNode.id, {
@@ -171,7 +171,6 @@ export function NodeEditor() {
 
 			const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
 			const nodeDefinitionId: string = event.dataTransfer.getData('application/aigurflow');
-			console.log(`***nodeDefinitionId`, nodeDefinitionId);
 			const nodeDefinition = nodeRepository[nodeDefinitionId];
 
 			// check if the dropped element is valid
@@ -190,9 +189,6 @@ export function NodeEditor() {
 				data: nodeDefinition,
 				tag: makeid(16),
 			};
-
-			console.log(`***nodeDefinition`, nodeDefinition);
-			console.log(`***newNode`, newNode);
 
 			setNodes((nodes) => nodes.concat(newNode));
 			saveFlowInUrl();
@@ -283,12 +279,16 @@ export function NodeEditor() {
 
 				return nextEdges;
 			});
-			const flow = reactFlowInstance.toObject();
-			setFlow(flow);
 			saveFlowInUrl();
 		},
-		[getClosestEdge, reactFlowInstance, saveFlowInUrl, setEdges, setFlow]
+		[getClosestEdge, saveFlowInUrl, setEdges]
 	);
+
+	useEffect(() => {
+		if (reactFlowInstance) {
+			setFlow(reactFlowInstance);
+		}
+	}, [reactFlowInstance, setFlow]);
 
 	useEffect(() => {
 		if (
@@ -319,12 +319,10 @@ export function NodeEditor() {
 				setEdges((eds) => eds.filter((e) => e.id !== edge.id));
 			}
 
-			const flow = reactFlowInstance.toObject();
-			setFlow(flow);
 			saveFlowInUrl();
 			edgeUpdateSuccessful.current = true;
 		},
-		[reactFlowInstance, saveFlowInUrl, setEdges, setFlow]
+		[saveFlowInUrl, setEdges]
 	);
 
 	return (

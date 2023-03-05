@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 
-import { createAblyNotifier } from '@aigur/ably';
 import { Pipeline, vercelEdgeFunction } from '@aigur/client/src';
+import { createAblyNotifier } from '@aigur/ably';
 
 const ably = createAblyNotifier(
 	process.env.ABLY_KEY!,
@@ -42,9 +42,7 @@ export const config = {
 };
 
 async function getAction(nodeId: string) {
-	console.log(`action`, { nodeId });
 	const node = await import('#/nodes/nodes').then((mod) => (mod as any)[nodeId]);
-	console.log('node', { node });
 	if (node) {
 		return node;
 	}
