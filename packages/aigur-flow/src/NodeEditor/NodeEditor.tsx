@@ -78,6 +78,7 @@ export function NodeEditor() {
 	const selectedNode = useNodeStore((state) => state.selectedNode);
 	const [output, setOutput] = useState(null);
 	const { setFlow, currentFlow } = useFlowStore((state) => state);
+	const [isRunning, setIsRunning] = useState(false);
 
 	const connectNodesProperties = useCallback(
 		(edge: Edge<any>) => {
@@ -208,11 +209,13 @@ export function NodeEditor() {
 
 	const onRun = useCallback(async () => {
 		if (reactFlowInstance) {
+			setIsRunning(true);
 			const flow = reactFlowInstance.toObject();
 			const pipelineData = await flowToPipelineData(flow, nodesIO);
 			const pipeline = pipelineDataToPipeline(pipelineData);
 			selectPipeline(pipeline);
 			const output = await invokePipeline(pipeline, pipelineData);
+			setIsRunning(false);
 			setOutput(output);
 		}
 	}, [nodesIO, reactFlowInstance, selectPipeline]);
@@ -410,8 +413,11 @@ export function NodeEditor() {
 					</button>
 				</Panel>
 				<Panel position="bottom-right">
-					<button onClick={onRun} className="btn btn-primary btn-lg">
-						Run
+					<button
+						onClick={onRun}
+						className={`btn btn-primary btn-lg ${isRunning ? 'loading' : ''}`}
+					>
+						{isRunning ? '' : 'Run'}
 					</button>
 				</Panel>
 				{/* <Panel position="bottom-left">
