@@ -2,14 +2,14 @@ import { Position } from 'reactflow';
 import { useEffect, useState } from 'react';
 
 import { PipelineNode } from '../PipelineNode';
-import { NodeDefinition } from '../../types';
+import { NodeInstance } from '../../types';
 import { usePipelineStore } from '../../stores/usePipeline';
 import { useNodesIOStore } from '../../stores/useNodesIO';
 
 import type { Pipeline } from '@aigur/client/src';
 export interface ImageOutputNodeProps {
 	id: string;
-	data: NodeDefinition & { pipeline: Pipeline<any, any, any> };
+	data: NodeInstance & { pipeline: Pipeline<any, any, any> };
 }
 
 export function ImageOutputNode(props: ImageOutputNodeProps) {

@@ -3,13 +3,13 @@ import { Position } from 'reactflow';
 
 import { useNodesIOStore } from '../../stores/useNodesIO';
 import { usePipelineStore } from '../../stores/usePipeline';
-import { NodeDefinition } from '../../types';
+import { NodeInstance } from '../../types';
 import { PipelineNode } from '../PipelineNode';
 
 import type { Pipeline } from '@aigur/client/src';
 export interface TextInputNodeProps {
 	id: string;
-	data: NodeDefinition & { pipeline: Pipeline<any, any, any> };
+	data: NodeInstance & { pipeline: Pipeline<any, any, any> };
 }
 
 export function TextOutputNode(props: TextInputNodeProps) {

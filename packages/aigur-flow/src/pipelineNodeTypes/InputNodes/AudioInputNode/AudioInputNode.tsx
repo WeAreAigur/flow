@@ -1,17 +1,17 @@
-import { useEffect } from 'react';
 import { Position } from 'reactflow';
+import { useEffect } from 'react';
 
 import { Pipeline } from '@aigur/client/src';
 
-import { useNodesIOStore } from '../../../stores/useNodesIO';
-import { NodeDefinition } from '../../../types';
-import { PipelineNode } from '../../PipelineNode';
-import { useRecord } from './useRecord';
 import { VoiceRecorder } from './VoiceRecorder';
+import { useRecord } from './useRecord';
+import { PipelineNode } from '../../PipelineNode';
+import { NodeInstance } from '../../../types';
+import { useNodesIOStore } from '../../../stores/useNodesIO';
 
 export interface AudioInputNodeProps {
 	id: string;
-	data: NodeDefinition & { pipeline: Pipeline<any, any, any> };
+	data: NodeInstance & { pipeline: Pipeline<any, any, any> };
 }
 
 export function AudioInputNode(props: AudioInputNodeProps) {

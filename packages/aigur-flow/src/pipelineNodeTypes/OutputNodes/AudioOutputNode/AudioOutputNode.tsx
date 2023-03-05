@@ -3,11 +3,11 @@ import { Position } from 'reactflow';
 import { Pipeline } from '@aigur/client/src';
 
 import { PipelineNode } from '../../PipelineNode';
-import { NodeDefinition } from '../../../types';
+import { NodeInstance } from '../../../types';
 
 export interface AudioOutputNodeProps {
 	id: string;
-	data: NodeDefinition & { pipeline: Pipeline<any, any, any> };
+	data: NodeInstance & { pipeline: Pipeline<any, any, any> };
 }
 
 export function AudioOutputNode(props: AudioOutputNodeProps) {

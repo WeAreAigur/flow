@@ -1,14 +1,14 @@
-import { Position } from 'reactflow';
 import { useState } from 'react';
+import { Position } from 'reactflow';
 
-import { PipelineNode } from '../PipelineNode';
-import { NodeDefinition } from '../../types';
 import { useNodesIOStore } from '../../stores/useNodesIO';
+import { NodeInstance } from '../../types';
+import { PipelineNode } from '../PipelineNode';
 
 import type { Pipeline } from '@aigur/client/src';
 export interface TextInputNodeProps {
 	id: string;
-	data: NodeDefinition & { pipeline: Pipeline<any, any, any> };
+	data: NodeInstance & { pipeline: Pipeline<any, any, any> };
 }
 
 export function TextInputNode(props: TextInputNodeProps) {

@@ -1,12 +1,12 @@
 import { Position } from 'reactflow';
 
 import { PipelineNode } from '../PipelineNode';
-import { NodeDefinition } from '../../types';
+import { NodeInstance } from '../../types';
 
 import type { Pipeline } from '@aigur/client/src';
 export interface InputNodeProps {
 	id: string;
-	data: NodeDefinition & { pipeline: Pipeline<any, any, any> };
+	data: NodeInstance & { pipeline: Pipeline<any, any, any> };
 }
 
 export function InputNode(props: InputNodeProps) {
