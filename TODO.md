@@ -1,7 +1,6 @@
 nodeRepository -> nodeTree -> NodeBank -> NodeEditor -> PipelineNode
 
-zod is not serializable and cannot be saved in url
-need to restore zod on load
+action.name is mangled in production
 
 enum - dropdown
 

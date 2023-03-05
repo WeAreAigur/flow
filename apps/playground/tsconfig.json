@@ -4,6 +4,9 @@
 	"exclude": ["node_modules"],
 	"compilerOptions": {
 		"baseUrl": ".",
+		"strict": false,
+		"target": "ES2020",
+		"types": ["vitest/importMeta"],
 		"paths": {
 			"#/*": ["*"]
 		}

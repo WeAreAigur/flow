@@ -10,7 +10,7 @@
 	},
 	"dependencies": {
 		"@aigur/ably": "^1.0.0",
-		"@aigur/client": "^1.8.0",
+		"@aigur/client": "^1.8.2",
 		"@aigur/flow": "workspace:*",
 		"@aigur/supabase": "^0.32.0",
 		"next": "^13.1.1",
@@ -30,6 +30,7 @@
 		"postcss": "^8.4.21",
 		"tailwindcss": "^3.2.7",
 		"tsconfig": "workspace:*",
-		"typescript": "^4.5.3"
+		"typescript": "^4.5.3",
+		"vitest": "^0.29.1"
 	}
 }

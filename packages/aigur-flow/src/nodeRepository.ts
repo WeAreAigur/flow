@@ -1,22 +1,21 @@
 import { z } from 'zod';
 
 import {
-	googleImageLabeling,
 	inputSchema as googleImageInputSchema,
+	name as googleImageLabeling,
 	outputSchema as googleImageOutputSchema,
 } from '@aigur/client/src/nodes/image/labeling/googleImageLabeling';
 import { inputSchema as stabilityInputSchema } from '@aigur/client/src/nodes/image/textToImage/stability';
 import {
-	gpt3Prediction,
+	name as gpt3Prediction,
 	outputSchema as gpt3OutputSchema,
 	rawInputSchema as gpt3InputSchema,
 } from '@aigur/client/src/nodes/text/prediction/gpt3';
 import {
 	inputSchema as whisperInputSchema,
+	name as whisperApi,
 	outputSchema as whisperOutputSchema,
-	whisperApi,
 } from '@aigur/client/src/nodes/voice/transcribe/whisper/whisperapi';
-import { APIKeys } from '@aigur/client/src/types';
 
 import { NodeDefinition, NodeDefinitionType, ZodReadableStream } from './types';
 import { upperFirst } from './utils/stringUtils';
@@ -98,9 +97,7 @@ export const googleImageLabelingNode = createNodeDefinition({
 });
 
 export const stabilityTextToImageNode = createNodeDefinition({
-	action: async function stabilityTextToImageAigur(input: any, APIKeys: any) {
-		return true;
-	},
+	action: 'stabilityTextToImageAigur',
 	inputSchema: stabilityInputSchema,
 	outputSchema: z.object({ url: z.string() }),
 	title: 'Stability Text to Image',
@@ -126,7 +123,7 @@ export const nodeRepository = {
 } as const satisfies Record<string, NodeDefinition>;
 
 function createNodeDefinition(opts: {
-	action: (input: any, apiKeys: APIKeys) => Promise<any>;
+	action: string;
 	inputSchema: z.AnyZodObject;
 	outputSchema: z.AnyZodObject | ZodReadableStream;
 	title: string;
@@ -135,7 +132,7 @@ function createNodeDefinition(opts: {
 }): NodeDefinition {
 	return {
 		title: opts.title,
-		id: opts.action.name,
+		id: opts.action,
 		definitionLabel: opts.definitionLabel,
 		type: opts.type,
 		schema: {
