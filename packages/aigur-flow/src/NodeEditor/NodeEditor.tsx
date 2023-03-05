@@ -81,45 +81,8 @@ export function NodeEditor() {
 	const [reactFlowInstance, setReactFlowInstance] = useState(null);
 	const selectedNode = useNodeStore((state) => state.selectedNode);
 	const nodesIO = useNodesIOStore((state) => state.io);
-	const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 	const [output, setOutput] = useState(null);
 	const { setFlow, currentFlow } = useFlowStore((state) => state);
-
-	useEffect(() => {
-		const data = loadDataFromUrl();
-		if (!data) {
-			return;
-		}
-		if (data.flow) {
-			console.log(`setting flow from url`, data.flow);
-			setNodes(data.flow.nodes);
-			setEdges(data.flow.edges);
-		}
-		if (data.nodesIO) {
-			console.log(`setting io from url`, data.nodesIO);
-			initIO(data.nodesIO);
-		}
-	}, []);
-
-	const saveFlowInUrl = useCallback(() => {
-		return;
-		if (reactFlowInstance) {
-			setTimeout(() => {
-				console.log(`saving`);
-				const flow = reactFlowInstance.toObject();
-				if (!flow?.nodes.length && typeof window !== 'undefined') {
-					history.replaceState('', '', location.pathname);
-					return;
-				}
-				const base64Flow = btoa(JSON.stringify({ flow, nodesIO }));
-				window.location.hash = base64Flow;
-			});
-		}
-	}, [nodesIO, reactFlowInstance]);
-
-	useEffect(() => {
-		saveFlowInUrl();
-	}, [nodesIO, saveFlowInUrl]);
 
 	const connectNodesProperties = useCallback(
 		(edge: Edge<any>) => {
@@ -198,6 +161,51 @@ export function NodeEditor() {
 		},
 		[currentFlow, setNodeIO, store]
 	);
+
+	const onConnect = useCallback(
+		(edge) => {
+			console.log(`onConnect`, edge);
+			connectNodesProperties(edge);
+			setEdges((eds) => addEdge(edge, eds));
+		},
+		[connectNodesProperties, setEdges]
+	);
+
+	useEffect(() => {
+		const data = loadDataFromUrl();
+		if (!data) {
+			return;
+		}
+		if (data.flow) {
+			console.log(`setting flow from url`, data.flow);
+			setNodes(data.flow.nodes);
+			setEdges(data.flow.edges);
+		}
+		if (data.nodesIO) {
+			console.log(`setting io from url`, data.nodesIO);
+			initIO(data.nodesIO);
+		}
+	}, []);
+
+	const saveFlowInUrl = useCallback(() => {
+		return;
+		if (reactFlowInstance) {
+			setTimeout(() => {
+				console.log(`saving`);
+				const flow = reactFlowInstance.toObject();
+				if (!flow?.nodes.length && typeof window !== 'undefined') {
+					history.replaceState('', '', location.pathname);
+					return;
+				}
+				const base64Flow = btoa(JSON.stringify({ flow, nodesIO }));
+				window.location.hash = base64Flow;
+			});
+		}
+	}, [nodesIO, reactFlowInstance]);
+
+	useEffect(() => {
+		saveFlowInUrl();
+	}, [nodesIO, saveFlowInUrl]);
 
 	const onDragOver = useCallback((event) => {
 		event.preventDefault();
@@ -355,11 +363,13 @@ export function NodeEditor() {
 	// }, [connectNodesProperties, edges, currentFlow]);
 
 	const onEdgeUpdateStart = useCallback(() => {
+		console.log(`onEdgeUpdateStart`);
 		edgeUpdateSuccessful.current = false;
 	}, []);
 
 	const onEdgeUpdate = useCallback(
 		(oldEdge, newConnection) => {
+			console.log(`onEdgeUpdate`);
 			edgeUpdateSuccessful.current = true;
 			setEdges((els) => updateEdge(oldEdge, newConnection, els));
 		},
@@ -368,6 +378,7 @@ export function NodeEditor() {
 
 	const onEdgeUpdateEnd = useCallback(
 		(_, edge) => {
+			console.log(`onEdgeUpdateEnd`);
 			if (!edgeUpdateSuccessful.current) {
 				setEdges((eds) => eds.filter((e) => e.id !== edge.id));
 			}
