@@ -1,5 +1,9 @@
 import { Tree } from 'antd';
 
+import { createNode } from '../NodeEditor/nodeCreator';
+import { nodeRepository } from '../nodeRepository';
+import { useFlowStore } from '../stores/useFlow';
+
 export interface Branch {
 	title: string;
 	key: string;
@@ -13,6 +17,7 @@ interface NodeBankProps {
 }
 
 export function NodeBank(props: NodeBankProps) {
+	const currentFlow = useFlowStore((state) => state.currentFlow);
 	return (
 		<div className="h-full">
 			{/* <div className="flex items-center bg-base-300 h-11 flex-end">
@@ -20,8 +25,16 @@ export function NodeBank(props: NodeBankProps) {
 			</div> */}
 			<div className="p-4">
 				<Tree
-					rootClassName="bg-transparent text-white"
+					rootClassName="bg-transparent text-slate-300"
 					treeData={props.nodeTree}
+					onClick={(key, node) => {
+						const nodeDefinition = nodeRepository[node.key];
+						const newNode = createNode(nodeDefinition, {
+							x: 300 + Math.random() * 500,
+							y: 400 + Math.random() * 500,
+						});
+						currentFlow.addNodes(newNode);
+					}}
 					onDragStart={({ event, node }) => {
 						// event.dataTransfer.effectAllowed = 'move';
 						event.dataTransfer.setData('application/aigurflow', node.key);
@@ -29,7 +42,7 @@ export function NodeBank(props: NodeBankProps) {
 					defaultExpandAll={true}
 					draggable={{
 						icon: false,
-						nodeDraggable: (node) => node.children === undefined, // && node.title !== 'input' && node.title !== 'output',
+						nodeDraggable: (node) => !node.children,
 					}}
 				/>
 			</div>

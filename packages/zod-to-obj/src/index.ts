@@ -19,7 +19,6 @@ export function zodToObj(schema: z.AnyZodObject): ZTO_Base[] {
 	for (const key in shape) {
 		const field = shape[key];
 		const realType = field.innerType ? field.innerType() : field;
-		console.log(`***realType`, realType);
 		const obj: ZTO_Base = {
 			property: key,
 			type: zodTypeToType[realType._def.typeName],

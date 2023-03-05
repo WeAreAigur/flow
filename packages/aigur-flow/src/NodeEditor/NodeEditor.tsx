@@ -13,8 +13,6 @@ import ReactFlow, {
 } from 'reactflow';
 import { isZTOArray, isZTOObject, zodToObj, ZTO_Base } from 'zod-to-obj';
 
-import { makeid } from '@aigur/client/src/makeid';
-
 import { EditNodeModal } from '../EditNodeModal';
 import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
 import { nodeRepository } from '../nodeRepository';
@@ -32,7 +30,7 @@ import { useNodeStore } from '../stores/useNode';
 import { useNodesIOStore } from '../stores/useNodesIO';
 import { usePipelineStore } from '../stores/usePipeline';
 import { getPreviousNodes } from '../utils/getPreviousNodes';
-import { upperFirst } from '../utils/stringUtils';
+import { createNode } from './nodeCreator';
 
 function loadDataFromUrl() {
 	return;
@@ -52,8 +50,6 @@ const savedFlow = { nodes: null, edges: null }; // loadDataFromUrl().flow;
 const initialNodes = savedFlow?.nodes ?? [];
 
 const initialEdges = savedFlow?.edges ?? [];
-
-let nodeCnt = 0;
 
 const nodeTypes = {
 	'pipeline-inputText': TextInputNode,
@@ -240,13 +236,7 @@ export function NodeEditor() {
 				x: event.clientX - reactFlowBounds.left,
 				y: event.clientY - reactFlowBounds.top,
 			});
-			const newNode = {
-				id: `${nodeDefinition.id}@@${nodeCnt++}`,
-				type: `${nodeDefinition.type}${upperFirst(nodeDefinition.subtype ?? '')}`,
-				position,
-				data: nodeDefinition,
-				tag: makeid(16),
-			};
+			const newNode = createNode(nodeDefinition, position);
 
 			setNodes((nodes) => nodes.concat(newNode));
 			saveFlowInUrl();
