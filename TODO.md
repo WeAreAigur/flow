@@ -1,7 +1,5 @@
 nodeRepository -> nodeTree -> NodeBank -> NodeEditor -> PipelineNode
 
-action.name is mangled in production
-
 enum - dropdown
 
 - output panel

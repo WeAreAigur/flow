@@ -18,23 +18,24 @@ export function zodToObj(schema: z.AnyZodObject): ZTO_Base[] {
 	const result = [];
 	for (const key in shape) {
 		const field = shape[key];
-		const unwrappedField = unwrapSchema(field);
+		const realType = field.innerType ? field.innerType() : field;
+		console.log(`***realType`, realType);
 		const obj: ZTO_Base = {
 			property: key,
-			type: zodTypeToType[unwrappedField._def.typeName],
-			required: !isOptional(field),
+			type: zodTypeToType[realType._def.typeName],
+			required: !field.isOptional(),
 		};
 		if (obj.type === 'object') {
 			(obj as ZTO_Object).properties = zodToObj(field);
 		}
 		if (obj.type === 'array') {
-			obj.subType = zodTypeToType[unwrappedField.element._def.typeName];
+			obj.subType = zodTypeToType[realType.element._def.typeName];
 			if (obj.subType === 'object') {
-				(obj as ZTO_Object).properties = zodToObj(unwrappedField._def.type);
+				(obj as ZTO_Object).properties = zodToObj(realType._def.type);
 			}
 		}
 		if (obj.type === 'enum') {
-			(obj as ZTO_Enum).possibleValues = unwrappedField._def.values;
+			(obj as ZTO_Enum).possibleValues = realType._def.values;
 		}
 		const defaultValue = getDefaultValue(field);
 		if (defaultValue !== undefined) {
@@ -46,7 +47,7 @@ export function zodToObj(schema: z.AnyZodObject): ZTO_Base[] {
 }
 
 function unwrapSchema(schema: z.ZodTypeAny) {
-	if (isOptional(schema)) {
+	if (schema.isOptional()) {
 		return unwrapSchema(schema._def.innerType);
 	}
 	if (schema instanceof z.ZodEffects) {
@@ -66,9 +67,18 @@ function getDefaultValue(schema: z.ZodTypeAny) {
 	return;
 }
 
-export function isOptional(schema: z.ZodTypeAny) {
-	return schema._def.typeName === 'ZodOptional' || schema._def.typeName === 'ZodDefault';
-}
+// export function isOptional(schema: z.ZodTypeAny) {
+// 	console.log(`***schema`, schema);
+// 	const def = schema?._def;
+// 	if (!def) {
+// 		return false;
+// 	}
+// 	return (
+// 		def.typeName === 'ZodOptional' ||
+// 		def.typeName === 'ZodDefault' ||
+// 		(def.typeName === 'ZodEffects' && isOptional(def.schema))
+// 	);
+// }
 
 export const isZTOObject = (obj: ZTO_Base): obj is ZTO_Object => obj.type === 'object';
 export const isZTOEnum = (obj: ZTO_Base): obj is ZTO_Enum => obj.type === 'enum';

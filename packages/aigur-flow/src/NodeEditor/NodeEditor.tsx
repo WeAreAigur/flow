@@ -1,6 +1,6 @@
 import './NodeEditor.css';
 
-import { zodToObj } from 'zod-to-obj';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
 	addEdge,
 	Background,
@@ -11,28 +11,28 @@ import ReactFlow, {
 	useNodesState,
 	useStoreApi,
 } from 'reactflow';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { isZTOArray, isZTOObject, zodToObj, ZTO_Base } from 'zod-to-obj';
 
 import { makeid } from '@aigur/client/src/makeid';
 
-import { upperFirst } from '../utils/stringUtils';
-import { getPreviousNodes } from '../utils/getPreviousNodes';
-import { usePipelineStore } from '../stores/usePipeline';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { useNodeStore } from '../stores/useNode';
-import { useFlowStore } from '../stores/useFlow';
-import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
-import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
-import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
-import { ImageOutputNode } from '../pipelineNodeTypes/OutputNodes/ImageOutputNode';
-import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
-import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
-import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
-import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
-import { GenericNode } from '../pipelineNodeTypes/GenericNode';
-import { nodeRepository } from '../nodeRepository';
-import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
 import { EditNodeModal } from '../EditNodeModal';
+import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
+import { nodeRepository } from '../nodeRepository';
+import { GenericNode } from '../pipelineNodeTypes/GenericNode';
+import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
+import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
+import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
+import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
+import { ImageOutputNode } from '../pipelineNodeTypes/OutputNodes/ImageOutputNode';
+import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
+import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
+import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
+import { useFlowStore } from '../stores/useFlow';
+import { useNodeStore } from '../stores/useNode';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { usePipelineStore } from '../stores/usePipeline';
+import { getPreviousNodes } from '../utils/getPreviousNodes';
+import { upperFirst } from '../utils/stringUtils';
 
 function loadDataFromUrl() {
 	return;
@@ -129,37 +129,72 @@ export function NodeEditor() {
 			const targetNode = nodeInternals.get(edge.target);
 
 			const targetInputFields = zodToObj(targetNode.data.schema.input);
-			const targetRequiredInputFields = targetInputFields.filter((field) => field.required);
+			const targetRequiredInputFields = targetInputFields.filter((field) => {
+				if (isZTOArray(field) && field.subType === 'object') {
+					const requiredFields = field.properties.filter((prop) => prop.required);
+					// if there is more than one required field, we can't auto connect it
+					return requiredFields.length === 1;
+				}
+				return field.required;
+			});
+
+			if (targetRequiredInputFields.length !== 1) {
+				return;
+			}
+
+			const inputType = getRequiredType(targetRequiredInputFields[0]);
+
 			const sourceOutputFields = zodToObj(sourceNode.data.schema.output);
+			const filteredOutputFields = sourceOutputFields.filter((field) => field.type === inputType);
 
-			if (targetRequiredInputFields.length > 1) {
+			if (filteredOutputFields.length !== 1) {
 				return;
 			}
-			const filteredOutputFields = sourceOutputFields.filter(
-				(field) => field.type === targetRequiredInputFields[0].type
-			);
 
-			if (filteredOutputFields.length > 1) {
-				return;
-			}
+			// {text_input: {text: '$context.0.text$'}}
 
 			const previousNodes = getPreviousNodes(targetNode.id, currentFlow.toObject());
-
 			const sourceNodeIndex = previousNodes.length - 2 < 0 ? 'input' : previousNodes.length - 2;
 			setNodeIO(targetNode.id, {
-				input: {
-					[targetRequiredInputFields[0]
-						.property]: `$context.${sourceNodeIndex}.${filteredOutputFields[0].property}$`,
-				},
+				input: getRequiredInput(
+					targetRequiredInputFields[0],
+					filteredOutputFields[0],
+					sourceNodeIndex
+				),
 				output: {},
 			});
 
-			// get targetNode's schema.input
-			// find required property
-			// get sourceNode's schema.output
-			// find property with same type as required property
-			// if only one, connect
-			// setNodeIO
+			function getRequiredType(requiredInputField: ZTO_Base) {
+				if (
+					isZTOObject(requiredInputField) ||
+					(isZTOArray(requiredInputField) && requiredInputField.subType === 'object')
+				) {
+					return requiredInputField.properties.find((prop) => prop.required).type;
+				}
+				return requiredInputField.type;
+			}
+
+			function getRequiredInput(targetField, outputField, sourceNodeIndex) {
+				if (isZTOObject(targetField)) {
+					return {
+						[targetField.property]: getRequiredInput(
+							targetField.properties[0],
+							outputField,
+							sourceNodeIndex
+						),
+					};
+				}
+				if (isZTOArray(targetField) && targetField.subType === 'object') {
+					return {
+						[targetField.property]: [
+							getRequiredInput(targetField.properties[0], outputField, sourceNodeIndex),
+						],
+					};
+				}
+				return {
+					[targetField.property]: `$context.${sourceNodeIndex}.${outputField.property}$`,
+				};
+			}
 		},
 		[currentFlow, setNodeIO, store]
 	);
