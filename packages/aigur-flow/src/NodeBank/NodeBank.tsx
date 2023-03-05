@@ -27,12 +27,21 @@ export function NodeBank(props: NodeBankProps) {
 					onClick={(_event, node) => {
 						const nodeDefinition = nodeRepository[node.key];
 						const viewport = currentFlow.getViewport();
+						const { nodes } = currentFlow.toObject();
+						const position = nodes[0]?.position ?? {
+							x: viewport.x,
+							y: viewport.y,
+						};
+						console.log(`***nodes`, nodes);
 						const newNode = createNode(nodeDefinition, {
-							x: viewport.x + 300 + Math.random() * 100,
-							y: viewport.y / 2 - 500 + Math.random() * 100,
+							x: position.x,
+							y: position.y + 300,
 						});
 
 						currentFlow.addNodes(newNode);
+						if (nodes.length === 0) {
+							currentFlow.fitView();
+						}
 						// console.log(`***currentFlow.toObject()`, currentFlow.toObject());
 					}}
 					onDragStart={({ event, node }) => {
