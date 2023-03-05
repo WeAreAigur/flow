@@ -56,18 +56,18 @@ function unwrapSchema(schema: z.ZodTypeAny) {
 }
 
 function getDefaultValue(schema: z.ZodTypeAny) {
-	if (schema instanceof z.ZodDefault) {
+	if (schema._def.typeName === 'ZodDefault') {
 		const defaultValue = schema._def.defaultValue();
 		return defaultValue;
 	}
-	if (schema instanceof z.ZodOptional) {
+	if (schema._def.typeName === 'ZodOptional') {
 		return getDefaultValue(schema._def.innerType);
 	}
 	return;
 }
 
-function isOptional(schema: z.ZodTypeAny) {
-	return schema instanceof z.ZodOptional || schema instanceof z.ZodDefault;
+export function isOptional(schema: z.ZodTypeAny) {
+	return schema._def.typeName === 'ZodOptional' || schema._def.typeName === 'ZodDefault';
 }
 
 export const isZTOObject = (obj: ZTO_Base): obj is ZTO_Object => obj.type === 'object';

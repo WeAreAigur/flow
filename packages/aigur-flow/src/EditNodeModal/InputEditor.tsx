@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
-import { UseFormRegister, UseFormReturn, UseFormSetValue } from 'react-hook-form';
-import { z } from 'zod';
 import { isZTOArray, isZTOObject, zodToObj, ZTO_Base } from 'zod-to-obj';
+import { z } from 'zod';
+import { UseFormRegister, UseFormReturn, UseFormSetValue } from 'react-hook-form';
+import { useEffect, useState } from 'react';
 
-import { useFlowStore } from '../stores/useFlow';
-import { NodeDefinition } from '../types';
 import { ValueField } from './ValueField';
+import { getPreviousNodes } from '../utils/getPreviousNodes';
+import { NodeDefinition } from '../types';
+import { useFlowStore } from '../stores/useFlow';
 
 export interface InputEditorProps {
 	node: NodeDefinition;
@@ -26,28 +27,12 @@ export function InputEditor(props: InputEditorProps) {
 
 	useEffect(() => {
 		if (props.node && currentFlow) {
-			const previousNodes = getPreviousNodes();
+			const previousNodes = getPreviousNodes(props.node.id, currentFlow);
 			const nodesWithOutput = previousNodes.map((prevNode) => ({
 				id: prevNode.id,
 				output: prevNode.data.schema.output,
 			}));
 			setPreviousNodes(nodesWithOutput);
-		}
-
-		function getPreviousNodes() {
-			const previousNodes = [];
-			let nodeId = props.node.id;
-			let edge = currentFlow.edges.find((edge) => edge.target === nodeId);
-			if (!edge) {
-				return [];
-			}
-			do {
-				const sourceNode = currentFlow.nodes.find((node) => node.id === edge.source);
-				previousNodes.push(sourceNode);
-				nodeId = sourceNode?.id;
-				edge = currentFlow.edges.find((edge) => edge.target === nodeId);
-			} while (!!edge);
-			return previousNodes;
 		}
 	}, [currentFlow, props.node]);
 

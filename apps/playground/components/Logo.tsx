@@ -5,7 +5,7 @@ export interface LogoProps {
 export function Logo(props: LogoProps) {
 	return (
 		<span className={'font-bold text-2xl'}>
-			<span className="text-secondary">AI</span>GUR
+			<span className="text-primary">AI</span>GUR
 		</span>
 	);
 }

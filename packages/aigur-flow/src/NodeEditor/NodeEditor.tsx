@@ -1,35 +1,38 @@
 import './NodeEditor.css';
 
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
 	addEdge,
 	Background,
+	Edge,
 	Panel,
 	updateEdge,
 	useEdgesState,
 	useNodesState,
 	useStoreApi,
 } from 'reactflow';
-import { useCallback, useRef, useState } from 'react';
+import { zodToObj } from 'zod-to-obj';
 
 import { makeid } from '@aigur/client/src/makeid';
 
-import { upperFirst } from '../utils/stringUtils';
-import { usePipelineStore } from '../stores/usePipeline';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { useNodeStore } from '../stores/useNode';
-import { useFlowStore } from '../stores/useFlow';
-import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
-import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
-import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
-import { ImageOutputNode } from '../pipelineNodeTypes/OutputNodes/ImageOutputNode';
-import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
-import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
-import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
-import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
-import { GenericNode } from '../pipelineNodeTypes/GenericNode';
-import { nodeRepository } from '../nodeRepository';
-import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
 import { EditNodeModal } from '../EditNodeModal';
+import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
+import { nodeRepository } from '../nodeRepository';
+import { GenericNode } from '../pipelineNodeTypes/GenericNode';
+import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
+import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
+import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
+import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
+import { ImageOutputNode } from '../pipelineNodeTypes/OutputNodes/ImageOutputNode';
+import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
+import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
+import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
+import { useFlowStore } from '../stores/useFlow';
+import { useNodeStore } from '../stores/useNode';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { usePipelineStore } from '../stores/usePipeline';
+import { getPreviousNodes } from '../utils/getPreviousNodes';
+import { upperFirst } from '../utils/stringUtils';
 
 function load(): { nodes: any[]; edges: any[] } {
 	if (typeof window === 'undefined' || !window.location.hash.slice(1)) return;
@@ -79,6 +82,7 @@ export function NodeEditor() {
 	const reactFlowWrapper = useRef(null);
 	const edgeUpdateSuccessful = useRef(true);
 	const store = useStoreApi();
+	const setNodeIO = useNodesIOStore((state) => state.setNodeIO);
 	const selectPipeline = usePipelineStore((state) => state.selectPipeline);
 	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -87,7 +91,7 @@ export function NodeEditor() {
 	const nodesIO = useNodesIOStore((state) => state.io);
 	const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 	const [output, setOutput] = useState(null);
-	const setFlow = useFlowStore((state) => state.setFlow);
+	const { setFlow, currentFlow } = useFlowStore((state) => state);
 
 	const saveFlowInUrl = useCallback(() => {
 		// TODO: enable again
@@ -101,6 +105,49 @@ export function NodeEditor() {
 			});
 		}
 	}, [reactFlowInstance]);
+
+	const connectNodesProperties = useCallback(
+		(edge: Edge<any>) => {
+			const { nodeInternals } = store.getState();
+
+			const sourceNode = nodeInternals.get(edge.source);
+			const targetNode = nodeInternals.get(edge.target);
+
+			const targetInputFields = zodToObj(targetNode.data.schema.input);
+			const targetRequiredInputFields = targetInputFields.filter((field) => field.required);
+			const sourceOutputFields = zodToObj(sourceNode.data.schema.output);
+
+			if (targetRequiredInputFields.length > 1) {
+				return;
+			}
+			const filteredOutputFields = sourceOutputFields.filter(
+				(field) => field.type === targetRequiredInputFields[0].type
+			);
+
+			if (filteredOutputFields.length > 1) {
+				return;
+			}
+
+			const previousNodes = getPreviousNodes(targetNode.id, currentFlow);
+
+			const sourceNodeIndex = previousNodes.length - 2 < 0 ? 'input' : previousNodes.length - 2;
+			setNodeIO(targetNode.id, {
+				input: {
+					[targetRequiredInputFields[0]
+						.property]: `$context.${sourceNodeIndex}.${filteredOutputFields[0].property}$`,
+				},
+				output: {},
+			});
+
+			// get targetNode's schema.input
+			// find required property
+			// get sourceNode's schema.output
+			// find property with same type as required property
+			// if only one, connect
+			// setNodeIO
+		},
+		[currentFlow, setNodeIO, store]
+	);
 
 	const onDragOver = useCallback((event) => {
 		event.preventDefault();
@@ -183,7 +230,7 @@ export function NodeEditor() {
 				return null;
 			}
 
-			const closeNodeIsSource = closestNode.node.positionAbsolute.x < node.positionAbsolute.x;
+			const closeNodeIsSource = closestNode.node.positionAbsolute.y < node.positionAbsolute.y;
 
 			return {
 				id: `${node.id}-${closestNode.node.id}`,
@@ -225,14 +272,13 @@ export function NodeEditor() {
 			setEdges((edges) => {
 				const nextEdges = edges.filter((edge) => edge.className !== PROXIMITY_CLASS);
 
-				if (closeEdge) {
-					if (
-						!nextEdges.some(
-							(edge) => edge.source === closeEdge.source && edge.target === closeEdge.target
-						)
-					) {
-						nextEdges.push(closeEdge);
-					}
+				if (
+					closeEdge &&
+					!nextEdges.some(
+						(edge) => edge.source === closeEdge.source && edge.target === closeEdge.target
+					)
+				) {
+					nextEdges.push(closeEdge);
 				}
 
 				return nextEdges;
@@ -243,6 +289,17 @@ export function NodeEditor() {
 		},
 		[getClosestEdge, reactFlowInstance, saveFlowInUrl, setEdges, setFlow]
 	);
+
+	useEffect(() => {
+		if (
+			currentFlow &&
+			edges &&
+			edges.length > 0 &&
+			edges[edges.length - 1].className !== PROXIMITY_CLASS
+		) {
+			connectNodesProperties(edges[edges.length - 1]);
+		}
+	}, [connectNodesProperties, edges, currentFlow]);
 
 	const onEdgeUpdateStart = useCallback(() => {
 		edgeUpdateSuccessful.current = false;
