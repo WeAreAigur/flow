@@ -70,13 +70,12 @@ export function NodeEditor() {
 	const reactFlowWrapper = useRef(null);
 	const edgeUpdateSuccessful = useRef(true);
 	const store = useStoreApi();
-	const { setNodeIO, initIO } = useNodesIOStore((state) => state);
+	const { setNodeIO, initIO, deleteNodeIO, io: nodesIO } = useNodesIOStore((state) => state);
 	const selectPipeline = usePipelineStore((state) => state.selectPipeline);
 	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 	const [reactFlowInstance, setReactFlowInstance] = useState(null);
 	const selectedNode = useNodeStore((state) => state.selectedNode);
-	const nodesIO = useNodesIOStore((state) => state.io);
 	const [output, setOutput] = useState(null);
 	const { setFlow, currentFlow } = useFlowStore((state) => state);
 
@@ -160,7 +159,6 @@ export function NodeEditor() {
 
 	const onConnect = useCallback(
 		(edge) => {
-			console.log(`onConnect`, edge);
 			connectNodesProperties(edge);
 			setEdges((eds) => addEdge(edge, eds));
 		},
@@ -173,12 +171,10 @@ export function NodeEditor() {
 			return;
 		}
 		if (data.flow) {
-			console.log(`setting flow from url`, data.flow);
 			setNodes(data.flow.nodes);
 			setEdges(data.flow.edges);
 		}
 		if (data.nodesIO) {
-			console.log(`setting io from url`, data.nodesIO);
 			initIO(data.nodesIO);
 		}
 	}, []);
@@ -353,13 +349,11 @@ export function NodeEditor() {
 	// }, [connectNodesProperties, edges, currentFlow]);
 
 	const onEdgeUpdateStart = useCallback(() => {
-		console.log(`onEdgeUpdateStart`);
 		edgeUpdateSuccessful.current = false;
 	}, []);
 
 	const onEdgeUpdate = useCallback(
 		(oldEdge, newConnection) => {
-			console.log(`onEdgeUpdate`);
 			edgeUpdateSuccessful.current = true;
 			setEdges((els) => updateEdge(oldEdge, newConnection, els));
 		},
@@ -368,16 +362,16 @@ export function NodeEditor() {
 
 	const onEdgeUpdateEnd = useCallback(
 		(_, edge) => {
-			console.log(`onEdgeUpdateEnd`);
 			if (!edgeUpdateSuccessful.current) {
 				setEdges((eds) => eds.filter((e) => e.id !== edge.id));
+				deleteNodeIO(edge.target);
 			}
 
-			connectNodesProperties(edge);
+			// connectNodesProperties(edge);
 			saveFlowInUrl();
 			edgeUpdateSuccessful.current = true;
 		},
-		[connectNodesProperties, saveFlowInUrl, setEdges]
+		[deleteNodeIO, saveFlowInUrl, setEdges]
 	);
 
 	function newPipeline() {

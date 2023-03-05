@@ -20,14 +20,11 @@ export function NodeBank(props: NodeBankProps) {
 	const currentFlow = useFlowStore((state) => state.currentFlow);
 	return (
 		<div className="h-full">
-			{/* <div className="flex items-center bg-base-300 h-11 flex-end">
-				<input type="text" className="input input-xs input-bordered" />
-			</div> */}
 			<div className="p-4">
 				<Tree
 					rootClassName="bg-transparent text-slate-300"
 					treeData={props.nodeTree}
-					onClick={(key, node) => {
+					onClick={(_event, node) => {
 						const nodeDefinition = nodeRepository[node.key];
 						const newNode = createNode(nodeDefinition, {
 							x: 300 + Math.random() * 500,
