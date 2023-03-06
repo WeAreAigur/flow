@@ -1,5 +1,7 @@
 import './NodeEditor.css';
 
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { GlobalHotKeys } from 'react-hotkeys';
 import ReactFlow, {
 	addEdge,
 	Background,
@@ -9,27 +11,26 @@ import ReactFlow, {
 	useNodesState,
 	useStoreApi,
 } from 'reactflow';
-import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { createNode } from './nodeCreator';
-import { useConnectNodesProperties } from './connectNodeProperties';
-import { useUserStore } from '../stores/userUser';
-import { usePipelineStore } from '../stores/usePipeline';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { useNodeStore } from '../stores/useNode';
-import { useFlowStore } from '../stores/useFlow';
-import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
-import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
-import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
-import { ImageOutputNode } from '../pipelineNodeTypes/OutputNodes/ImageOutputNode';
-import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
-import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
-import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
-import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
-import { GenericNode } from '../pipelineNodeTypes/GenericNode';
-import { nodeRepository } from '../nodeRepository';
-import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
 import { EditNodeModal } from '../EditNodeModal';
+import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
+import { nodeRepository } from '../nodeRepository';
+import { GenericNode } from '../pipelineNodeTypes/GenericNode';
+import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
+import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
+import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
+import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
+import { ImageOutputNode } from '../pipelineNodeTypes/OutputNodes/ImageOutputNode';
+import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
+import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
+import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
+import { useFlowStore } from '../stores/useFlow';
+import { useNodeStore } from '../stores/useNode';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { usePipelineStore } from '../stores/usePipeline';
+import { useUserStore } from '../stores/userUser';
+import { useConnectNodesProperties } from './connectNodeProperties';
+import { createNode } from './nodeCreator';
 
 function loadDataFromUrl() {
 	if (typeof window === 'undefined' || !window.location.hash.slice(1)) return;
@@ -129,7 +130,7 @@ export function NodeEditor() {
 		event.dataTransfer.dropEffect = 'move';
 	}, []);
 
-	const onRun = useCallback(async () => {
+	const runPipeline = useCallback(async () => {
 		if (reactFlowInstance) {
 			setIsRunning(true);
 			const flow = reactFlowInstance.toObject();
@@ -140,7 +141,11 @@ export function NodeEditor() {
 			setIsRunning(false);
 			setOutput(output);
 		}
-	}, [nodesIO, reactFlowInstance, selectPipeline]);
+	}, [nodesIO, reactFlowInstance, selectPipeline, userId]);
+
+	const onRun = useCallback(async () => {
+		runPipeline();
+	}, [runPipeline]);
 
 	const onDrop = useCallback(
 		(event) => {
@@ -307,48 +312,58 @@ export function NodeEditor() {
 		initIO({});
 	}
 
+	const keyMap = {
+		runPipeline: ['ctrl+enter', 'cmd+enter'],
+	};
+
+	const handlers = {
+		runPipeline,
+	};
+
 	return (
-		<div className="h-full reactflow-wrapper" ref={reactFlowWrapper}>
-			<ReactFlow
-				nodes={nodes}
-				edges={edges}
-				onNodesChange={onNodesChange}
-				onEdgesChange={onEdgesChange}
-				onEdgeUpdate={onEdgeUpdate}
-				onEdgeUpdateStart={onEdgeUpdateStart}
-				onEdgeUpdateEnd={onEdgeUpdateEnd}
-				onConnect={onConnect}
-				onDragOver={onDragOver}
-				onDrop={onDrop}
-				onNodeDrag={onNodeDrag}
-				onNodeDragStop={onNodeDragStop}
-				onInit={setReactFlowInstance}
-				nodeTypes={nodeTypes}
-				maxZoom={0.75}
-				proOptions={{ hideAttribution: true }}
-				fitView
-			>
-				<Background />
-				<Panel position="top-right">
-					<button onClick={newPipeline} className="btn btn-secondary btn-sm">
-						New
-					</button>
-				</Panel>
-				<Panel position="bottom-right">
-					<button
-						onClick={onRun}
-						className={`btn btn-primary btn-lg ${isRunning ? 'loading' : ''}`}
-					>
-						{isRunning ? '' : 'Run'}
-					</button>
-				</Panel>
-				{/* <Panel position="bottom-left">
+		<GlobalHotKeys keyMap={keyMap} handlers={handlers} allowChanges={true}>
+			<div className="h-full reactflow-wrapper" ref={reactFlowWrapper}>
+				<ReactFlow
+					nodes={nodes}
+					edges={edges}
+					onNodesChange={onNodesChange}
+					onEdgesChange={onEdgesChange}
+					onEdgeUpdate={onEdgeUpdate}
+					onEdgeUpdateStart={onEdgeUpdateStart}
+					onEdgeUpdateEnd={onEdgeUpdateEnd}
+					onConnect={onConnect}
+					onDragOver={onDragOver}
+					onDrop={onDrop}
+					onNodeDrag={onNodeDrag}
+					onNodeDragStop={onNodeDragStop}
+					onInit={setReactFlowInstance}
+					nodeTypes={nodeTypes}
+					maxZoom={0.75}
+					proOptions={{ hideAttribution: true }}
+					fitView
+				>
+					<Background />
+					<Panel position="top-right">
+						<button onClick={newPipeline} className="btn btn-secondary btn-sm">
+							New
+						</button>
+					</Panel>
+					<Panel position="bottom-right">
+						<button
+							onClick={onRun}
+							className={`btn btn-primary btn-lg ${isRunning ? 'loading' : ''}`}
+						>
+							{isRunning ? '' : 'Run'}
+						</button>
+					</Panel>
+					{/* <Panel position="bottom-left">
 					<div className="bg-neutral-800 text-white h-24 w-[32rem] p-2 rounded-lg">
 						<pre>{output}</pre>
 					</div>
 				</Panel> */}
-			</ReactFlow>
-			<EditNodeModal node={selectedNode} />
-		</div>
+				</ReactFlow>
+				<EditNodeModal node={selectedNode} />
+			</div>
+		</GlobalHotKeys>
 	);
 }
