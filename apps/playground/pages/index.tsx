@@ -1,3 +1,4 @@
+import { getUserId } from '#/services/user';
 import { Logo } from '#/components/Logo';
 
 import { AigurFlow } from '@aigur/flow';
@@ -8,7 +9,7 @@ export default function Web() {
 			<div className="px-4 py-2">
 				<Logo />
 			</div>
-			<AigurFlow />
+			<AigurFlow userId={getUserId()} />
 		</div>
 	);
 }

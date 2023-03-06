@@ -34,7 +34,6 @@ export function NodeBank(props: NodeBankProps) {
 							x: viewport.x,
 							y: viewport.y,
 						};
-						console.log(`***nodes`, nodes);
 						const newNode = createNode(nodeDefinition, {
 							x: position.x,
 							y: position.y + 300,

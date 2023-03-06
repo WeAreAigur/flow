@@ -1,6 +1,5 @@
 import './NodeEditor.css';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
 	addEdge,
 	Background,
@@ -10,25 +9,27 @@ import ReactFlow, {
 	useNodesState,
 	useStoreApi,
 } from 'reactflow';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { EditNodeModal } from '../EditNodeModal';
-import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
-import { nodeRepository } from '../nodeRepository';
-import { GenericNode } from '../pipelineNodeTypes/GenericNode';
-import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
-import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
-import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
-import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
-import { ImageOutputNode } from '../pipelineNodeTypes/OutputNodes/ImageOutputNode';
-import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
-import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
-import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
-import { useFlowStore } from '../stores/useFlow';
-import { useNodeStore } from '../stores/useNode';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { usePipelineStore } from '../stores/usePipeline';
-import { useConnectNodesProperties } from './connectNodeProperties';
 import { createNode } from './nodeCreator';
+import { useConnectNodesProperties } from './connectNodeProperties';
+import { useUserStore } from '../stores/userUser';
+import { usePipelineStore } from '../stores/usePipeline';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { useNodeStore } from '../stores/useNode';
+import { useFlowStore } from '../stores/useFlow';
+import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
+import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
+import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
+import { ImageOutputNode } from '../pipelineNodeTypes/OutputNodes/ImageOutputNode';
+import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
+import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
+import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
+import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
+import { GenericNode } from '../pipelineNodeTypes/GenericNode';
+import { nodeRepository } from '../nodeRepository';
+import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
+import { EditNodeModal } from '../EditNodeModal';
 
 function loadDataFromUrl() {
 	if (typeof window === 'undefined' || !window.location.hash.slice(1)) return;
@@ -78,6 +79,7 @@ export function NodeEditor() {
 	const setFlow = useFlowStore((state) => state.setFlow);
 	const [isRunning, setIsRunning] = useState(false);
 	const connectNodesProperties = useConnectNodesProperties();
+	const userId = useUserStore((state) => state.userId);
 
 	const onConnect = useCallback(
 		(edge) => {
@@ -107,7 +109,6 @@ export function NodeEditor() {
 	const saveFlowInUrl = useCallback(() => {
 		if (reactFlowInstance) {
 			setTimeout(() => {
-				console.log(`saving`);
 				const flow = reactFlowInstance.toObject();
 				if (!flow?.nodes.length && typeof window !== 'undefined') {
 					history.replaceState('', '', location.pathname);
@@ -135,7 +136,7 @@ export function NodeEditor() {
 			const pipelineData = await flowToPipelineData(flow, nodesIO);
 			const pipeline = pipelineDataToPipeline(pipelineData);
 			selectPipeline(pipeline);
-			const output = await invokePipeline(pipeline, pipelineData);
+			const output = await invokePipeline(pipeline, pipelineData, userId);
 			setIsRunning(false);
 			setOutput(output);
 		}

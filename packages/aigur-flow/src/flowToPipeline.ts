@@ -1,6 +1,6 @@
-import { makeid } from '@aigur/client/src/makeid';
-import { Pipeline } from '@aigur/client/src';
 import { createAblyNotifier } from '@aigur/ably';
+import { Pipeline } from '@aigur/client/src';
+import { makeid } from '@aigur/client/src/makeid';
 
 import { FlowPipeline, NodesIO, PipelineData } from './types';
 
@@ -40,7 +40,6 @@ export async function flowToPipelineData(flow: FlowPipeline, nodesIO: NodesIO) {
 		memoryToSave: null,
 	});
 
-
 	return pipelineData;
 }
 
@@ -63,13 +62,15 @@ export function pipelineDataToPipeline(pipelineData: PipelineData) {
 
 export async function invokePipeline(
 	pipeline: Pipeline<any, any, any>,
-	pipelineData: PipelineData
+	pipelineData: PipelineData,
+	userId: string
 ) {
 	return fetch(`/api/pipelines/${pipelineData.id}`, {
 		method: 'POST',
 		body: JSON.stringify({
 			...pipelineData,
 			pipelineInstanceId: (pipeline as any).pipelineInstanceId,
+			userId,
 		}),
 		headers: {
 			'Content-Type': 'application/json',

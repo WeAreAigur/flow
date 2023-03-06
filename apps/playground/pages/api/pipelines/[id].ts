@@ -1,7 +1,8 @@
+import { logsnag } from '#/services/logsnag';
 import { NextRequest } from 'next/server';
 
-import { Pipeline, vercelEdgeFunction } from '@aigur/client/src';
 import { createAblyNotifier } from '@aigur/ably';
+import { Pipeline, vercelEdgeFunction } from '@aigur/client/src';
 
 const ably = createAblyNotifier(
 	process.env.ABLY_KEY!,
@@ -11,6 +12,15 @@ const ably = createAblyNotifier(
 
 export default async function genericEdgeFunction(req: NextRequest) {
 	const pipe = await req.clone().json();
+	logsnag.publish({
+		channel: 'flow',
+		event: 'invoke',
+		notify: true,
+		icon: '🚀',
+		tags: {
+			userid: pipe.userId,
+		},
+	});
 	pipe.nodes = await Promise.all(
 		pipe.nodes.map(async (node: any) => ({
 			...node,
