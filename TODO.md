@@ -1,3 +1,5 @@
+Analytics!
+
 nodeRepository -> nodeTree -> NodeBank -> NodeEditor -> PipelineNode
 
 disable Run if input/output are not connected

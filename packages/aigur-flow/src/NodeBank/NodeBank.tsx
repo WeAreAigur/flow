@@ -1,5 +1,6 @@
 import { Tree } from 'antd';
 
+import { useConnectNodesProperties } from '../NodeEditor/connectNodeProperties';
 import { createNode } from '../NodeEditor/nodeCreator';
 import { nodeRepository } from '../nodeRepository';
 import { useFlowStore } from '../stores/useFlow';
@@ -18,6 +19,7 @@ interface NodeBankProps {
 
 export function NodeBank(props: NodeBankProps) {
 	const currentFlow = useFlowStore((state) => state.currentFlow);
+	const connectNodesProperties = useConnectNodesProperties();
 	return (
 		<div className="h-full">
 			<div className="p-4">
@@ -39,8 +41,19 @@ export function NodeBank(props: NodeBankProps) {
 						});
 
 						currentFlow.addNodes(newNode);
+
 						if (nodes.length === 0) {
 							currentFlow.fitView();
+						} else {
+							const edge = {
+								id: `${newNode.id}-${nodes[0].id}`,
+								source: nodes[0].id,
+								target: newNode.id,
+							};
+							currentFlow.addEdges(edge);
+							setTimeout(() => {
+								connectNodesProperties(edge);
+							});
 						}
 						// console.log(`***currentFlow.toObject()`, currentFlow.toObject());
 					}}
