@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z, ZodSchema } from 'zod';
 
 import { ZTO_Array, ZTO_Base, ZTO_Enum, ZTO_Object } from './types';
 
@@ -18,7 +18,7 @@ export function zodToObj(schema: z.AnyZodObject): ZTO_Base[] {
 	const result = [];
 	for (const key in shape) {
 		const field = shape[key];
-		const realType = field.innerType ? field.innerType() : field;
+		const realType = getRealType(field);
 		const obj: ZTO_Base = {
 			property: key,
 			type: zodTypeToType[realType._def.typeName],
@@ -36,6 +36,7 @@ export function zodToObj(schema: z.AnyZodObject): ZTO_Base[] {
 		if (obj.type === 'enum') {
 			(obj as ZTO_Enum).possibleValues = realType._def.values;
 		}
+
 		const defaultValue = getDefaultValue(field);
 		if (defaultValue !== undefined) {
 			obj.defaultValue = defaultValue;
@@ -45,14 +46,22 @@ export function zodToObj(schema: z.AnyZodObject): ZTO_Base[] {
 	return result;
 }
 
-function unwrapSchema(schema: z.ZodTypeAny) {
-	if (schema.isOptional()) {
-		return unwrapSchema(schema._def.innerType);
+function getRealType(field) {
+	if (field._def.typeName === 'ZodUnion') {
+		const options: ZodSchema[] = field._def.options;
+		const foundString = options.find((x) => (x._def as any).typeName === 'ZodString');
+		if (foundString) {
+			return foundString;
+		}
+		return options[0];
 	}
-	if (schema instanceof z.ZodEffects) {
-		return unwrapSchema(schema._def.schema);
+	if (field.innerType) {
+		return field.innerType();
 	}
-	return schema;
+	if (field.isOptional()) {
+		return getRealType(field._def.innerType);
+	}
+	return field;
 }
 
 function getDefaultValue(schema: z.ZodTypeAny) {

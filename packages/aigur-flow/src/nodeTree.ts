@@ -48,6 +48,57 @@ export const nodeTree: TreeData = [
 			},
 		],
 	},
+
+	{
+		title: 'Text',
+		key: 'text',
+		children: [
+			{
+				title: nodeRepository.gpt4Prediction.title,
+				key: nodeRepository.gpt4Prediction.id,
+			},
+			{
+				title: nodeRepository.gpt3Prediction.title,
+				key: nodeRepository.gpt3Prediction.id,
+			},
+		],
+	},
+	{
+		title: 'Image',
+		key: 'image',
+		children: [
+			{
+				title: 'Text to Image',
+				key: 'textToImageGroup',
+				children: [
+					{
+						title: nodeRepository.stabilityTextToImageAigur.title,
+						key: nodeRepository.stabilityTextToImageAigur.id,
+					},
+				],
+			},
+			{
+				title: 'Labeling',
+				key: 'labeling',
+				children: [
+					{
+						title: nodeRepository.googleImageLabeling.title,
+						key: nodeRepository.googleImageLabeling.id,
+					},
+				],
+			},
+		],
+	},
+	{
+		title: 'Voice',
+		key: 'voice',
+		children: [
+			{
+				title: nodeRepository.whisperApi.title,
+				key: nodeRepository.whisperApi.id,
+			},
+		],
+	},
 	{
 		title: 'HuggingFace',
 		key: 'huggingFace',
@@ -137,56 +188,6 @@ export const nodeTree: TreeData = [
 						key: nodeRepository.objectDetection.id,
 					},
 				],
-			},
-		],
-	},
-	{
-		title: 'Text',
-		key: 'text',
-		children: [
-			{
-				title: nodeRepository.gpt4Prediction.title,
-				key: nodeRepository.gpt4Prediction.id,
-			},
-			{
-				title: nodeRepository.gpt3Prediction.title,
-				key: nodeRepository.gpt3Prediction.id,
-			},
-		],
-	},
-	{
-		title: 'Image',
-		key: 'image',
-		children: [
-			{
-				title: 'Text to Image',
-				key: 'textToImageGroup',
-				children: [
-					{
-						title: nodeRepository.stabilityTextToImageAigur.title,
-						key: nodeRepository.stabilityTextToImageAigur.id,
-					},
-				],
-			},
-			{
-				title: 'Labeling',
-				key: 'labeling',
-				children: [
-					{
-						title: nodeRepository.googleImageLabeling.title,
-						key: nodeRepository.googleImageLabeling.id,
-					},
-				],
-			},
-		],
-	},
-	{
-		title: 'Voice',
-		key: 'voice',
-		children: [
-			{
-				title: nodeRepository.whisperApi.title,
-				key: nodeRepository.whisperApi.id,
 			},
 		],
 	},

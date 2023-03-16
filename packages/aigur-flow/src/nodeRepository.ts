@@ -175,6 +175,21 @@ export const gpt4PredictionNode = createNodeDefinition({
 	definitionLabel: 'GPT-4',
 	type: 'provider',
 });
+gpt4PredictionNode.getRequiredFields = (input) => {
+	console.log(`***getRequiredFields`);
+	return input.filter((i) => i.property === 'messages');
+};
+gpt4PredictionNode.createNodeInput = (outputField, sourceNodeIndex) => {
+	console.log(`***createNodeInput`);
+	return {
+		messages: [
+			{
+				role: 'user',
+				content: `$context.${sourceNodeIndex}.${outputField.property}$`,
+			},
+		],
+	};
+};
 
 export const whisperApiNode = createNodeDefinition({
 	action: whisperApi,

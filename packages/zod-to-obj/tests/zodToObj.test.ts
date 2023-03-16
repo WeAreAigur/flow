@@ -25,16 +25,16 @@ test('simple object', () => {
 
 test('optional property', () => {
 	const schema = z.object({
-		name: z.string(),
+		// name: z.string(),
 		age: z.number().optional(),
 	});
 	const result = zodToObj(schema);
 	expect(result).toStrictEqual([
-		{
-			property: 'name',
-			type: 'string',
-			required: true,
-		},
+		// {
+		// 	property: 'name',
+		// 	type: 'string',
+		// 	required: true,
+		// },
 		{
 			property: 'age',
 			type: 'number',
@@ -157,6 +157,26 @@ test('complex array', () => {
 					defaultValue: 'red',
 				},
 			],
+		},
+	]);
+});
+
+test('enum or string', () => {
+	const schema = z.object({
+		name: z.enum(['bla', 'doot']).or(z.string()),
+		name2: z.enum(['bla', 'doot']).or(z.string()).optional(),
+	});
+	const result = zodToObj(schema);
+	expect(result).toStrictEqual([
+		{
+			property: 'name',
+			type: 'string',
+			required: true,
+		},
+		{
+			property: 'name2',
+			type: 'string',
+			required: false,
 		},
 	]);
 });

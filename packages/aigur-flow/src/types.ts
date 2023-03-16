@@ -1,3 +1,4 @@
+import { ZTO_Base } from 'zod-to-obj';
 import { z } from 'zod';
 
 export interface NodeTree {
@@ -15,6 +16,8 @@ export interface NodeDefinition {
 		input?: z.AnyZodObject;
 		output?: z.AnyZodObject | ZodReadableStream;
 	};
+	getRequiredFields?: (input: ZTO_Base[]) => string[];
+	createNodeInput?: (outputField: ZTO_Base, sourceNodeIndex: number) => any;
 }
 
 export interface NodeInstance extends NodeDefinition {

@@ -21,7 +21,7 @@ export function NodeBank(props: NodeBankProps) {
 	const currentFlow = useFlowStore((state) => state.currentFlow);
 	const connectNodesProperties = useConnectNodesProperties();
 	return (
-		<div className="h-full">
+		<div className="max-h-[calc(100vh-50px)] overflow-scroll">
 			<div className="p-4">
 				<Tree
 					rootClassName="bg-transparent text-slate-300"
