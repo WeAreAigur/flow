@@ -15,7 +15,7 @@ importers:
   apps/playground:
     specifiers:
       '@aigur/ably': ^1.0.0
-      '@aigur/client': ^1.8.2
+      '@aigur/client': ^1.12.0
       '@aigur/flow': workspace:*
       '@aigur/supabase': ^0.32.0
       '@babel/core': ^7.0.0
@@ -38,7 +38,7 @@ importers:
       zod: ^3.21.0
     dependencies:
       '@aigur/ably': 1.0.0
-      '@aigur/client': 1.8.2
+      '@aigur/client': 1.12.0
       '@aigur/flow': link:../../packages/aigur-flow
       '@aigur/supabase': 0.32.0
       logsnag: 0.1.6
@@ -64,7 +64,7 @@ importers:
   packages/aigur-flow:
     specifiers:
       '@aigur/ably': ^1.0.0
-      '@aigur/client': ^1.8.2
+      '@aigur/client': ^1.12.0
       '@aigur/supabase': ^0.32.0
       '@types/node': ^17.0.12
       '@types/react': ^18.0.17
@@ -84,7 +84,7 @@ importers:
       zustand: ^4.3.3
     dependencies:
       '@aigur/ably': 1.0.0
-      '@aigur/client': 1.8.2
+      '@aigur/client': 1.12.0
       '@aigur/supabase': 0.32.0
       antd: 5.2.3_react@18.2.0
       react-hook-form: 7.43.2_react@18.2.0
@@ -145,9 +145,10 @@ packages:
     resolution: {integrity: sha512-XkVh7SXTxgk+FAd6+5J2z1hON41UgqjOxC/+VBVjRPiVdz0fql/rBONHW8WUe+qAQiZHs0OXnNbAyENSzRkf9A==}
     dev: false
 
-  /@aigur/client/1.8.2:
-    resolution: {integrity: sha512-4PaM/t7ezIMlG3/GXC4lgQ0HdJmorru0eB/rXkDjzUFiFPAFI4FxQ2gvEeiu7JbkYlTwKgCZkz3oIDHBPlFpIw==}
+  /@aigur/client/1.12.0:
+    resolution: {integrity: sha512-sNki2kdUHlma434TLOwCDgJB5jw43xNt/mqHMlZYswHKRCH/8GMf1NtnyuvQxmA2DF5+vYfVYYcY/j+UWO8VjQ==}
     dependencies:
+      '@huggingface/inference': 1.6.0
       eventsource-parser: 0.1.0
       form-data: 4.0.0
       zod: 3.21.0
@@ -636,6 +637,11 @@ packages:
       strip-json-comments: 3.1.1
     transitivePeerDependencies:
       - supports-color
+
+  /@huggingface/inference/1.6.0:
+    resolution: {integrity: sha512-j8feaIZp3ED4N98eb3szhYcp67pvwOCPZIkA9Ao4RCN5MPX+zUxOWP95ozhdUbQiAdyVNCB0UGoCpQywTgD8Aw==}
+    engines: {node: '>=18'}
+    dev: false
 
   /@humanwhocodes/config-array/0.5.0:
     resolution: {integrity: sha512-FagtKFz74XrTl7y6HCzQpwDfXP0yhxe9lHLD1UZxjvZIcbyRz8zTFF/yYNfSfzU414eDwZ1SrO0Qvtyf+wFMQg==}
