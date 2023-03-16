@@ -27,6 +27,9 @@ export function NodeBank(props: NodeBankProps) {
 					rootClassName="bg-transparent text-slate-300"
 					treeData={props.nodeTree}
 					onClick={(_event, node) => {
+						if (!!node.children?.length) {
+							return;
+						}
 						const nodeDefinition = nodeRepository[node.key];
 						const viewport = currentFlow.getViewport();
 						const { nodes } = currentFlow.toObject();

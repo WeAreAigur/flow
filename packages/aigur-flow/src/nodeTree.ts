@@ -54,7 +54,7 @@ export const nodeTree: TreeData = [
 		children: [
 			{
 				title: 'Text',
-				key: 'text',
+				key: 'hf-text',
 				children: [
 					{
 						title: nodeRepository.translation.title,
@@ -108,7 +108,7 @@ export const nodeTree: TreeData = [
 			},
 			{
 				title: 'Audio',
-				key: 'audio',
+				key: 'hf-audio',
 				children: [
 					{
 						title: nodeRepository.audioClassification.title,
@@ -122,7 +122,7 @@ export const nodeTree: TreeData = [
 			},
 			{
 				title: 'Image',
-				key: 'image',
+				key: 'hf-image',
 				children: [
 					{
 						title: nodeRepository.imageClassification.title,
@@ -145,6 +145,10 @@ export const nodeTree: TreeData = [
 		key: 'text',
 		children: [
 			{
+				title: nodeRepository.gpt4Prediction.title,
+				key: nodeRepository.gpt4Prediction.id,
+			},
+			{
 				title: nodeRepository.gpt3Prediction.title,
 				key: nodeRepository.gpt3Prediction.id,
 			},
@@ -156,7 +160,7 @@ export const nodeTree: TreeData = [
 		children: [
 			{
 				title: 'Text to Image',
-				key: 'textToImage',
+				key: 'textToImageGroup',
 				children: [
 					{
 						title: nodeRepository.stabilityTextToImageAigur.title,
