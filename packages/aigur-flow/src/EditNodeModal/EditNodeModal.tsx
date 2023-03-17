@@ -1,13 +1,13 @@
-import { zodToObj } from 'zod-to-obj';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodToObj } from 'zod-to-obj';
 
-import { InputEditor } from './InputEditor';
-import { upperFirst } from '../utils/stringUtils';
-import { NodeDefinition } from '../types';
-import { useNodesIOStore } from '../stores/useNodesIO';
 import { useFlowStore } from '../stores/useFlow';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { NodeDefinition } from '../types';
+import { upperFirst } from '../utils/stringUtils';
+import { InputEditor } from './InputEditor';
 
 export interface EditNodeModalProps {
 	node: NodeDefinition;
@@ -28,13 +28,13 @@ export function EditNodeModal(props: EditNodeModalProps) {
 		}
 	}, [currentFlow, form, io, props.node]);
 
-	const submit = (data) => {
+	const submit = (data: any) => {
 		const inputToSubmit = pruneObject(data.input);
 		setNodeIO(props.node.id, { input: inputToSubmit, output: {} });
 	};
 
 	function pruneObject(obj: Record<string, any>) {
-		const prunedObject = {};
+		const prunedObject: Record<string, any> = {};
 		for (let property in obj) {
 			if (obj[property] !== 'NaN' && obj[property] !== '') {
 				prunedObject[property] = obj[property];

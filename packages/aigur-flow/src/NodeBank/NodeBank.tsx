@@ -27,10 +27,10 @@ export function NodeBank(props: NodeBankProps) {
 					rootClassName="bg-transparent text-slate-300"
 					treeData={props.nodeTree}
 					onClick={(_event, node) => {
-						if (!!node.children?.length) {
+						if (!!node.children?.length || !currentFlow) {
 							return;
 						}
-						const nodeDefinition = nodeRepository[node.key];
+						const nodeDefinition = (nodeRepository as any)[node.key];
 						const viewport = currentFlow.getViewport();
 						const { nodes } = currentFlow.toObject();
 						const position = nodes[0]?.position ?? {

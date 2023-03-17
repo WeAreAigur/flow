@@ -11,7 +11,11 @@ const zodTypeToType = {
 	ZodArray: 'array',
 	ZodEnum: 'enum',
 	ZodBoolean: 'boolean',
-};
+} as const;
+
+function getTypeByZodType(type: keyof typeof zodTypeToType): ZTO_Base['type'] {
+	return zodTypeToType[type];
+}
 
 export function zodToObj(schema: z.AnyZodObject): ZTO_Base[] {
 	const shape = schema._def.shape();
@@ -21,14 +25,14 @@ export function zodToObj(schema: z.AnyZodObject): ZTO_Base[] {
 		const realType = getRealType(field);
 		const obj: ZTO_Base = {
 			property: key,
-			type: zodTypeToType[realType._def.typeName],
+			type: getTypeByZodType(realType._def.typeName),
 			required: !field.isOptional(),
 		};
 		if (obj.type === 'object') {
 			(obj as ZTO_Object).properties = zodToObj(field);
 		}
 		if (obj.type === 'array') {
-			obj.subType = zodTypeToType[realType.element._def.typeName];
+			obj.subType = getTypeByZodType(realType.element._def.typeName);
 			if (obj.subType === 'object') {
 				(obj as ZTO_Object).properties = zodToObj(realType._def.type);
 			}
@@ -46,7 +50,7 @@ export function zodToObj(schema: z.AnyZodObject): ZTO_Base[] {
 	return result;
 }
 
-function getRealType(field) {
+function getRealType(field: any): any {
 	if (field._def.typeName === 'ZodUnion') {
 		const options: ZodSchema[] = field._def.options;
 		const foundString = options.find((x) => (x._def as any).typeName === 'ZodString');
@@ -64,7 +68,7 @@ function getRealType(field) {
 	return field;
 }
 
-function getDefaultValue(schema: z.ZodTypeAny) {
+function getDefaultValue(schema: z.ZodTypeAny): any {
 	if (schema._def.typeName === 'ZodDefault') {
 		const defaultValue = schema._def.defaultValue();
 		return defaultValue;

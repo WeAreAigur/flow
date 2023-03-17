@@ -1,8 +1,9 @@
+import { ReactFlowInstance } from 'reactflow';
 import { create } from 'zustand';
 
 interface FlowState {
-	currentFlow: any;
-	setFlow: (flow: any) => void;
+	currentFlow: ReactFlowInstance<any, any> | null;
+	setFlow: (flow: ReactFlowInstance<any, any>) => void;
 }
 
 export const useFlowStore = create<FlowState>((set) => ({

@@ -1,14 +1,20 @@
+import { ReactFlowJsonObject } from 'reactflow';
+
 import { createAblyNotifier } from '@aigur/ably';
 import { Pipeline } from '@aigur/client/src';
 import { makeid } from '@aigur/client/src/makeid';
 
-import { FlowPipeline, NodesIO, PipelineData } from './types';
+import { NodesIO, PipelineData } from './types';
 
-export async function flowToPipelineData(flow: FlowPipeline, nodesIO: NodesIO) {
+export async function flowToPipelineData(flow: ReactFlowJsonObject<any, any>, nodesIO: NodesIO) {
 	const nodes = flow.nodes;
 	const edges = flow.edges;
 	const inputNode = nodes.find((node) => node.id.startsWith('input'));
 	const outputNode = nodes.find((node) => node.id.startsWith('output'));
+	if (!inputNode || !outputNode) {
+		console.warn(`couldnt find input or output nodes`);
+		return;
+	}
 	const pipelineData: PipelineData = {
 		id: `pipeline-${makeid(10)}`,
 		nodes: [],
@@ -21,7 +27,11 @@ export async function flowToPipelineData(flow: FlowPipeline, nodesIO: NodesIO) {
 		return;
 	}
 	do {
-		const node = nodes.find((node) => node.id === edge.source);
+		const node = nodes.find((node) => node.id === edge!.source);
+		if (!node) {
+			console.warn(`couldnt find node with id ${edge!.source}`);
+			return;
+		}
 		const nodeIO = nodesIO[node.id];
 		if (!node.data.id.startsWith('input')) {
 			pipelineData.nodes.push({
@@ -31,7 +41,7 @@ export async function flowToPipelineData(flow: FlowPipeline, nodesIO: NodesIO) {
 				memoryToSave: null,
 			});
 		}
-		edge = edges.find((_edge) => _edge.source === edge.target);
+		edge = edges.find((_edge) => _edge.source === edge!.target);
 	} while (!!edge);
 	pipelineData.nodes.push({
 		...nodesIO[outputNode.id],

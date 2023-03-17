@@ -23,7 +23,7 @@ export interface PipelineNodeProps {
 	children?: React.ReactNode;
 }
 
-let resetTimeout;
+let resetTimeout: NodeJS.Timeout | null = null;
 const PIPELINE_RESET_TIME = 1_500;
 const PIPELINE_RESET_ON_START_TIME = 10_000;
 export function PipelineNode(props: PipelineNodeProps) {
@@ -85,7 +85,7 @@ export function PipelineNode(props: PipelineNodeProps) {
 	}, [props.data, props.id, selectedPipeline, status]);
 
 	function deleteNode() {
-		currentFlow.deleteElements({ nodes: [props] });
+		currentFlow?.deleteElements({ nodes: [props] });
 		deleteNodeIO(props.id);
 	}
 

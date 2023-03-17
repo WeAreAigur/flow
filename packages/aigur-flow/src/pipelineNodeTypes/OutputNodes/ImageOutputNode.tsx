@@ -21,7 +21,7 @@ export function ImageOutputNode(props: ImageOutputNodeProps) {
 		if (!selectedPipeline) {
 			return;
 		}
-		return selectedPipeline.onFinish((event) => {
+		return selectedPipeline.onFinish((event: any) => {
 			setImageUrl(event.data.output.imageUrl);
 		});
 	}, [props.data, selectedPipeline]);

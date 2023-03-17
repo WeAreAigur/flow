@@ -16,7 +16,7 @@ export interface NodeDefinition {
 		input?: z.AnyZodObject;
 		output?: z.AnyZodObject | ZodReadableStream;
 	};
-	getRequiredFields?: (input: ZTO_Base[]) => string[];
+	getRequiredFields?: (input: ZTO_Base[]) => ZTO_Base[];
 	createNodeInput?: (outputField: ZTO_Base, sourceNodeIndex: number) => any;
 }
 
@@ -25,20 +25,6 @@ export interface NodeInstance extends NodeDefinition {
 }
 
 export type NodeDefinitionType = string; //'generic' | 'pipeline-input' | 'pipeline-output' | 'provider';
-
-export interface FlowPipeline {
-	nodes: {
-		id: string;
-		data: NodeInstance;
-	}[];
-	edges: {
-		id: string;
-		source: string;
-		target: string;
-		sourceHandle: string;
-		targetHandle: string;
-	}[];
-}
 
 export interface PipelineData {
 	id: string;

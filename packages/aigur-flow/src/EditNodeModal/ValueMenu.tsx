@@ -21,7 +21,7 @@ export function ValueMenu(props: ValueMenuProps) {
 			options={props.options}
 			expandTrigger="hover"
 			displayRender={() => ''}
-			onChange={props.onChange}
+			onChange={props.onChange as any}
 			showArrow={false}
 			showSearch={false}
 			allowClear={false}

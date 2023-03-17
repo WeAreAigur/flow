@@ -26,7 +26,6 @@ export function ValueField(props: ValueFieldProps) {
 		<div>
 			<input
 				type={getInputType()}
-				name={props.name}
 				{...props.register(props.name, {
 					onChange: (e) => {
 						if (props.type === 'number') {
@@ -36,6 +35,7 @@ export function ValueField(props: ValueFieldProps) {
 						return e.target.value;
 					},
 				})}
+				name={props.name}
 				className="col-span-3 border-r-0 rounded-tr-none rounded-br-none input input-bordered input-sm"
 			/>
 			<ValueMenu

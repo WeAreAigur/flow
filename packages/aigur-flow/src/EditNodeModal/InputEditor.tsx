@@ -1,12 +1,12 @@
-import { isZTOArray, isZTOObject, zodToObj, ZTO_Base } from 'zod-to-obj';
-import { z } from 'zod';
-import { UseFormRegister, UseFormReturn, UseFormSetValue } from 'react-hook-form';
 import { useEffect, useState } from 'react';
+import { UseFormRegister, UseFormReturn, UseFormSetValue } from 'react-hook-form';
+import { z } from 'zod';
+import { isZTOArray, isZTOObject, zodToObj, ZTO_Base } from 'zod-to-obj';
 
-import { ValueField } from './ValueField';
-import { getPreviousNodes } from '../utils/getPreviousNodes';
-import { NodeDefinition } from '../types';
 import { useFlowStore } from '../stores/useFlow';
+import { NodeDefinition } from '../types';
+import { getPreviousNodes } from '../utils/getPreviousNodes';
+import { ValueField } from './ValueField';
 
 export interface InputEditorProps {
 	node: NodeDefinition;
@@ -60,7 +60,7 @@ export function InputEditor(props: InputEditorProps) {
 	return (
 		<SchemaForm
 			prefix="input"
-			data={zodToObj(props.node.schema.input)}
+			data={zodToObj(props.node.schema.input!)}
 			register={register}
 			setValue={setValue}
 			getOptionsFor={getOptionsFor}
@@ -75,7 +75,7 @@ function SchemaForm(props: {
 	getOptionsFor: (type: string) => any[];
 	prefix: string;
 }) {
-	const renderField = (field) => {
+	const renderField = (field: any) => {
 		if (isZTOObject(field)) {
 			return (
 				<SchemaForm

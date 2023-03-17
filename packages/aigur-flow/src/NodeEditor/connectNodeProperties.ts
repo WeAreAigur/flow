@@ -13,23 +13,25 @@ export function useConnectNodesProperties() {
 	const setNodeIO = useNodesIOStore((state) => state.setNodeIO);
 	const connect = useCallback(
 		function connect(edge: Edge<any>) {
+			if (!currentFlow) {
+				return;
+			}
 			const { nodeInternals } = store.getState();
 			const sourceNode = nodeInternals.get(edge.source);
 			const targetNode = nodeInternals.get(edge.target);
-			const targetRepositoryNode = nodeRepository[targetNode.data.id];
+			if (!sourceNode || !targetNode) {
+				return;
+			}
+			const targetRepositoryNode = (nodeRepository as any)[targetNode.data.id];
 			const targetInputFields = zodToObj(targetNode.data.schema.input);
-			console.log(`***targetInputFields`, targetInputFields);
 			const targetRequiredInputFields = getRequiredInputFields();
-			console.log(`***targetRequiredInputFields`, targetRequiredInputFields);
 			if (targetRequiredInputFields.length !== 1) {
 				return;
 			}
 
 			const inputType = getRequiredFieldType(targetRequiredInputFields[0]);
-			console.log(`***inputType`, inputType);
 			const sourceOutputFields = zodToObj(sourceNode.data.schema.output);
 			const filteredOutputFields = getOutputFieldsByType();
-			console.log(`***filteredOutputFields`, filteredOutputFields);
 
 			if (filteredOutputFields.length !== 1) {
 				return;
@@ -37,14 +39,9 @@ export function useConnectNodesProperties() {
 
 			const previousNodes = getPreviousNodes(targetNode.id, currentFlow.toObject());
 			const sourceNodeIndex = previousNodes.length - 2 < 0 ? 'input' : previousNodes.length - 2;
-			console.log(
-				`***targetRepositoryNode?.createNodeInput`,
-				targetRepositoryNode?.createNodeInput
-			);
 			const input = targetRepositoryNode?.createNodeInput
 				? targetRepositoryNode?.createNodeInput(filteredOutputFields[0], sourceNodeIndex)
 				: getRequiredInput(targetRequiredInputFields[0], filteredOutputFields[0], sourceNodeIndex);
-			console.log(`***input`, input);
 			setNodeIO(targetNode.id, {
 				input,
 				output: {},
@@ -75,13 +72,17 @@ export function useConnectNodesProperties() {
 					isZTOObject(requiredInputField) ||
 					(isZTOArray(requiredInputField) && requiredInputField.subType === 'object')
 				) {
-					return requiredInputField.properties.find((prop) => prop.required).type;
+					return requiredInputField.properties.find((prop) => prop.required)?.type;
 				}
 
 				return requiredInputField.type;
 			}
 
-			function getRequiredInput(targetField, outputField, sourceNodeIndex) {
+			function getRequiredInput(
+				targetField: ZTO_Base,
+				outputField: ZTO_Base,
+				sourceNodeIndex: number | string
+			): any {
 				if (isZTOObject(targetField)) {
 					return {
 						[targetField.property]: getRequiredInput(

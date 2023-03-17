@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
 import { Position } from 'reactflow';
+import { useEffect, useState } from 'react';
 
-import { useNodesIOStore } from '../../stores/useNodesIO';
-import { usePipelineStore } from '../../stores/usePipeline';
-import { NodeInstance } from '../../types';
 import { PipelineNode } from '../PipelineNode';
+import { NodeInstance } from '../../types';
+import { usePipelineStore } from '../../stores/usePipeline';
+import { useNodesIOStore } from '../../stores/useNodesIO';
 
 import type { Pipeline } from '@aigur/client/src';
 export interface TextInputNodeProps {
@@ -16,7 +16,7 @@ export function TextOutputNode(props: TextInputNodeProps) {
 	const { setNodeIO } = useNodesIOStore((state) => state);
 	const selectedPipeline = usePipelineStore((state) => state.selectedPipeline);
 	const [text, setText] = useState('');
-	const saveText = (text) => {
+	const saveText = (text: string) => {
 		setText(text);
 		setNodeIO(props.id, { input: { text }, output: { text } });
 	};
@@ -25,7 +25,7 @@ export function TextOutputNode(props: TextInputNodeProps) {
 		if (!selectedPipeline) {
 			return;
 		}
-		return selectedPipeline.onFinish((event) => {
+		return selectedPipeline.onFinish((event: any) => {
 			setText(event.data.output.text);
 		});
 	}, [selectedPipeline]);

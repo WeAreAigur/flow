@@ -1,43 +1,47 @@
 import './NodeEditor.css';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { GlobalHotKeys } from 'react-hotkeys';
 import ReactFlow, {
 	addEdge,
 	Background,
+	Connection,
+	Edge,
+	Node,
 	Panel,
+	ReactFlowInstance,
 	updateEdge,
 	useEdgesState,
 	useNodesState,
 	useStoreApi,
 } from 'reactflow';
+import { GlobalHotKeys } from 'react-hotkeys';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { EditNodeModal } from '../EditNodeModal';
-import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
-import { nodeRepository } from '../nodeRepository';
-import { GenericNode } from '../pipelineNodeTypes/GenericNode';
-import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
-import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
-import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
-import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
-import { ImageOutputNode } from '../pipelineNodeTypes/OutputNodes/ImageOutputNode';
-import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
-import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
-import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
-import { useFlowStore } from '../stores/useFlow';
-import { useNodeStore } from '../stores/useNode';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { usePipelineStore } from '../stores/usePipeline';
-import { useUserStore } from '../stores/userUser';
-import { useConnectNodesProperties } from './connectNodeProperties';
 import { createNode } from './nodeCreator';
+import { useConnectNodesProperties } from './connectNodeProperties';
+import { useUserStore } from '../stores/userUser';
+import { usePipelineStore } from '../stores/usePipeline';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { useNodeStore } from '../stores/useNode';
+import { useFlowStore } from '../stores/useFlow';
+import { ProviderNode } from '../pipelineNodeTypes/ProviderNode';
+import { TextOutputNode } from '../pipelineNodeTypes/OutputNodes/TextOutputNode';
+import { OutputNode } from '../pipelineNodeTypes/OutputNodes/OutputNode';
+import { ImageOutputNode } from '../pipelineNodeTypes/OutputNodes/ImageOutputNode';
+import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
+import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
+import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
+import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
+import { GenericNode } from '../pipelineNodeTypes/GenericNode';
+import { nodeRepository } from '../nodeRepository';
+import { flowToPipelineData, invokePipeline, pipelineDataToPipeline } from '../flowToPipeline';
+import { EditNodeModal } from '../EditNodeModal';
 
 function loadDataFromUrl() {
 	if (typeof window === 'undefined' || !window.location.hash.slice(1)) return;
 	const data = JSON.parse(atob(window.location.hash.slice(1)));
 	if (data?.flow.nodes) {
 		for (let node of data.flow.nodes) {
-			node.data = nodeRepository[node.data.id];
+			node.data = (nodeRepository as any)[node.data.id];
 		}
 	}
 	return data;
@@ -67,14 +71,16 @@ const MIN_DISTANCE = 550;
 const PROXIMITY_CLASS = 'proximity';
 
 export function NodeEditor() {
-	const reactFlowWrapper = useRef(null);
+	const reactFlowWrapper = useRef<HTMLDivElement>(null);
 	const edgeUpdateSuccessful = useRef(true);
 	const store = useStoreApi();
 	const { initIO, deleteNodeIO, io: nodesIO } = useNodesIOStore((state) => state);
 	const selectPipeline = usePipelineStore((state) => state.selectPipeline);
 	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-	const [reactFlowInstance, setReactFlowInstance] = useState(null);
+	const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance<any, any> | null>(
+		null
+	);
 	const selectedNode = useNodeStore((state) => state.selectedNode);
 	const [output, setOutput] = useState(null);
 	const setFlow = useFlowStore((state) => state.setFlow);
@@ -83,7 +89,8 @@ export function NodeEditor() {
 	const userId = useUserStore((state) => state.userId);
 
 	const onConnect = useCallback(
-		(edge) => {
+		(edge: any) => {
+			console.log(`***onConnect edge`, edge);
 			connectNodesProperties(edge);
 			setEdges((eds) => addEdge(edge, eds));
 		},
@@ -108,8 +115,8 @@ export function NodeEditor() {
 	}, []);
 
 	const saveFlowInUrl = useCallback(() => {
-		if (reactFlowInstance) {
-			setTimeout(() => {
+		setTimeout(() => {
+			if (reactFlowInstance) {
 				const flow = reactFlowInstance.toObject();
 				if (!flow?.nodes.length && typeof window !== 'undefined') {
 					history.replaceState('', '', location.pathname);
@@ -117,15 +124,15 @@ export function NodeEditor() {
 				}
 				const base64Flow = btoa(JSON.stringify({ flow, nodesIO }));
 				window.location.hash = base64Flow;
-			});
-		}
+			}
+		});
 	}, [nodesIO, reactFlowInstance]);
 
 	useEffect(() => {
 		saveFlowInUrl();
 	}, [nodesIO, saveFlowInUrl]);
 
-	const onDragOver = useCallback((event) => {
+	const onDragOver = useCallback((event: any) => {
 		event.preventDefault();
 		event.dataTransfer.dropEffect = 'move';
 	}, []);
@@ -135,6 +142,11 @@ export function NodeEditor() {
 			setIsRunning(true);
 			const flow = reactFlowInstance.toObject();
 			const pipelineData = await flowToPipelineData(flow, nodesIO);
+			if (!pipelineData) {
+				// TODO: show error
+				setIsRunning(false);
+				return;
+			}
 			const pipeline = pipelineDataToPipeline(pipelineData);
 			selectPipeline(pipeline);
 			const output = await invokePipeline(pipeline, pipelineData, userId);
@@ -148,22 +160,26 @@ export function NodeEditor() {
 	}, [runPipeline]);
 
 	const onDrop = useCallback(
-		(event) => {
+		(event: any) => {
 			event.preventDefault();
-
+			if (!reactFlowWrapper.current) {
+				return;
+			}
 			const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
 			const nodeDefinitionId: string = event.dataTransfer.getData('application/aigurflow');
-			const nodeDefinition = nodeRepository[nodeDefinitionId];
+			const nodeDefinition = (nodeRepository as any)[nodeDefinitionId];
 
 			// check if the dropped element is valid
 			if (!nodeDefinition) {
 				return;
 			}
 
-			const position = reactFlowInstance.project({
-				x: event.clientX - reactFlowBounds.left,
-				y: event.clientY - reactFlowBounds.top,
-			});
+			const position = reactFlowInstance
+				? reactFlowInstance.project({
+						x: event.clientX - reactFlowBounds.left,
+						y: event.clientY - reactFlowBounds.top,
+				  })
+				: { x: event.clientX - reactFlowBounds.left, y: event.clientY - reactFlowBounds.top };
 			const newNode = createNode(nodeDefinition, position);
 
 			setNodes((nodes) => nodes.concat(newNode));
@@ -173,15 +189,15 @@ export function NodeEditor() {
 	);
 
 	const getClosestEdge = useCallback(
-		(node) => {
+		(node: Node) => {
 			const { nodeInternals } = store.getState();
 			const storeNodes = Array.from(nodeInternals.values());
 
 			const closestNode = storeNodes.reduce(
 				(res, n) => {
-					if (n.id !== node.id) {
-						const dx = n.positionAbsolute.x - node.positionAbsolute.x;
-						const dy = n.positionAbsolute.y - node.positionAbsolute.y;
+					if (n && n.id !== node.id) {
+						const dx = n.positionAbsolute!.x - node.positionAbsolute!.x;
+						const dy = n.positionAbsolute!.y - node.positionAbsolute!.y;
 						const d = Math.sqrt(dx * dx + dy * dy);
 
 						if (d < res.distance && d < MIN_DISTANCE) {
@@ -194,7 +210,7 @@ export function NodeEditor() {
 				},
 				{
 					distance: Number.MAX_VALUE,
-					node: null,
+					node: null as any,
 				}
 			);
 
@@ -202,7 +218,7 @@ export function NodeEditor() {
 				return null;
 			}
 
-			const closeNodeIsSource = closestNode.node.positionAbsolute.y < node.positionAbsolute.y;
+			const closeNodeIsSource = closestNode.node.positionAbsolute.y < node.positionAbsolute!.y;
 
 			return {
 				id: `${node.id}-${closestNode.node.id}`,
@@ -214,7 +230,7 @@ export function NodeEditor() {
 	);
 
 	const onNodeDrag = useCallback(
-		(_, node) => {
+		(_: any, node: Node) => {
 			const closeEdge = getClosestEdge(node);
 
 			setEdges((edges) => {
@@ -238,7 +254,7 @@ export function NodeEditor() {
 	);
 
 	const onNodeDragStop = useCallback(
-		(_, node) => {
+		(_: any, node: Node) => {
 			const closeEdge = getClosestEdge(node);
 
 			setEdges((edges) => {
@@ -285,7 +301,7 @@ export function NodeEditor() {
 	}, []);
 
 	const onEdgeUpdate = useCallback(
-		(oldEdge, newConnection) => {
+		(oldEdge: Edge, newConnection: Connection) => {
 			edgeUpdateSuccessful.current = true;
 			setEdges((els) => updateEdge(oldEdge, newConnection, els));
 		},
@@ -293,7 +309,7 @@ export function NodeEditor() {
 	);
 
 	const onEdgeUpdateEnd = useCallback(
-		(_, edge) => {
+		(_: any, edge: Edge) => {
 			if (!edgeUpdateSuccessful.current) {
 				setEdges((eds) => eds.filter((e) => e.id !== edge.id));
 				deleteNodeIO(edge.target);

@@ -1,9 +1,9 @@
-import { useState } from 'react';
 import { Position } from 'reactflow';
+import { useState } from 'react';
 
-import { useNodesIOStore } from '../../stores/useNodesIO';
-import { NodeInstance } from '../../types';
 import { PipelineNode } from '../PipelineNode';
+import { NodeInstance } from '../../types';
+import { useNodesIOStore } from '../../stores/useNodesIO';
 
 import type { Pipeline } from '@aigur/client/src';
 export interface TextInputNodeProps {
@@ -14,7 +14,7 @@ export interface TextInputNodeProps {
 export function TextInputNode(props: TextInputNodeProps) {
 	const { setNodeIO, io } = useNodesIOStore((state) => state);
 	const [text, setText] = useState(io[props.id]?.input?.text ?? '');
-	const saveText = (text) => {
+	const saveText = (text: string) => {
 		setText(text);
 		setNodeIO(props.id, { input: { text }, output: { text } });
 	};
