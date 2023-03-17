@@ -180,3 +180,28 @@ test('enum or string', () => {
 		},
 	]);
 });
+
+test('optional subobject', () => {
+	const schema = z.object({
+		options: z
+			.object({
+				name: z.string(),
+			})
+			.optional(),
+	});
+	const result = zodToObj(schema);
+	expect(result).toStrictEqual([
+		{
+			property: 'options',
+			type: 'object',
+			required: false,
+			properties: [
+				{
+					property: 'name',
+					type: 'string',
+					required: true,
+				},
+			],
+		},
+	]);
+});

@@ -29,7 +29,7 @@ export function zodToObj(schema: z.AnyZodObject): ZTO_Base[] {
 			required: !field.isOptional(),
 		};
 		if (obj.type === 'object') {
-			(obj as ZTO_Object).properties = zodToObj(field);
+			(obj as ZTO_Object).properties = zodToObj(realType);
 		}
 		if (obj.type === 'array') {
 			obj.subType = getTypeByZodType(realType.element._def.typeName);
