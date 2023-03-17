@@ -15,7 +15,7 @@ importers:
   apps/playground:
     specifiers:
       '@aigur/ably': ^1.0.0
-      '@aigur/client': ^1.12.1
+      '@aigur/client': ^1.12.2
       '@aigur/flow': workspace:*
       '@aigur/supabase': ^0.32.0
       '@babel/core': ^7.0.0
@@ -38,7 +38,7 @@ importers:
       zod: ^3.21.0
     dependencies:
       '@aigur/ably': 1.0.0
-      '@aigur/client': 1.12.1
+      '@aigur/client': 1.12.2
       '@aigur/flow': link:../../packages/aigur-flow
       '@aigur/supabase': 0.32.0
       logsnag: 0.1.6
@@ -64,7 +64,7 @@ importers:
   packages/aigur-flow:
     specifiers:
       '@aigur/ably': ^1.0.0
-      '@aigur/client': ^1.12.1
+      '@aigur/client': ^1.12.2
       '@aigur/supabase': ^0.32.0
       '@types/node': ^17.0.12
       '@types/react': ^18.0.17
@@ -84,7 +84,7 @@ importers:
       zustand: ^4.3.3
     dependencies:
       '@aigur/ably': 1.0.0
-      '@aigur/client': 1.12.1
+      '@aigur/client': 1.12.2
       '@aigur/supabase': 0.32.0
       antd: 5.2.3_react@18.2.0
       react-hook-form: 7.43.2_react@18.2.0
@@ -145,8 +145,8 @@ packages:
     resolution: {integrity: sha512-XkVh7SXTxgk+FAd6+5J2z1hON41UgqjOxC/+VBVjRPiVdz0fql/rBONHW8WUe+qAQiZHs0OXnNbAyENSzRkf9A==}
     dev: false
 
-  /@aigur/client/1.12.1:
-    resolution: {integrity: sha512-nP7dK5qJHraMGf12yiKcN1OOUnWVJDKkmQhqc258Mn7Qubb6joCC3HN6ZSw/lS0JAxOYu/Z+Tu+tJixRMaKlug==}
+  /@aigur/client/1.12.2:
+    resolution: {integrity: sha512-YV2quq8FHvMYDkg2r9JACkb9ejIB2MWlSpVKkP8hwfO2L0TZTBboZOAC4Nug0xdJB3JdyOWFqPRKu2WvxHkwjA==}
     dependencies:
       '@huggingface/inference': 1.6.0
       eventsource-parser: 0.1.0

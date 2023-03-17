@@ -10,7 +10,7 @@
 	},
 	"dependencies": {
 		"@aigur/ably": "^1.0.0",
-		"@aigur/client": "^1.12.1",
+		"@aigur/client": "^1.12.2",
 		"@aigur/flow": "workspace:*",
 		"@aigur/supabase": "^0.32.0",
 		"logsnag": "^0.1.6",
