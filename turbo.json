@@ -14,7 +14,7 @@
 		},
 		"aigur-flow#dev": {
 			"dependsOn": ["^build"],
-			"env": ["OPENAI_KEY"],
+			"env": ["OPENAI_KEY", "NODE_ENV"],
 			"outputs": ["dist/**"]
 		},
 		"playground#dev": {

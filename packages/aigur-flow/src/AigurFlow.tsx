@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
 import { ReactFlowProvider } from 'reactflow';
+import { useEffect } from 'react';
 
-import { NodeBank } from './NodeBank';
-import { NodeEditor } from './NodeEditor';
-import { nodeTree } from './nodeTree';
-import { useNodesIOStore } from './stores/useNodesIO';
 import { useUserStore } from './stores/userUser';
+import { useNodesIOStore } from './stores/useNodesIO';
+import { nodeTree } from './nodeTree';
+import { NodeEditor } from './NodeEditor';
+import { NodeBank } from './NodeBank';
 
 interface AigurFlowProps {
 	userId: string;
@@ -20,7 +20,7 @@ export function AigurFlow(props: AigurFlowProps) {
 	return (
 		<ReactFlowProvider>
 			<div className="flex flex-col flex-1 space-y-4 aigur-flow">
-				<div>{JSON.stringify(io)}</div>
+				{process.env.NODE_ENV === 'development' ? <div>{JSON.stringify(io)}</div> : null}
 				<div className="flex flex-1">
 					<div className="w-16 bg-base-300"></div>
 					<div className="w-1/4 max-w-4xl min-w-fit bg-base-200">
