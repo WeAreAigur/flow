@@ -30,7 +30,7 @@ export function EditNodeModal(props: EditNodeModalProps) {
 
 	const submit = (data: any) => {
 		const inputToSubmit = pruneObject(data.input);
-		setNodeIO(props.node.id, { input: inputToSubmit, output: {} });
+		setNodeIO(props.node.id, { input: inputToSubmit ?? {}, output: {} });
 	};
 
 	function pruneObject(obj: Record<string, any>) {
