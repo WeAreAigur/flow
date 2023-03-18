@@ -36,14 +36,21 @@ export function EditNodeModal(props: EditNodeModalProps) {
 	function pruneObject(obj: Record<string, any>) {
 		const prunedObject: Record<string, any> = {};
 		for (let property in obj) {
-			if (obj[property] !== 'NaN' && obj[property] !== '') {
-				prunedObject[property] = obj[property];
+			const value = obj[property];
+			if (value !== 'NaN' && value !== '') {
+				prunedObject[property] = value;
 			}
-			if (Array.isArray(obj[property])) {
-				prunedObject[property] = obj[property].map(pruneObject);
-			} else if (typeof obj[property] === 'object') {
-				prunedObject[property] = pruneObject(obj[property]);
+			if (Array.isArray(value)) {
+				prunedObject[property] = value.map(pruneObject).filter(Boolean);
+			} else if (typeof value === 'object') {
+				prunedObject[property] = Object.fromEntries(
+					Object.entries(pruneObject(value) ?? {}).filter(([key, value]) => value !== null)
+				);
 			}
+		}
+
+		if (Object.keys(prunedObject).length === 0) {
+			return null;
 		}
 
 		return prunedObject;

@@ -16,7 +16,7 @@ export interface ValueMenuProps {
 export function ValueMenu(props: ValueMenuProps) {
 	return (
 		<Cascader
-			className="w-8 aigur-flow-value-menu-root"
+			className="w-8 aigur-flow-value-menu-root aigur-flow-value-menu-root-open"
 			popupClassName="w-96"
 			options={props.options}
 			expandTrigger="hover"

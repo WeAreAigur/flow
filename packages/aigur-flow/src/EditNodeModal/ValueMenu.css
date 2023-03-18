@@ -14,13 +14,19 @@
 		.ant-select-customize-input
 	)
 	.ant-select-selector {
+	border: 1px solid rgba(166, 173, 187, 0.2);
+	background: #20252e;
+	height: 32px;
+	width: 32px;
+}
+
+.aigur-flow-value-menu-root-open:where(.css-dev-only-do-not-override-10ed4xt).ant-select:not(
+		.ant-select-customize-input
+	)
+	.ant-select-selector {
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 	border-top-right-radius: 9px;
 	border-bottom-right-radius: 9px;
-	border: 1px solid rgba(166, 173, 187, 0.2);
 	border-left: 0;
-	background: #20252e;
-	height: 32px;
-	width: 32px;
 }

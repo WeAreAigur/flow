@@ -176,11 +176,9 @@ export const gpt4PredictionNode = createNodeDefinition({
 	type: 'provider',
 });
 gpt4PredictionNode.getRequiredFields = (input) => {
-	console.log(`***getRequiredFields`);
 	return input.filter((i) => i.property === 'messages');
 };
 gpt4PredictionNode.createNodeInput = (outputField, sourceNodeIndex) => {
-	console.log(`***createNodeInput`);
 	return {
 		messages: [
 			{

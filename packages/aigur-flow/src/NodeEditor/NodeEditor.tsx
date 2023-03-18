@@ -1,17 +1,8 @@
 import './NodeEditor.css';
 
 import ReactFlow, {
-	addEdge,
-	Background,
-	Connection,
-	Edge,
-	Node,
-	Panel,
-	ReactFlowInstance,
-	updateEdge,
-	useEdgesState,
-	useNodesState,
-	useStoreApi,
+    addEdge, Background, Connection, Edge, Node, Panel, ReactFlowInstance, updateEdge,
+    useEdgesState, useNodesState, useStoreApi
 } from 'reactflow';
 import { GlobalHotKeys } from 'react-hotkeys';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -90,7 +81,6 @@ export function NodeEditor() {
 
 	const onConnect = useCallback(
 		(edge: any) => {
-			console.log(`***onConnect edge`, edge);
 			connectNodesProperties(edge);
 			setEdges((eds) => addEdge(edge, eds));
 		},

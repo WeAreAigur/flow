@@ -4,7 +4,6 @@ import { supabaseUpload } from '@aigur/supabase';
 
 export default async function upload(req: NextRequest) {
 	const { arrayBuffer, extension } = await req.json();
-	console.log(`***arrayBuffer`, arrayBuffer);
 	console.log(`uploading to supabase`, { extension });
 	const { url } = await supabaseUpload({
 		bucket: 'flow',

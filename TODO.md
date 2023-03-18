@@ -1,10 +1,15 @@
-Analytics!
-
 nodeRepository -> nodeTree -> NodeBank -> NodeEditor -> PipelineNode
+
+input/output panel
 
 disable Run if input/output are not connected
 
 enum - dropdown
+
+input editor - show that a field is bound to a value
+
+- checkbox show be intermediate and different color
+- input should have pills
 
 - output panel
 - upload image input
