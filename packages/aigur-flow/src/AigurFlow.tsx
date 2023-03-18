@@ -20,7 +20,7 @@ export function AigurFlow(props: AigurFlowProps) {
 	return (
 		<ReactFlowProvider>
 			<div className="flex flex-col flex-1 space-y-4 aigur-flow">
-				<div>{JSON.stringify(io)}</div>
+				{/* <div>{JSON.stringify(io)}</div> */}
 				<div className="flex flex-1">
 					<div className="w-16 bg-base-300"></div>
 					<div className="w-1/4 max-w-4xl min-w-fit bg-base-200">
