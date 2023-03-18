@@ -48,7 +48,10 @@ export function useConnectNodesProperties() {
 			});
 
 			function getOutputFieldsByType() {
-				return sourceOutputFields.filter((field) => field.type === inputType);
+				// TODO: create a data structure of types to acceptedTypes
+				return sourceOutputFields.filter(
+					(field) => field.type === inputType || (field.type === 'array' && inputType === 'string')
+				);
 			}
 
 			function getRequiredInputFields() {

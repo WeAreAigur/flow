@@ -1,3 +1,5 @@
+- automatic transform output to input type if possible (url to arraybuffer, etc)
+
 nodeRepository -> nodeTree -> NodeBank -> NodeEditor -> PipelineNode
 
 input/output panel

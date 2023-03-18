@@ -1,114 +1,114 @@
 import { z } from 'zod';
 
 import {
-	inputSchema as whisperInputSchema,
-	name as whisperApi,
-	outputSchema as whisperOutputSchema,
-} from '@aigur/client/src/nodes/voice/transcribe/whisper/whisperapi';
-import {
-	inputSchema as gpt4InputSchema,
-	name as gpt4Prediction,
-	outputSchema as gpt4OutputSchema,
-} from '@aigur/client/src/nodes/text/prediction/gpt4';
-import {
-	name as gpt3Prediction,
-	outputSchema as gpt3OutputSchema,
-	rawInputSchema as gpt3InputSchema,
-} from '@aigur/client/src/nodes/text/prediction/gpt3';
-import { inputSchema as stabilityInputSchema } from '@aigur/client/src/nodes/image/textToImage/stability';
-import {
-	inputSchema as googleImageInputSchema,
-	name as googleImageLabeling,
-	outputSchema as googleImageOutputSchema,
-} from '@aigur/client/src/nodes/image/labeling/googleImageLabeling';
-import {
-	inputSchema as zeroShotClassificationInputSchema,
-	name as zeroShotClassification,
-	outputSchema as zeroShotClassificationOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/zeroShotClassification';
-import {
-	inputSchema as translationInputSchema,
-	name as translation,
-	outputSchema as translationOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/translation';
-import {
-	inputSchema as tokenClassificationInputSchema,
-	name as tokenClassification,
-	outputSchema as tokenClassificationOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/tokenClassification';
-import {
-	inputSchema as textToImageInputSchema,
-	name as textToImage,
-	outputSchema as textToImageOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/textToImage';
-import {
-	inputSchema as textGenerationInputSchema,
-	name as textGeneration,
-	outputSchema as textGenerationOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/textGeneration';
-import {
-	inputSchema as textClassificationInputSchema,
-	name as textClassification,
-	outputSchema as textClassificationOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/textClassification';
-import {
-	inputSchema as tableQuestionAnswerInputSchema,
-	name as tableQuestionAnswer,
-	outputSchema as tableQuestionAnswerOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/tableQuestionAnswer';
-import {
-	inputSchema as summarizationInputSchema,
-	name as summarization,
-	outputSchema as summarizationOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/summarization';
-import {
-	inputSchema as questionAnswerInputSchema,
-	name as questionAnswer,
-	outputSchema as questionAnswerOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/questionAnswer';
-import {
-	inputSchema as objectDetectionInputSchema,
-	name as objectDetection,
-	outputSchema as objectDetectionOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/objectDetection';
-import {
-	inputSchema as imageSegmentationInputSchema,
-	name as imageSegmentation,
-	outputSchema as imageSegmentationOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/imageSegmentation';
-import {
-	inputSchema as imageClassificationInputSchema,
-	name as imageClassification,
-	outputSchema as imageClassificationOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/imageClassification';
-import {
-	inputSchema as fillMaskInputSchema,
-	name as fillMask,
-	outputSchema as fillMaskOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/fillMask';
-import {
-	inputSchema as featureExtractionInputSchema,
-	name as featureExtraction,
-	outputSchema as featureExtractionOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/featureExtraction';
-import {
-	inputSchema as conversationalInputSchema,
-	name as conversational,
-	outputSchema as conversationalOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/conversational';
+	inputSchema as audioClassificationInputSchema,
+	name as audioClassification,
+	outputSchema as audioClassificationOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/audioClassification';
 import {
 	inputSchema as automaticSpeechRecognitionInputSchema,
 	name as automaticSpeechRecognition,
 	outputSchema as automaticSpeechRecognitionOutputSchema,
 } from '@aigur/client/src/nodes/huggingface/automaticSpeechRecognition';
 import {
-	inputSchema as audioClassificationInputSchema,
-	name as audioClassification,
-	outputSchema as audioClassificationOutputSchema,
-} from '@aigur/client/src/nodes/huggingface/audioClassification';
+	inputSchema as conversationalInputSchema,
+	name as conversational,
+	outputSchema as conversationalOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/conversational';
+import {
+	inputSchema as featureExtractionInputSchema,
+	name as featureExtraction,
+	outputSchema as featureExtractionOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/featureExtraction';
+import {
+	inputSchema as fillMaskInputSchema,
+	name as fillMask,
+	outputSchema as fillMaskOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/fillMask';
+import {
+	inputSchema as imageClassificationInputSchema,
+	name as imageClassification,
+	outputSchema as imageClassificationOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/imageClassification';
+import {
+	inputSchema as imageSegmentationInputSchema,
+	name as imageSegmentation,
+	outputSchema as imageSegmentationOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/imageSegmentation';
+import {
+	inputSchema as objectDetectionInputSchema,
+	name as objectDetection,
+	outputSchema as objectDetectionOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/objectDetection';
+import {
+	inputSchema as questionAnswerInputSchema,
+	name as questionAnswer,
+	outputSchema as questionAnswerOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/questionAnswer';
+import {
+	inputSchema as summarizationInputSchema,
+	name as summarization,
+	outputSchema as summarizationOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/summarization';
+import {
+	inputSchema as tableQuestionAnswerInputSchema,
+	name as tableQuestionAnswer,
+	outputSchema as tableQuestionAnswerOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/tableQuestionAnswer';
+import {
+	inputSchema as textClassificationInputSchema,
+	name as textClassification,
+	outputSchema as textClassificationOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/textClassification';
+import {
+	inputSchema as textGenerationInputSchema,
+	name as textGeneration,
+	outputSchema as textGenerationOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/textGeneration';
+import {
+	inputSchema as textToImageInputSchema,
+	name as textToImage,
+	outputSchema as textToImageOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/textToImage';
+import {
+	inputSchema as tokenClassificationInputSchema,
+	name as tokenClassification,
+	outputSchema as tokenClassificationOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/tokenClassification';
+import {
+	inputSchema as translationInputSchema,
+	name as translation,
+	outputSchema as translationOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/translation';
+import {
+	inputSchema as zeroShotClassificationInputSchema,
+	name as zeroShotClassification,
+	outputSchema as zeroShotClassificationOutputSchema,
+} from '@aigur/client/src/nodes/huggingface/zeroShotClassification';
+import {
+	inputSchema as googleImageInputSchema,
+	name as googleImageLabeling,
+	outputSchema as googleImageOutputSchema,
+} from '@aigur/client/src/nodes/image/labeling/googleImageLabeling';
+import { inputSchema as stabilityInputSchema } from '@aigur/client/src/nodes/image/textToImage/stability';
+import {
+	name as gpt3Prediction,
+	outputSchema as gpt3OutputSchema,
+	rawInputSchema as gpt3InputSchema,
+} from '@aigur/client/src/nodes/text/prediction/gpt3';
+import {
+	inputSchema as gpt4InputSchema,
+	name as gpt4Prediction,
+	outputSchema as gpt4OutputSchema,
+} from '@aigur/client/src/nodes/text/prediction/gpt4';
+import {
+	inputSchema as whisperInputSchema,
+	name as whisperApi,
+	outputSchema as whisperOutputSchema,
+} from '@aigur/client/src/nodes/voice/transcribe/whisper/whisperapi';
 
-import { upperFirst } from './utils/stringUtils';
 import { NodeDefinition, NodeDefinitionType, ZodReadableStream } from './types';
+import { upperFirst } from './utils/stringUtils';
 
 export const inputCustomNode = createIO({
 	type: 'input',
@@ -129,6 +129,13 @@ export const inputAudioNode = createIO({
 	title: 'Audio Input',
 	input: z.object({ audio: z.string() }),
 	subtype: 'audio',
+});
+
+export const inputImageNode = createIO({
+	type: 'input',
+	title: 'Image Input',
+	input: z.object({ image: z.string() }),
+	subtype: 'image',
 });
 
 export const outputCustomNode = createIO({
@@ -359,6 +366,7 @@ export const nodeRepository = {
 	/// input
 	inputCustom: inputCustomNode,
 	inputText: inputTextNode,
+	inputImage: inputImageNode,
 	inputAudio: inputAudioNode,
 	/// output
 	outputCustom: outputCustomNode,

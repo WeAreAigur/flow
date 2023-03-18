@@ -20,13 +20,14 @@ export function AudioInputNode(props: AudioInputNodeProps) {
 
 	useEffect(() => {
 		if (audio) {
-			fetch('/api/audioupload', {
+			fetch('/api/uploadtostorage', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
-					audio,
+					file: audio,
+					extension: 'mp3',
 				}),
 			})
 				.then((res) => res.json())

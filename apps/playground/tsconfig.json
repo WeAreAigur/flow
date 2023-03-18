@@ -1,6 +1,11 @@
 {
 	"extends": "tsconfig/nextjs.json",
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+	"include": [
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		"../../packages/aigur-flow/src/pipelineNodeTypes/InputNodes/ImageInputNode/uploadImage.ts"
+	],
 	"exclude": ["node_modules"],
 	"compilerOptions": {
 		"baseUrl": ".",

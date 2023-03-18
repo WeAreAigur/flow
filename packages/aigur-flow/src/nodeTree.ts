@@ -19,6 +19,10 @@ export const nodeTree: TreeData = [
 						key: nodeRepository.inputText.id,
 					},
 					{
+						title: nodeRepository.inputImage.title,
+						key: nodeRepository.inputImage.id,
+					},
+					{
 						title: nodeRepository.inputAudio.title,
 						key: nodeRepository.inputAudio.id,
 					},

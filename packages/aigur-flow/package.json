@@ -25,6 +25,8 @@
 		"@aigur/client": "^1.12.2",
 		"@aigur/supabase": "^0.32.0",
 		"antd": "^5.2.3",
+		"compressorjs": "^1.2.1",
+		"react-dropzone": "^14.2.3",
 		"react-hook-form": "^7.43.2",
 		"react-hotkeys": "^2.0.0",
 		"reactflow": "^11.5.6",

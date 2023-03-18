@@ -1,8 +1,17 @@
 import './NodeEditor.css';
 
 import ReactFlow, {
-    addEdge, Background, Connection, Edge, Node, Panel, ReactFlowInstance, updateEdge,
-    useEdgesState, useNodesState, useStoreApi
+	addEdge,
+	Background,
+	Connection,
+	Edge,
+	Node,
+	Panel,
+	ReactFlowInstance,
+	updateEdge,
+	useEdgesState,
+	useNodesState,
+	useStoreApi,
 } from 'reactflow';
 import { GlobalHotKeys } from 'react-hotkeys';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -21,6 +30,7 @@ import { ImageOutputNode } from '../pipelineNodeTypes/OutputNodes/ImageOutputNod
 import { AudioOutputNode } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/AudioOutputNode';
 import { TextInputNode } from '../pipelineNodeTypes/InputNodes/TextInputNode';
 import { InputNode } from '../pipelineNodeTypes/InputNodes/InputNode';
+import { ImageInputNode } from '../pipelineNodeTypes/InputNodes/ImageInputNode/ImageInputNode';
 import { AudioInputNode } from '../pipelineNodeTypes/InputNodes/AudioInputNode/AudioInputNode';
 import { GenericNode } from '../pipelineNodeTypes/GenericNode';
 import { nodeRepository } from '../nodeRepository';
@@ -49,6 +59,7 @@ const initialEdges = savedFlow?.edges ?? [];
 const nodeTypes = {
 	'pipeline-inputText': TextInputNode,
 	'pipeline-inputAudio': AudioInputNode,
+	'pipeline-inputImage': ImageInputNode,
 	'pipeline-inputCustom': InputNode,
 	'pipeline-outputText': TextOutputNode,
 	'pipeline-outputAudio': AudioOutputNode,
