@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { Edge, useStoreApi } from 'reactflow';
 import { isZTOArray, isZTOObject, zodToObj, ZTO_Base } from 'zod-to-obj';
 
-import { nodeRepository } from '../nodeRepository';
+import { nodeRepository } from '../nodes/nodeRepository';
 import { useFlowStore } from '../stores/useFlow';
 import { useNodesIOStore } from '../stores/useNodesIO';
 import { getPreviousNodes } from '../utils/getPreviousNodes';

@@ -1,5 +1,5 @@
 import { TreeData } from './NodeBank';
-import { nodeRepository } from './nodeRepository';
+import { nodeRepository } from './nodes/nodeRepository';
 
 export const nodeTree: TreeData = [
 	{
