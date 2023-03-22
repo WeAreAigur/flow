@@ -5,6 +5,6 @@ import { createIO } from '../createIO';
 export const outputImageNode = createIO({
 	type: 'output',
 	title: 'Image Output',
-	input: z.object({ imageUrl: z.string() }),
+	input: z.object({ imageUrl: z.string().url() }),
 	subtype: 'image',
 });

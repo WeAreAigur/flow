@@ -1,9 +1,9 @@
 import { Tree } from 'antd';
 
-import { useConnectNodesProperties } from '../NodeEditor/connectNodeProperties';
-import { createNode } from '../NodeEditor/nodeCreator';
-import { nodeRepository } from '../nodes/nodeRepository';
 import { useFlowStore } from '../stores/useFlow';
+import { nodeRepository } from '../nodes/nodeRepository';
+import { createNode } from '../NodeEditor/nodeCreator';
+import { useConnectNodesProperties } from '../NodeEditor/connectNodeProperties';
 
 export interface Branch {
 	title: string;

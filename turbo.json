@@ -20,6 +20,7 @@
 		"playground#dev": {
 			"dependsOn": ["^build"],
 			"env": [
+				"NEXT_PUBLIC_SITE_URL",
 				"NEXT_PUBLIC_LOGSNAG_KEY",
 				"OPENAI_KEY",
 				"ABLY_KEY",
@@ -27,7 +28,8 @@
 				"SUPABASE_URL",
 				"SUPABASE_SERVICE_KEY",
 				"WHISPERAPI_KEY",
-				"STABILITY_KEY"
+				"STABILITY_KEY",
+				"GOOGLE_KEY"
 			],
 			"outputs": [".next/**"]
 		}

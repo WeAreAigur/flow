@@ -1,3 +1,8 @@
+- transform schema deeply
+
+function getOutputFieldsByType() {
+// TODO: create a data structure of types to acceptedTypes
+
 - automatic transform output to input type if possible (url to arraybuffer, etc)
 
 nodeRepository -> nodeTree -> NodeBank -> NodeEditor -> PipelineNode

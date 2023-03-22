@@ -86,7 +86,6 @@ function SchemaForm(props: {
 			);
 		}
 		if (isZTOArray(field)) {
-			console.log(`***field is array`, field);
 			return (
 				<div className="flex flex-col p-4 space-y-4 bg-base-300">
 					<SchemaForm
@@ -116,8 +115,6 @@ function SchemaForm(props: {
 			/>
 		);
 	};
-
-	console.log(`***props`, props);
 
 	return (
 		<>

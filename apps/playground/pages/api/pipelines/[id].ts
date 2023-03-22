@@ -1,5 +1,7 @@
+import { fetchAndDecorateNode } from '#/nodes/fetchAndDecorateNode';
 import { logsnag } from '#/services/logsnag';
 import { NextRequest } from 'next/server';
+import { z } from 'zod';
 
 import { createAblyNotifier } from '@aigur/ably';
 import { Pipeline, vercelEdgeFunction } from '@aigur/client/src';
@@ -24,7 +26,7 @@ export default async function genericEdgeFunction(req: NextRequest) {
 	pipe.nodes = await Promise.all(
 		pipe.nodes.map(async (node: any) => ({
 			...node,
-			action: await getAction(node.action),
+			action: await getAction(node.action, node.schema),
 		}))
 	);
 	const flow: any = {
@@ -42,6 +44,7 @@ export default async function genericEdgeFunction(req: NextRequest) {
 			openai: process.env.OPENAI_KEY!,
 			whisperapi: process.env.WHISPERAPI_KEY!,
 			stability: process.env.STABILITY_KEY!,
+			googleapis: process.env.GOOGLE_KEY!,
 		}
 	);
 	return vercelEdgeFunction({ [pipe.id]: pipeline })(req);
@@ -51,10 +54,6 @@ export const config = {
 	runtime: 'edge',
 };
 
-async function getAction(nodeId: string) {
-	const node = await import('#/nodes/nodes').then((mod) => (mod as any)[nodeId]);
-	if (node) {
-		return node;
-	}
-	return import('@aigur/client/src').then((mod) => (mod as any)[nodeId]);
+async function getAction(nodeId: string, schema: { input: z.ZodRawShape; output: z.ZodRawShape }) {
+	return fetchAndDecorateNode(nodeId as any, schema);
 }

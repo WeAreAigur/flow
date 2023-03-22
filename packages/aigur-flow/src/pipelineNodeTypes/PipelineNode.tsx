@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
 import { Handle, Position } from 'reactflow';
+import { useEffect, useRef, useState } from 'react';
 
-import { EditNodeModalTrigger } from '../EditNodeModal/EditNodeModalTrigger';
-import { useFlowStore } from '../stores/useFlow';
-import { useNodeStore } from '../stores/useNode';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { usePipelineStore } from '../stores/usePipeline';
 import { NodeInstance } from '../types';
+import { usePipelineStore } from '../stores/usePipeline';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { useNodeStore } from '../stores/useNode';
+import { useFlowStore } from '../stores/useFlow';
+import { EditNodeModalTrigger } from '../EditNodeModal/EditNodeModalTrigger';
 
 import type { Pipeline } from '@aigur/client/src';
 export interface PipelineNodeProps {

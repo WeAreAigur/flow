@@ -76,8 +76,8 @@ export const nodeTree: TreeData = [
 				key: 'textToImageGroup',
 				children: [
 					{
-						title: nodeRepository.stabilityTextToImageAigur.title,
-						key: nodeRepository.stabilityTextToImageAigur.id,
+						title: nodeRepository.stabilityTextToImage.title,
+						key: nodeRepository.stabilityTextToImage.id,
 					},
 				],
 			},

@@ -22,7 +22,7 @@
 	},
 	"dependencies": {
 		"@aigur/ably": "^1.0.0",
-		"@aigur/client": "^1.12.2",
+		"@aigur/client": "^1.13.0",
 		"@aigur/supabase": "^0.32.0",
 		"antd": "^5.2.3",
 		"compressorjs": "^1.2.1",

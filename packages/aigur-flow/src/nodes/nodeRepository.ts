@@ -48,7 +48,7 @@ export const nodeRepository = {
 	gpt4Prediction: gpt4PredictionNode,
 	whisperApi: whisperApiNode,
 	googleImageLabeling: googleImageLabelingNode,
-	stabilityTextToImageAigur: stabilityTextToImageNode,
+	stabilityTextToImage: stabilityTextToImageNode,
 	/// huggingface
 	translation: translationNode,
 	audioClassification: audioClassificationNode,

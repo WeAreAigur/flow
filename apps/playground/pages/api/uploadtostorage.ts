@@ -4,7 +4,7 @@ import { makeid } from '#/utils/makeid';
 import { supabaseUpload } from '@aigur/supabase';
 import { stringToArrayBuffer } from '@aigur/client/src';
 
-export default async function audioUpload(req: NextRequest) {
+export default async function uploadtostorage(req: NextRequest) {
 	const { file, extension } = await req.json();
 	const { arrayBuffer } = await stringToArrayBuffer({ string: file });
 	const { url } = await supabaseUpload({

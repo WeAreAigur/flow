@@ -1,8 +1,8 @@
-import { ReactFlowJsonObject } from 'reactflow';
+import { Node, ReactFlowJsonObject } from 'reactflow';
 
-import { createAblyNotifier } from '@aigur/ably';
-import { Pipeline } from '@aigur/client/src';
 import { makeid } from '@aigur/client/src/makeid';
+import { Pipeline } from '@aigur/client/src';
+import { createAblyNotifier } from '@aigur/ably';
 
 import { NodesIO, PipelineData } from './types';
 
@@ -36,6 +36,7 @@ export async function flowToPipelineData(flow: ReactFlowJsonObject<any, any>, no
 		if (!node.data.id.startsWith('input')) {
 			pipelineData.nodes.push({
 				...nodeIO,
+				schema: getSchema(node),
 				tag: node.data.tag,
 				action: node.data.id,
 				memoryToSave: null,
@@ -45,12 +46,20 @@ export async function flowToPipelineData(flow: ReactFlowJsonObject<any, any>, no
 	} while (!!edge);
 	pipelineData.nodes.push({
 		...nodesIO[outputNode.id],
+		schema: getSchema(outputNode),
 		tag: outputNode.data.tag,
 		action: 'output',
 		memoryToSave: null,
 	});
 
 	return pipelineData;
+}
+
+function getSchema(node: Node<any>) {
+	return {
+		input: node.data.schema.input._def.shape ? node.data.schema.input._def.shape() : {},
+		output: node.data.schema.output._def.shape ? node.data.schema.output._def.shape() : {},
+	};
 }
 
 export function pipelineDataToPipeline(pipelineData: PipelineData) {

@@ -1,11 +1,11 @@
-import { useCallback } from 'react';
-import { Edge, useStoreApi } from 'reactflow';
 import { isZTOArray, isZTOObject, zodToObj, ZTO_Base } from 'zod-to-obj';
+import { Edge, useStoreApi } from 'reactflow';
+import { useCallback } from 'react';
 
-import { nodeRepository } from '../nodes/nodeRepository';
-import { useFlowStore } from '../stores/useFlow';
-import { useNodesIOStore } from '../stores/useNodesIO';
 import { getPreviousNodes } from '../utils/getPreviousNodes';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { useFlowStore } from '../stores/useFlow';
+import { nodeRepository } from '../nodes/nodeRepository';
 
 export function useConnectNodesProperties() {
 	const store = useStoreApi();
@@ -50,7 +50,10 @@ export function useConnectNodesProperties() {
 			function getOutputFieldsByType() {
 				// TODO: create a data structure of types to acceptedTypes
 				return sourceOutputFields.filter(
-					(field) => field.type === inputType || (field.type === 'array' && inputType === 'string')
+					(field) =>
+						field.type === inputType ||
+						(field.type === 'array' && inputType === 'string') ||
+						(typeof field.type === 'undefined' && inputType === 'string')
 				);
 			}
 
