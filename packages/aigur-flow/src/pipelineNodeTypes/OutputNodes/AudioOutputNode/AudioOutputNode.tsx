@@ -37,7 +37,7 @@ export function AudioOutputNode(props: AudioOutputNodeProps) {
 				handles: [
 					{
 						position: Position.Top,
-						type: 'source',
+						type: 'target',
 					},
 				],
 			}}

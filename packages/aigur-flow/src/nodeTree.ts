@@ -1,5 +1,5 @@
-import { TreeData } from './NodeBank';
 import { nodeRepository } from './nodes/nodeRepository';
+import { TreeData } from './NodeBank';
 
 export const nodeTree: TreeData = [
 	{
@@ -100,6 +100,10 @@ export const nodeTree: TreeData = [
 			{
 				title: nodeRepository.whisperApi.title,
 				key: nodeRepository.whisperApi.id,
+			},
+			{
+				title: nodeRepository.googleTextToSpeech.title,
+				key: nodeRepository.googleTextToSpeech.id,
 			},
 		],
 	},

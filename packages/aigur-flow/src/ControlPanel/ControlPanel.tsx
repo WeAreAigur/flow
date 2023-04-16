@@ -59,7 +59,7 @@ export function ControlPanel(props: ControlPanelProps) {
 	return (
 		<GlobalHotKeys keyMap={keyMap} handlers={handlers} allowChanges={true}>
 			<div className="w-72 drawer drawer-end drawer-mobile">
-				<input id="control-panel" type="checkbox" className="drawer-toggle" />
+				<input id="control-panel" type="checkbox" className="drawer-toggle" defaultChecked={true} />
 				<div className="hidden drawer-content">
 					<label htmlFor="control-panel" className="drawer-button btn btn-primary lg:hidden">
 						Open drawer

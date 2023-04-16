@@ -15,8 +15,8 @@ export function OutputPanel(props: OutputPanelProps) {
 		if (props.output.text) {
 			return <TextOutputPanel output={props.output} />;
 		}
-		if (props.output.audioUrl) {
-			return <AudioOutputPanel audioUrl={props.output.audioUrl} />;
+		if (props.output.audio) {
+			return <AudioOutputPanel audioUrl={props.output.audio} />;
 		}
 		if (props.output.imageUrl) {
 			return <ImageOutputPanel imageUrl={props.output.imageUrl} />;

@@ -5,6 +5,6 @@ import { createIO } from '../createIO';
 export const outputAudioNode = createIO({
 	type: 'output',
 	title: 'Audio Output',
-	input: z.object({ audio: z.string() }),
+	input: z.object({ audio: z.string().url() }),
 	subtype: 'audio',
 });

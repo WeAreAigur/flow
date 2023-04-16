@@ -41,6 +41,7 @@ export function NodeBank(props: NodeBankProps) {
 				y: position.y + 300,
 			});
 
+			console.log(`***adding new node`, newNode);
 			currentFlow.addNodes(newNode);
 			setNodeIO(newNode.id, {
 				type: newNode.type,
@@ -52,14 +53,14 @@ export function NodeBank(props: NodeBankProps) {
 			if (nodes.length === 0) {
 				currentFlow.fitView();
 			} else {
-				const edge = {
-					id: `${newNode.id}-${nodes[0].id}`,
-					source: nodes[0].id,
-					target: newNode.id,
-				};
-				debugger;
-				currentFlow.addEdges(edge);
 				setTimeout(() => {
+					const edge = {
+						id: `${newNode.id}-${nodes[0].id}`,
+						source: nodes[0].id,
+						target: newNode.id,
+					};
+					console.log(`***edge`, edge);
+					currentFlow.addEdges(edge);
 					connectNodesProperties(edge);
 				});
 			}
