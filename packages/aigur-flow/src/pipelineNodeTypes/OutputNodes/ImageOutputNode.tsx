@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { PipelineNode } from '../PipelineNode';
 import { NodeInstance } from '../../types';
 import { usePipelineStore } from '../../stores/usePipeline';
-import { useNodesIOStore } from '../../stores/useNodesIO';
 
 import type { Pipeline } from '@aigur/client/src';
 export interface ImageOutputNodeProps {
@@ -13,7 +12,6 @@ export interface ImageOutputNodeProps {
 }
 
 export function ImageOutputNode(props: ImageOutputNodeProps) {
-	const { setNodeIO } = useNodesIOStore((state) => state);
 	const selectedPipeline = usePipelineStore((state) => state.selectedPipeline);
 	const [imageUrl, setImageUrl] = useState('');
 

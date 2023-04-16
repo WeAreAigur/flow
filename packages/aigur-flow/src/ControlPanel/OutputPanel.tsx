@@ -1,3 +1,7 @@
+import Image from 'next/image';
+
+import { PlayAudio } from '../pipelineNodeTypes/OutputNodes/AudioOutputNode/PlayAudio';
+
 export interface OutputPanelProps {
 	output: Record<string, any> | null;
 }
@@ -7,8 +11,15 @@ export function OutputPanel(props: OutputPanelProps) {
 		if (props.output === null) {
 			return null;
 		}
+		console.log(`***props.output`, props.output);
 		if (props.output.text) {
 			return <TextOutputPanel output={props.output} />;
+		}
+		if (props.output.audioUrl) {
+			return <AudioOutputPanel audioUrl={props.output.audioUrl} />;
+		}
+		if (props.output.imageUrl) {
+			return <ImageOutputPanel imageUrl={props.output.imageUrl} />;
 		}
 	}
 
@@ -28,4 +39,20 @@ function TextOutputPanel(props: OutputPanelProps) {
 			value={props.output ? props.output['text'] : ''}
 		/>
 	);
+}
+
+interface AudioOutputPanelProps {
+	audioUrl: string;
+}
+
+function AudioOutputPanel(props: AudioOutputPanelProps) {
+	return <PlayAudio audioUrl={props.audioUrl} inProgress={false} />;
+}
+
+interface ImageOutputPanelProps {
+	imageUrl: string;
+}
+
+function ImageOutputPanel(props: ImageOutputPanelProps) {
+	return <Image src={props.imageUrl} width={128} height={128} alt="" />;
 }

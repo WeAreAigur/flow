@@ -65,7 +65,7 @@ export function InputPanel(props: InputPanelProps) {
 
 	return (
 		<div className="flex flex-col space-y-2">
-			<div className="text-xl">Input - {props.inputKeyName}</div>
+			<div className="text-xl">Input</div>
 			{getTypedInputPanel()}
 		</div>
 	);

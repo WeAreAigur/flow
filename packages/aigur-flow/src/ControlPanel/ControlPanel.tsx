@@ -23,6 +23,7 @@ export function ControlPanel(props: ControlPanelProps) {
 		reactFlowInstance.setNodes([]);
 		reactFlowInstance.setEdges([]);
 		initIO({});
+		setOutput(null);
 	}
 
 	const runPipeline = useCallback(async () => {

@@ -1,9 +1,12 @@
 import { Position } from 'reactflow';
+import { useEffect, useState } from 'react';
 
 import { Pipeline } from '@aigur/client/src';
 
+import { PlayAudio } from './PlayAudio';
 import { PipelineNode } from '../../PipelineNode';
 import { NodeInstance } from '../../../types';
+import { usePipelineStore } from '../../../stores/usePipeline';
 
 export interface AudioOutputNodeProps {
 	id: string;
@@ -11,6 +14,19 @@ export interface AudioOutputNodeProps {
 }
 
 export function AudioOutputNode(props: AudioOutputNodeProps) {
+	const selectedPipeline = usePipelineStore((state) => state.selectedPipeline);
+	const [audioUrl, setAudioUrl] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (!selectedPipeline) {
+			return;
+		}
+		return selectedPipeline.onFinish((event: any) => {
+			console.log(`***event.data.output`, event.data.output);
+			setAudioUrl(event.data.output.audioUrl);
+		});
+	}, [props.data, selectedPipeline]);
+
 	return (
 		<PipelineNode
 			id={props.id}
@@ -26,7 +42,7 @@ export function AudioOutputNode(props: AudioOutputNodeProps) {
 				],
 			}}
 		>
-			<div className="text-red-500">Voice</div>
+			<PlayAudio audioUrl={audioUrl} inProgress={false} />
 		</PipelineNode>
 	);
 }

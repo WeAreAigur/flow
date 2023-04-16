@@ -57,6 +57,7 @@ export function NodeBank(props: NodeBankProps) {
 					source: nodes[0].id,
 					target: newNode.id,
 				};
+				debugger;
 				currentFlow.addEdges(edge);
 				setTimeout(() => {
 					connectNodesProperties(edge);
