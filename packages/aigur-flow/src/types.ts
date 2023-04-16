@@ -32,13 +32,14 @@ export interface PipelineData {
 	nodes: any[];
 }
 
-export type NodesIO = Record<
-	string,
-	{
-		input: Record<string, string>;
-		output: Record<string, string>;
-	}
->;
+export type NodesIO = Record<string, NodeIODefinition>;
+
+export type NodeIODefinition = {
+	type?: string;
+	subType?: string;
+	input: Record<string, string>;
+	output: Record<string, string>;
+};
 
 export type ZodReadableStream = z.ZodType<
 	InstanceType<typeof ReadableStream>,

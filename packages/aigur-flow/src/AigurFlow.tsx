@@ -6,6 +6,7 @@ import { useNodesIOStore } from './stores/useNodesIO';
 import { nodeTree } from './nodeTree';
 import { NodeEditor } from './NodeEditor';
 import { NodeBank } from './NodeBank';
+import { ControlPanel } from './ControlPanel';
 
 interface AigurFlowProps {
 	userId: string;
@@ -29,6 +30,7 @@ export function AigurFlow(props: AigurFlowProps) {
 					<div className="flex-1">
 						<NodeEditor />
 					</div>
+					<ControlPanel />
 				</div>
 			</div>
 		</ReactFlowProvider>

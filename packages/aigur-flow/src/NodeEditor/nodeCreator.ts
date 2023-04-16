@@ -1,7 +1,7 @@
 import { makeid } from '@aigur/client/src/makeid';
 
-import { NodeDefinition } from '../types';
 import { upperFirst } from '../utils/stringUtils';
+import { NodeDefinition } from '../types';
 
 let nodeCnt = 0;
 
@@ -12,6 +12,7 @@ export function createNode(
 	const newNode = {
 		id: `${nodeDefinition.id}@@${nodeCnt++}`,
 		type: `${nodeDefinition.type}${upperFirst(nodeDefinition.subtype ?? '')}`,
+		subType: nodeDefinition.subtype,
 		position,
 		data: { ...nodeDefinition, tag: makeid() },
 	};

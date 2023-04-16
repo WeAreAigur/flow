@@ -1,13 +1,13 @@
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodToObj } from 'zod-to-obj';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
 
-import { useFlowStore } from '../stores/useFlow';
-import { useNodesIOStore } from '../stores/useNodesIO';
-import { NodeDefinition } from '../types';
-import { upperFirst } from '../utils/stringUtils';
 import { InputEditor } from './InputEditor';
+import { upperFirst } from '../utils/stringUtils';
+import { NodeDefinition } from '../types';
+import { useNodesIOStore } from '../stores/useNodesIO';
+import { useFlowStore } from '../stores/useFlow';
 
 export interface EditNodeModalProps {
 	node: NodeDefinition;
@@ -30,7 +30,12 @@ export function EditNodeModal(props: EditNodeModalProps) {
 
 	const submit = (data: any) => {
 		const inputToSubmit = pruneObject(data.input);
-		setNodeIO(props.node.id, { input: inputToSubmit ?? {}, output: {} });
+		setNodeIO(props.node.id, {
+			type: props.node.type,
+			subType: props.node.subtype,
+			input: inputToSubmit ?? {},
+			output: {},
+		});
 	};
 
 	function pruneObject(obj: Record<string, any>) {

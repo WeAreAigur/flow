@@ -1,10 +1,9 @@
 import './NodeEditor.css';
 
 import ReactFlow, {
-    addEdge, Background, Connection, Edge, Node, Panel, ReactFlowInstance, updateEdge,
-    useEdgesState, useNodesState, useStoreApi
+    addEdge, Background, Connection, Edge, Node, ReactFlowInstance, updateEdge, useEdgesState,
+    useNodesState, useStoreApi
 } from 'reactflow';
-import { GlobalHotKeys } from 'react-hotkeys';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { createNode } from './nodeCreator';
@@ -67,7 +66,7 @@ export function NodeEditor() {
 	const reactFlowWrapper = useRef<HTMLDivElement>(null);
 	const edgeUpdateSuccessful = useRef(true);
 	const store = useStoreApi();
-	const { initIO, deleteNodeIO, io: nodesIO } = useNodesIOStore((state) => state);
+	const { setNodeIO, initIO, deleteNodeIO, io: nodesIO } = useNodesIOStore((state) => state);
 	const selectPipeline = usePipelineStore((state) => state.selectPipeline);
 	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -147,10 +146,6 @@ export function NodeEditor() {
 		}
 	}, [nodesIO, reactFlowInstance, selectPipeline, userId]);
 
-	const onRun = useCallback(async () => {
-		runPipeline();
-	}, [runPipeline]);
-
 	const onDrop = useCallback(
 		(event: any) => {
 			event.preventDefault();
@@ -173,11 +168,17 @@ export function NodeEditor() {
 				  })
 				: { x: event.clientX - reactFlowBounds.left, y: event.clientY - reactFlowBounds.top };
 			const newNode = createNode(nodeDefinition, position);
+			setNodeIO(newNode.id, {
+				type: newNode.type,
+				subType: newNode.subType,
+				input: {},
+				output: {},
+			});
 
 			setNodes((nodes) => nodes.concat(newNode));
 			saveFlowInUrl();
 		},
-		[reactFlowInstance, saveFlowInUrl, setNodes]
+		[reactFlowInstance, saveFlowInUrl, setNodeIO, setNodes]
 	);
 
 	const getClosestEdge = useCallback(
@@ -314,64 +315,30 @@ export function NodeEditor() {
 		[deleteNodeIO, saveFlowInUrl, setEdges]
 	);
 
-	function newPipeline() {
-		setNodes([]);
-		setEdges([]);
-		initIO({});
-	}
-
-	const keyMap = {
-		runPipeline: ['ctrl+enter', 'cmd+enter'],
-	};
-
-	const handlers = {
-		runPipeline,
-	};
-
 	return (
-		<GlobalHotKeys keyMap={keyMap} handlers={handlers} allowChanges={true}>
-			<div className="h-full reactflow-wrapper" ref={reactFlowWrapper}>
-				<ReactFlow
-					nodes={nodes}
-					edges={edges}
-					onNodesChange={onNodesChange}
-					onEdgesChange={onEdgesChange}
-					onEdgeUpdate={onEdgeUpdate}
-					onEdgeUpdateStart={onEdgeUpdateStart}
-					onEdgeUpdateEnd={onEdgeUpdateEnd}
-					onConnect={onConnect}
-					onDragOver={onDragOver}
-					onDrop={onDrop}
-					onNodeDrag={onNodeDrag}
-					onNodeDragStop={onNodeDragStop}
-					onInit={setReactFlowInstance}
-					nodeTypes={nodeTypes}
-					maxZoom={0.75}
-					proOptions={{ hideAttribution: true }}
-					fitView
-				>
-					<Background />
-					<Panel position="top-right">
-						<button onClick={newPipeline} className="btn btn-secondary btn-sm">
-							New
-						</button>
-					</Panel>
-					<Panel position="bottom-right">
-						<button
-							onClick={onRun}
-							className={`btn btn-primary btn-lg ${isRunning ? 'loading' : ''}`}
-						>
-							{isRunning ? '' : 'Run'}
-						</button>
-					</Panel>
-					{/* <Panel position="bottom-left">
-					<div className="bg-neutral-800 text-white h-24 w-[32rem] p-2 rounded-lg">
-						<pre>{output}</pre>
-					</div>
-				</Panel> */}
-				</ReactFlow>
-				<EditNodeModal node={selectedNode} />
-			</div>
-		</GlobalHotKeys>
+		<div className="h-full reactflow-wrapper" ref={reactFlowWrapper}>
+			<ReactFlow
+				nodes={nodes}
+				edges={edges}
+				onNodesChange={onNodesChange}
+				onEdgesChange={onEdgesChange}
+				onEdgeUpdate={onEdgeUpdate}
+				onEdgeUpdateStart={onEdgeUpdateStart}
+				onEdgeUpdateEnd={onEdgeUpdateEnd}
+				onConnect={onConnect}
+				onDragOver={onDragOver}
+				onDrop={onDrop}
+				onNodeDrag={onNodeDrag}
+				onNodeDragStop={onNodeDragStop}
+				onInit={setReactFlowInstance}
+				nodeTypes={nodeTypes}
+				maxZoom={0.75}
+				proOptions={{ hideAttribution: true }}
+				fitView
+			>
+				<Background />
+			</ReactFlow>
+			<EditNodeModal node={selectedNode} />
+		</div>
 	);
 }
