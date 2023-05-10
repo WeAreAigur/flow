@@ -4,4 +4,13 @@ module.exports = {
 	images: {
 		domains: ['rxbcnsluyhrlazakjohf.supabase.co'],
 	},
+	async redirects() {
+		return [
+			{
+				source: '/',
+				destination: 'https://app.aigur.dev',
+				permanent: false,
+			},
+		];
+	},
 };
